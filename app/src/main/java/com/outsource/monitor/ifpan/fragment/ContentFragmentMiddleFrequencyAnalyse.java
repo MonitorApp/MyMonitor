@@ -44,6 +44,7 @@ import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 import com.outsource.monitor.utils.Utils;
+import com.outsource.monitor.widget.FallsLevelView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -69,7 +70,8 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
     private int averageCount;//当前的平均值是由多少条数据算出来的
     private CombinedChart mChart;
     private IFPANXAxisValueFormatter mXValueFormatter;
-    private CombinedChart mFallChart;
+//    private CombinedChart mFallChart;
+    private FallsLevelView mFallsLevelView;
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final long REFRESH_FALL_INTERVAL = 1000;
     private static final int MSG_ID_REFRESH_CHART = 1;
@@ -90,10 +92,10 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
             } else if (msg.what == MSG_ID_REFRESH_FALL) {
                 removeExpiredFallRows();
                 refreshFallChart();
-                CombinedData data = mFallChart.getData();
-                data.notifyDataChanged();
-                mFallChart.notifyDataSetChanged();
-                mFallChart.invalidate();
+//                CombinedData data = mFallChart.getData();
+//                data.notifyDataChanged();
+//                mFallChart.notifyDataSetChanged();
+//                mFallChart.invalidate();
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_FALL, REFRESH_FALL_INTERVAL);
             }
         }
@@ -169,41 +171,43 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
     }
 
     private void initFallChart(View view) {
-        mFallChart = (CombinedChart) view.findViewById(R.id.fall_middle_frequency_analyse);
-        mFallChart.getDescription().setEnabled(false);
-        mFallChart.setBackgroundColor(Color.BLACK);
-        mFallChart.setDrawGridBackground(false);
-        mFallChart.setDrawBarShadow(false);
-        mFallChart.setHighlightFullBarEnabled(false);
-        mFallChart.getAxisLeft().setEnabled(false);
-        mFallChart.getAxisRight().setEnabled(false);
-
-        YAxis leftAxis = mFallChart.getAxisLeft();
-        leftAxis.enableGridDashedLine(10, 10, 0);
-        leftAxis.setAxisLineColor(Color.parseColor("#403f40"));
-        leftAxis.setTextColor(Color.parseColor("#adadad"));
-        leftAxis.setAxisMinimum(0);
-        leftAxis.setAxisMaximum(BAR_COUNT);
-        leftAxis.setGranularity(0);
-        leftAxis.setGranularityEnabled(false);
-
-        XAxis xAxis = mFallChart.getXAxis();
-        xAxis.setValueFormatter(mXValueFormatter);
-        xAxis.enableGridDashedLine(10, 10, 0);
-        xAxis.setAxisLineColor(Color.parseColor("#403f40"));
-        xAxis.setTextColor(Color.parseColor("#adadad"));
-        xAxis.setPosition(XAxisPosition.BOTTOM);
-        xAxis.setGranularity(0f);
-
-        CombinedData data = new CombinedData();
-        data.setData(defaultHorizontalBarData());
-        mFallChart.setTouchEnabled(false);
-        mFallChart.setDrawBarShadow(false);
-        mFallChart.setHighlightFullBarEnabled(false);
-        mFallChart.setAutoScaleMinMaxEnabled(false);
-        mFallChart.setScaleEnabled(false);
-        mFallChart.setData(data);
-        mFallChart.invalidate();
+        mFallsLevelView = (FallsLevelView) view.findViewById(R.id.fall_middle_frequency_analyse);
+        mFallsLevelView.start();
+//        mFallChart = (CombinedChart) view.findViewById(R.id.fall_middle_frequency_analyse);
+//        mFallChart.getDescription().setEnabled(false);
+//        mFallChart.setBackgroundColor(Color.BLACK);
+//        mFallChart.setDrawGridBackground(false);
+//        mFallChart.setDrawBarShadow(false);
+//        mFallChart.setHighlightFullBarEnabled(false);
+//        mFallChart.getAxisLeft().setEnabled(false);
+//        mFallChart.getAxisRight().setEnabled(false);
+//
+//        YAxis leftAxis = mFallChart.getAxisLeft();
+//        leftAxis.enableGridDashedLine(10, 10, 0);
+//        leftAxis.setAxisLineColor(Color.parseColor("#403f40"));
+//        leftAxis.setTextColor(Color.parseColor("#adadad"));
+//        leftAxis.setAxisMinimum(0);
+//        leftAxis.setAxisMaximum(BAR_COUNT);
+//        leftAxis.setGranularity(0);
+//        leftAxis.setGranularityEnabled(false);
+//
+//        XAxis xAxis = mFallChart.getXAxis();
+//        xAxis.setValueFormatter(mXValueFormatter);
+//        xAxis.enableGridDashedLine(10, 10, 0);
+//        xAxis.setAxisLineColor(Color.parseColor("#403f40"));
+//        xAxis.setTextColor(Color.parseColor("#adadad"));
+//        xAxis.setPosition(XAxisPosition.BOTTOM);
+//        xAxis.setGranularity(0f);
+//
+//        CombinedData data = new CombinedData();
+//        data.setData(defaultHorizontalBarData());
+//        mFallChart.setTouchEnabled(false);
+//        mFallChart.setDrawBarShadow(false);
+//        mFallChart.setHighlightFullBarEnabled(false);
+//        mFallChart.setAutoScaleMinMaxEnabled(false);
+//        mFallChart.setScaleEnabled(false);
+//        mFallChart.setData(data);
+//        mFallChart.invalidate();
     }
 
     private void initService() {
@@ -212,6 +216,7 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
                 service.addIfpanDataReceiver(ContentFragmentMiddleFrequencyAnalyse.this);
+                service.addIfpanDataReceiver(mFallsLevelView);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);
                 int port = PreferenceUtils.getInt(PreferenceKey.DEVICE_PORT);
                 service.connect(ip, port, new ConnectCallback() {
@@ -427,11 +432,11 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
         }
         BarDataSet set = new BarDataSet(entries, "DataSet 1");
 
-        CombinedData data = mFallChart.getData();
-        HorizontalBarData barData = data.getHorizontalBarData();
-        barData.removeDataSet(0);
-        barData.addDataSet(set);
-        barData.notifyDataChanged();
+//        CombinedData data = mFallChart.getData();
+//        HorizontalBarData barData = data.getHorizontalBarData();
+//        barData.removeDataSet(0);
+//        barData.addDataSet(set);
+//        barData.notifyDataChanged();
     }
 
     @Override
@@ -460,9 +465,9 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
         xAxis.setAxisMinimum(-axisSpan / 2);
         xAxis.setAxisMaximum(axisSpan / 2);
 
-        XAxis fallXAxis = mFallChart.getXAxis();
-        fallXAxis.setAxisMinimum(0);
-        fallXAxis.setAxisMaximum(axisSpan);
+//        XAxis fallXAxis = mFallChart.getXAxis();
+//        fallXAxis.setAxisMinimum(0);
+//        fallXAxis.setAxisMaximum(axisSpan);
     }
 
     private float getDisplaySpan(long realSpan) {

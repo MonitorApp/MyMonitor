@@ -19,13 +19,20 @@
             android:background="@android:color/black"
             android:orientation="horizontal">
 
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:layout_marginBottom="37dp"-->
             <com.outsource.monitor.widget.PaletteView
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="37dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp"
                 android:layout_width="20dp"
                 android:layout_height="match_parent"/>
 
-            <com.github.mikephil.charting.charts.CombinedChart
+            <!--<com.github.mikephil.charting.charts.CombinedChart-->
+                <!--android:id="@+id/fall_middle_frequency_analyse"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"/>-->
+
+            <com.outsource.monitor.widget.FallsLevelView
                 android:id="@+id/fall_middle_frequency_analyse"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

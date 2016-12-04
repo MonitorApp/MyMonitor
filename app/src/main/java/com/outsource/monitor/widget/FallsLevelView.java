@@ -5,23 +5,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.widget.Toast;
 
-import com.github.mikephil.charting.buffer.ColorBuffer;
-import com.github.mikephil.charting.components.XAxis;
 import com.outsource.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.model.FrequencyLevel;
 import com.outsource.monitor.parser.IfpanParser48278;
-import com.outsource.monitor.service.DataReceiver;
 import com.outsource.monitor.service.IfpanDataReceiver;
 import com.outsource.monitor.utils.CollectionUtils;
-import com.outsource.monitor.utils.DateUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.Utils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,17 +24,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver {
 
-    private static final int LINE_HEIGHT = DisplayUtils.dp2px(1);//横线高度
-    private static int LINE_COUNT;//一屏最大显示的横线数量
-    private float mMinFrequency;//最低频率
-    private float mMaxFrequency;//最高频率
-    private static float FREQUENCY_BAND = 1;//频率差
-    private static float FREQUENCY_PER_PX = 1;//1像素占的频率值
     private static final int X_AXIS_HEIGHT = DisplayUtils.dp2px(15);//x轴刻度区域的高度
     private static final int Y_AXIS_WIDTH = DisplayUtils.dp2px(15);//y轴刻度区域的宽度
-    private static final float X_UNIT = 10;//x轴一个网格占多少频率
-    private static final float Y_UNIT = 10;//y轴一个网格占多少条线
+    private static final float X_CELL_COUNT = 10;//x轴有多少个网格
+    private static final float Y_CELL_COUNT = 10;//y轴有多少个网格
+    private static int LINE_HEIGHT = 1;
 
+    private int chartWidth;
     private Paint mLevelPaint;
     private Paint mXyAxisPaint;
     private Paint mMarkPaint;
@@ -49,13 +38,14 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
 
     private int mMarkTextHeight;
 
-    public ConcurrentLinkedQueue<List<FrequencyLevel>> mLevels = new ConcurrentLinkedQueue<>();
-
+    private static final int FALL_COUNT = 100;//最大显示的横线数量
     private static final long FALL_YAXIS_UNIT = 1000;//瀑布图两行之间的最小时间间隔
     private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private FallRow mAverageFallRow;
     private int averageCount;//当前的平均值是由多少条数据算出来的
+    private float span;//跨距
+    private float frequency;
 
     public FallsLevelView(Context context) {
         super(context);
@@ -69,15 +59,27 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
 
     @Override
     void drawCanvas(Canvas canvas) {
+        for (FallRow row : mFallRows) {
+            float y = LINE_HEIGHT * (float) (System.currentTimeMillis() - row.timestamp) / FALL_YAXIS_UNIT;
+            List<Float> levels = row.mValues;
+            int size = levels.size();
+            int start = Y_AXIS_WIDTH;
+            float distance = chartWidth / (float) size;
+            y = Math.min(y, mHeight - X_AXIS_HEIGHT - distance);
+            for (Float level : levels) {
+                mLevelPaint.setColor(Utils.level2Color(level));
+                canvas.drawLine(start, y, start + distance, y, mLevelPaint);
+                start += distance;
+            }
+        }
+
         canvas.drawLine(Y_AXIS_WIDTH - DisplayUtils.dp2px(1), mHeight - X_AXIS_HEIGHT, mWidth, mHeight - X_AXIS_HEIGHT, mXyAxisPaint);//x轴刻度线
         canvas.drawLine(Y_AXIS_WIDTH - DisplayUtils.dp2px(1), mHeight - X_AXIS_HEIGHT, Y_AXIS_WIDTH, 0, mXyAxisPaint);//y轴刻度线
 
-        int xUnitCount = (int) (FREQUENCY_BAND / X_UNIT);
-        if (xUnitCount == 0) return;
-        int xUnitWidth = (mWidth - Y_AXIS_WIDTH) / xUnitCount;
+        int xUnitWidth = (int) ((mWidth - Y_AXIS_WIDTH) / X_CELL_COUNT);
         //画x轴底部刻度值和垂直网格线
-        for (int i = 0; i <= xUnitCount; i++) {
-            int xValue = (int) (mMinFrequency + i * X_UNIT);
+        for (int i = 0; i <= X_CELL_COUNT; i++) {
+            int xValue = (int) (frequency + i * (span / X_CELL_COUNT));
             int x = Y_AXIS_WIDTH + xUnitWidth * i;
             String xMarkStr = String.valueOf(xValue);
             float textWidth = mMarkTextPaint.measureText(xMarkStr);
@@ -86,91 +88,42 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
         }
 
         //画x轴底部刻度值和水平网格线
-        int yUnitCount = (int) (LINE_COUNT / Y_UNIT);
-        if (yUnitCount == 0) return;
-        int yUnitHeight = (mHeight - X_AXIS_HEIGHT) / yUnitCount;
-        for (int i = 0; i <= yUnitCount; i++) {
+        int yUnitHeight = (int) ((mHeight - X_AXIS_HEIGHT) / Y_CELL_COUNT);
+        for (int i = 0; i <= Y_CELL_COUNT; i++) {
             int y = mHeight - X_AXIS_HEIGHT - (i + 1) * yUnitHeight;
             canvas.drawLine(Y_AXIS_WIDTH, y, mWidth, y, mMarkPaint);
-        }
-
-        int y =  (mLevels.size() - 1) * LINE_HEIGHT;
-        for (List<FrequencyLevel> list : mLevels) {
-            int start = Y_AXIS_WIDTH;
-            for (FrequencyLevel level : list) {
-                int distance = (int) ((level.frequency - mMinFrequency) / FREQUENCY_PER_PX);
-                mLevelPaint.setColor(Utils.level2Color(level.level));
-                canvas.drawLine(start, y, start + distance, y, mLevelPaint);
-                start += distance;
-            }
-            y -= LINE_HEIGHT;
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        LINE_COUNT = (mHeight - X_AXIS_HEIGHT) / LINE_HEIGHT;
-        calcFrequencyDimension();
-    }
-
-
-    @Override
-    public void onReceiveItuData(float[] ituData) {
-    }
-
-    @Override
-    public void onReceiveBandLevel(List<FrequencyLevel> levels) {
-        mLevels.add(levels);
-        if (mLevels.size() > LINE_COUNT) {
-            mLevels.poll();
-        }
-    }
-
-    /**
-     * 设置频率区间
-     * @param minFrequency
-     * @param maxFrequency
-     */
-    public void setFrequencyBand(int minFrequency, int maxFrequency) {
-        mMinFrequency = minFrequency;
-        mMaxFrequency = maxFrequency;
-        FREQUENCY_BAND = maxFrequency - minFrequency;
-        if (FREQUENCY_BAND > 0) {
-            calcFrequencyDimension();
-        } else {
-            Toast.makeText(getContext(), "最高频率要大于最低频率", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void calcFrequencyDimension() {
-        if (mWidth > 0 && FREQUENCY_BAND > 0) {
-            FREQUENCY_PER_PX = FREQUENCY_BAND / (mWidth - Y_AXIS_WIDTH);
-        }
+        chartWidth = mWidth - Y_AXIS_WIDTH;
+        LINE_HEIGHT = (mHeight - X_AXIS_HEIGHT) / FALL_COUNT;
+        mLevelPaint.setStrokeWidth(LINE_HEIGHT);
     }
 
     private void init() {
         mLevelPaint = new Paint();
         mLevelPaint.setStyle(Paint.Style.FILL);
-        mLevelPaint.setStrokeWidth(LINE_HEIGHT);
 
         mXyAxisPaint = new Paint();
-        mXyAxisPaint.setColor(Color.BLACK);
+        mXyAxisPaint.setColor(Color.parseColor("#403f40"));
         mXyAxisPaint.setAntiAlias(true);
         mXyAxisPaint.setStyle(Paint.Style.FILL);
         mXyAxisPaint.setStrokeWidth(DisplayUtils.dp2px(1f));
 
         mMarkPaint = new Paint();
-        mMarkPaint.setColor(Color.GRAY);
+        mMarkPaint.setColor(Color.parseColor("#403f40"));
         mMarkPaint.setAntiAlias(true);
         mMarkPaint.setStyle(Paint.Style.FILL);
         mMarkPaint.setStrokeWidth(1);
 
         mMarkTextPaint = new Paint();
-        mMarkTextPaint.setColor(Color.BLACK);
-        mMarkTextPaint.setTextSize(10);
+        mMarkTextPaint.setColor(Color.parseColor("#403f40"));
+        mMarkTextPaint.setTextSize(DisplayUtils.dp2px(11));
         Paint.FontMetrics fm = mMarkTextPaint.getFontMetrics();
-        mMarkTextHeight = (int) Math.ceil(fm.descent - fm.ascent);
+        mMarkTextHeight = (int) ((fm.descent - fm.ascent) / 2) - DisplayUtils.dp2px(4);
     }
 
     @Override
@@ -179,11 +132,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
             LogUtils.d("中频分析接受数据为空！");
             return;
         }
-        if (ColorBuffer.valueCount == 0) {
-            ColorBuffer.valueCount = ifpanData.dotCount;
-        }
-        mCurrentData.set(ifpanData.levelList);
-        refreshFallLevels(new FallRow(System.currentTimeMillis(), ifpanData.levelList));
+        updateFallLevels(new FallRow(System.currentTimeMillis(), ifpanData.levelList));
     }
 
     @Override
@@ -192,15 +141,11 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
             LogUtils.d("中频分析帧头为空！");
             return;
         }
-        mDataHead.set(ifpanHeads);
-        float axisSpan = getDisplaySpan(ifpanHeads.span);
-
-        XAxis fallXAxis = mFallChart.getXAxis();
-        fallXAxis.setAxisMinimum(0);
-        fallXAxis.setAxisMaximum(axisSpan);
+        span = getDisplaySpan(ifpanHeads.span);
+//        frequency = ifpanHeads.frequence;
     }
 
-    private void refreshFallLevels(FallRow row) {
+    private void updateFallLevels(FallRow row) {
         if (mAverageFallRow == null) {
             mAverageFallRow = row;
             averageCount++;
@@ -209,6 +154,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
             if (row.timestamp - lastTime > FALL_YAXIS_UNIT) {
                 calcNewAverageRow(row);
                 addFallRow(mAverageFallRow);
+//                removeExpiredFallRows();
                 mAverageFallRow = null;
                 averageCount = 0;
             } else {
@@ -224,7 +170,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
         mFallRows.add(averageFallRow);
         FallRow head = mFallRows.peek();
         if (head != null) {
-            if (averageFallRow.timestamp - head.timestamp > BAR_COUNT * FALL_YAXIS_UNIT) {
+            if (averageFallRow.timestamp - head.timestamp > FALL_COUNT * FALL_YAXIS_UNIT) {
                 mFallRows.poll();
             }
         }
@@ -247,16 +193,20 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
     private void removeExpiredFallRows() {
         long currentTime = System.currentTimeMillis();
         FallRow head = mFallRows.peek();
-        if (head == null || (System.currentTimeMillis() - head.timestamp < BAR_COUNT * FALL_YAXIS_UNIT)) {
+        if (head == null || (System.currentTimeMillis() - head.timestamp < FALL_COUNT * FALL_YAXIS_UNIT)) {
             return;
         }
         Iterator<FallRow> iterator = mFallRows.iterator();
         while (iterator.hasNext()) {
             FallRow row = iterator.next();
-            if (currentTime - row.timestamp > BAR_COUNT * FALL_YAXIS_UNIT) {
+            if (currentTime - row.timestamp > FALL_COUNT * FALL_YAXIS_UNIT) {
                 iterator.remove();
             }
         }
+    }
+
+    private float getDisplaySpan(long realSpan) {
+        return  realSpan / (float) 1000;
     }
 
 }

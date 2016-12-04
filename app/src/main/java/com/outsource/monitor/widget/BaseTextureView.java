@@ -182,7 +182,7 @@ public abstract class BaseTextureView extends TextureView implements TextureView
         setSurfaceTextureListener(this);
 
         mBgPaint = new Paint();
-        mBgPaint.setColor(Color.WHITE);
+        mBgPaint.setColor(Color.BLACK);
         mBgPaint.setStyle(Paint.Style.FILL);
     }
 

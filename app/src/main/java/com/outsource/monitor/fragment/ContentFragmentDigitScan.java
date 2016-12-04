@@ -89,7 +89,7 @@ public class ContentFragmentDigitScan extends Fragment {
             @Override
             public void onServiceConnected(DataProviderService.SocketBinder service) {
                 service.addDataReceiver(mLevelTextureView);
-                service.addDataReceiver(mFallsLevelView);
+//                service.addDataReceiver(mFallsLevelView);
             }
         });
         return view;
