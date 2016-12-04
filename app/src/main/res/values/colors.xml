@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="text_color_333">#333</color>
+    <color name="axis_line">#403f40</color>
+    <color name="axis_text">#adadad</color>
+    <color name="main_bg">#205c9b</color>
+    <color name="text_color_999">#999999</color>
+    <color name="text_color_666">#666666</color>
+    <color name="divider">#333</color>
+    <color name="color_ccc">#ccc</color>
+</resources>

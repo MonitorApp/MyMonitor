@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/main_bg"
+    android:gravity="center"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".activity.MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/tv_sgl_scan"
+            style="@style/MainActMenuText"
+            android:text="单频测量"/>
+
+        <TextView
+            android:id="@+id/tv_midddle_analyse"
+            style="@style/MainActMenuText"
+            android:text="中频分析"/>
+
+        <TextView
+            android:id="@+id/tv_band_scan"
+            style="@style/MainActMenuText"
+            android:text="频段扫描"/>
+
+        <TextView
+            android:id="@+id/tv_discrete_scan"
+            style="@style/MainActMenuText"
+            android:text="离散扫描"/>
+
+        <TextView
+            android:id="@+id/tv_digit_scan"
+            style="@style/MainActMenuText"
+            android:text="数字扫描"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_map"
+            style="@style/MainActMenuText"
+            android:text="地 图"/>
+
+        <TextView
+            android:id="@+id/tv_record"
+            style="@style/MainActMenuText"
+            android:text="记录文件"/>
+
+        <TextView
+            android:id="@+id/tv_option"
+            style="@style/MainActMenuText"
+            android:text="设置"/>
+
+        <TextView
+            android:id="@+id/tv_about"
+            style="@style/MainActMenuText"
+            android:text="关于...."/>
+
+        <TextView
+            android:id="@+id/tv_blank"
+            style="@style/MainActMenuText"
+            android:text=""/>
+
+    </LinearLayout>
+
+</LinearLayout>

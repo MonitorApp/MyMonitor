@@ -1,0 +1,96 @@
+package com.outsource.monitor.activity;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+
+import com.outsource.monitor.R;
+
+/**
+ * Created by Administrator on 2016/10/2.
+ */
+public abstract class TemplateActivity extends BaseActivity implements View.OnClickListener {
+
+    private DrawerLayout mDrawerLayout;
+
+    public abstract Fragment createMenuFragment();
+
+    public abstract Fragment createContentFragment();
+
+    public abstract String getMyTitle();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_template);
+        initViews();
+    }
+
+    private void initViews() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(getMyTitle());
+        toolbar.setSubtitle("");
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        Fragment menuFragment = createMenuFragment();
+        Fragment contentFragment = createContentFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fl_menu_container, menuFragment, menuFragment.getClass().getSimpleName())
+                .add(R.id.fl_main_container, contentFragment, contentFragment.getClass().getSimpleName())
+                .commitAllowingStateLoss();
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.dl_left);
+
+//        findViewById(R.id.btn_ok).setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_template, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_menu_toggle) {
+            if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+                mDrawerLayout.closeDrawer(Gravity.RIGHT);
+            }else{
+                mDrawerLayout.openDrawer(Gravity.RIGHT);
+            }
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId())
+        {
+            case R.id.btn_ok:
+                onOptionChange();
+                break;
+        }
+    }
+
+    protected void onOptionChange()
+    {
+        Log.i("TemplateActivity","onOptionChange");
+    }
+}
