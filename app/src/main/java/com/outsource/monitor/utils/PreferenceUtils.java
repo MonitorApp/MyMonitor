@@ -23,11 +23,39 @@ public class PreferenceUtils {
         return sSharedPreferences.getString(key, "");
     }
 
+    public static String getString(String key, String defVal) {
+        return sSharedPreferences.getString(key, defVal);
+    }
+
     public static void putInt(String key, int value) {
         sSharedPreferences.edit().putInt(key, value).apply();
     }
 
     public static int getInt(String key) {
         return sSharedPreferences.getInt(key, 0);
+    }
+
+    public static int getInt(String key, int defVal) {
+        return sSharedPreferences.getInt(key, defVal);
+    }
+
+    public static void putFloat(String key, float value)
+    {
+        sSharedPreferences.edit().putFloat(key, value).apply();
+    }
+
+    public static float getFloat(String key, float defVal)
+    {
+        return sSharedPreferences.getFloat(key, defVal);
+    }
+
+    public static void putLong(String key, long value)
+    {
+        sSharedPreferences.edit().putLong(key, value).apply();
+    }
+
+    public static long getLong(String key, long defVal)
+    {
+        return sSharedPreferences.getLong(key, defVal);
     }
 }

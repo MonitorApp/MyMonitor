@@ -1,6 +1,8 @@
 package com.outsource.monitor.parser;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ItuParser48278 extends  ParserBase48278
 {
@@ -14,11 +16,24 @@ public class ItuParser48278 extends  ParserBase48278
         public byte kindId;
         public long frequence;
         public ArrayList<HeadItem> dataHead = new ArrayList<HeadItem>();
+
+        public void Release()
+        {
+            kindId = 0;
+            frequence = 0;
+            dataHead.clear();
+        }
     }
 
     public static class DataValue {
         public long frequence;
         public ArrayList<Float> valueList = new ArrayList<Float>();
+
+        public void Release()
+        {
+            frequence = 0;
+            valueList.clear();
+        }
     }
 
     public DataHead m_dataHead;
@@ -61,6 +76,17 @@ public class ItuParser48278 extends  ParserBase48278
         return;
     }
 
+    @Override
+    public void Release()
+    {
+        super.Release();
+        m_dataHead.Release();
+        m_dataValue.Release();
+        s_ituParser48278Pool.add(this);
+    }
+
+    static private Queue<ItuParser48278> s_ituParser48278Pool = new LinkedList<>();
+
     public static ItuParser48278 TryParse(byte[] bytes, int pos) {
 
        int dataLen = ParserBase48278.CheckBytes(bytes, pos);
@@ -69,7 +95,13 @@ public class ItuParser48278 extends  ParserBase48278
             return  null;
         }
 
-        ItuParser48278 ituParse = new ItuParser48278();
+        ItuParser48278 ituParse;
+        ituParse = s_ituParser48278Pool.poll();
+        if(ituParse == null)
+        {
+            ituParse = new ItuParser48278();
+        }
+
         ituParse.ParserData(ByteUtil.SubBytes(bytes, 0, dataLen + 8));
         ituParse.byteLen = dataLen + 8;
         return ituParse;

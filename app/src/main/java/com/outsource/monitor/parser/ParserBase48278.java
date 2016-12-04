@@ -81,6 +81,12 @@ public abstract class ParserBase48278
         return byteArray.getPostion();
     }
 
+    public void Release() {
+        m_frameDataLen = 0;
+        m_frameType = 0;
+        byteLen = 0;
+    }
+
     abstract void ParseDataHead(ByteArray byteArray);
     abstract void ParseMonitorData(ByteArray byteArray);
 }

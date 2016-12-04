@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.parser.Command;
 
 /**
  * Created by Administrator on 2016/10/2.
@@ -26,6 +27,10 @@ public abstract class TemplateActivity extends BaseActivity implements View.OnCl
     public abstract Fragment createContentFragment();
 
     public abstract String getMyTitle();
+
+    public Command getCmd() {
+        return  null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

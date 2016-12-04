@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.outsource.monitor.R;
+import com.outsource.monitor.activity.TemplateActivity;
 import com.outsource.monitor.config.Consts;
 import com.outsource.monitor.config.DeviceConfig;
 import com.outsource.monitor.config.PreferenceKey;
@@ -43,8 +45,13 @@ import com.outsource.monitor.singlefrequency.model.ItuItemData;
 import com.outsource.monitor.singlefrequency.model.ItuLevel;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.LogUtils;
+import com.outsource.monitor.utils.ParamChangeEvent;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +157,14 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_LINE, REFRESH_LINE_INTERVAL);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_BAR, REFRESH_BAR_INTERVAL);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_BAR_INTERVAL);
+
+        EventBus.getDefault().register(this);
         return view;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ParamChangeEvent event) {
+        SendCommand();
     }
 
     @Override
@@ -269,6 +283,11 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
 
     private void initService() {
         mServiceHelper = new ServiceHelper(getActivity());
+        SendCommand();
+    }
+
+    private  void SendCommand()
+    {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
@@ -280,9 +299,17 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
                 service.connect(ip, port, new ConnectCallback() {
                     @Override
                     public void onConnectSuccess() {
-                        String cmd = "RMTP:SGLFREQ:4403000100113:frequency:97.1MHz\nifbw:15kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
-                        Command command = new Command(cmd, Command.Type.ITU);
-                        service.sendCommand(command);
+//                        String cmd = "RMTP:SGLFREQ:4403000100113:frequency:97.1MHz\nifbw:15kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
+//                        Command command = new Command(cmd, Command.Type.ITU);
+                        Command command = ((TemplateActivity)getActivity()).getCmd();
+                        if(command != null) {
+                            Log.i("SingleFrequencyMeasure", "send command: "+command.command);
+                            service.sendCommand(command);
+                        }
+                        else
+                        {
+                            Log.w("SingleFrequencyMeasure", "GetCommond is null!");
+                        }
                     }
 
                     @Override
@@ -297,6 +324,7 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        EventBus.getDefault().unregister(this);
         mServiceHelper.release();
     }
 
