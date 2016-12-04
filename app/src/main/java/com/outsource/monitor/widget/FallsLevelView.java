@@ -38,11 +38,12 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
 
     private int mMarkTextHeight;
 
-    private static final int FALL_COUNT = 100;//最大显示的横线数量
+    private static final int FALL_COUNT = 50;//最大显示的横线数量
     private static final long FALL_YAXIS_UNIT = 1000;//瀑布图两行之间的最小时间间隔
     private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private FallRow mAverageFallRow;
+    private long lastFallTime;
     private int averageCount;//当前的平均值是由多少条数据算出来的
     private float span;//跨距
     private float frequency;
@@ -165,7 +166,9 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
     }
 
     private void addFallRow(FallRow averageFallRow) {
-        long timestamp = averageFallRow.timestamp;
+//        if (Math.abs(averageFallRow.timestamp - lastFallTime - FALL_YAXIS_UNIT) < FALL_YAXIS_UNIT) {
+//            averageFallRow.timestamp = lastFallTime + FALL_YAXIS_UNIT;
+//        }
 //        averageFallRow.timestamp = (timestamp / FALL_YAXIS_UNIT) * FALL_YAXIS_UNIT;//去掉毫秒，防止出现2条数据在同一行的现象
         mFallRows.add(averageFallRow);
         FallRow head = mFallRows.peek();
@@ -174,6 +177,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
                 mFallRows.poll();
             }
         }
+        lastFallTime = averageFallRow.timestamp;
     }
 
     private void calcNewAverageRow(FallRow row) {
