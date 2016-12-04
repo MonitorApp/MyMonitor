@@ -113,8 +113,8 @@ public class MPBandScanActivity extends FragmentActivity implements DataReceiver
         mChart.setData(data);
         mChart.invalidate();
 
-        mServiceHelper = new ServiceHelper();
-        mServiceHelper.setOnServiceConnectListener(new ServiceHelper.OnServiceConnectListener() {
+        mServiceHelper = new ServiceHelper(this);
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(DataProviderService.SocketBinder service) {
                 service.addDataReceiver(MPBandScanActivity.this);
@@ -122,9 +122,14 @@ public class MPBandScanActivity extends FragmentActivity implements DataReceiver
                 service.setLevelRange(MIN_LEVEL, MAX_LEVEL);
             }
         });
-        mServiceHelper.bindService(this);
 
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH, 1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mServiceHelper.release();
     }
 
     private LineData generateLineData() {

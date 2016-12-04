@@ -72,7 +72,7 @@ public class ConnectActivity extends AppCompatActivity {
                     PreferenceUtils.putInt(PreferenceKey.DEVICE_PORT, Integer.valueOf(getInputPort()));
                     mPbConnecting.setVisibility(View.VISIBLE);
                     mLLConnectInput.setVisibility(View.INVISIBLE);
-                    mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectListener() {
+                    mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
                         @Override
                         public void onServiceConnected(DataProviderService.SocketBinder service) {
                             String ip = getInputIp();
@@ -99,8 +99,7 @@ public class ConnectActivity extends AppCompatActivity {
                 }
             }
         });
-        mServiceHelper = new ServiceHelper();
-        mServiceHelper.bindService(this);
+        mServiceHelper = new ServiceHelper(this);
     }
 
     private boolean checkIp() {
@@ -139,5 +138,11 @@ public class ConnectActivity extends AppCompatActivity {
         SpannableString builder = new SpannableString(mySpaceDesc + strSpace);
         builder.setSpan(new UnderlineSpan(), mySpaceDesc.length(), builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         mTvSpace.setText(builder);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mServiceHelper.release();
     }
 }

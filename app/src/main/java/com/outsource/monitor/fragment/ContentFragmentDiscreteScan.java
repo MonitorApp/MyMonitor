@@ -29,6 +29,7 @@ public class ContentFragmentDiscreteScan extends Fragment {
     private BandScanningTextureView mLevelTextureView;
     private FallsLevelView mFallsLevelView;
     private Button mBtnPlay;
+    private ServiceHelper mServiceHelper;
 
     public static Fragment newInstance() {
         return new ContentFragmentDiscreteScan();
@@ -84,20 +85,20 @@ public class ContentFragmentDiscreteScan extends Fragment {
         mLevelTextureView.start();
         mFallsLevelView.start();
 
-        ServiceHelper helper = new ServiceHelper();
-        DataProviderService.SocketBinder service = helper.getService();
-        if (service == null) {
-            helper.setOnServiceConnectListener(new ServiceHelper.OnServiceConnectListener() {
-                @Override
-                public void onServiceConnected(DataProviderService.SocketBinder service) {
-                    service.addDataReceiver(mLevelTextureView);
-                    service.addDataReceiver(mFallsLevelView);
-                }
-            });
-        } else {
-            service.addDataReceiver(mLevelTextureView);
-            service.addDataReceiver(mFallsLevelView);
-        }
+        mServiceHelper = new ServiceHelper(getActivity());
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
+            @Override
+            public void onServiceConnected(DataProviderService.SocketBinder service) {
+                service.addDataReceiver(mLevelTextureView);
+                service.addDataReceiver(mFallsLevelView);
+            }
+        });
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mServiceHelper.release();
     }
 }

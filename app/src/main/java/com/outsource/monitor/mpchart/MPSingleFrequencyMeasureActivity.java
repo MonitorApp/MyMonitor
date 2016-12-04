@@ -83,6 +83,12 @@ public class MPSingleFrequencyMeasureActivity extends FragmentActivity implement
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_BAR, REFRESH_BAR_INTERVAL);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mServiceHelper.release();
+    }
+
     private void initLineChart() {
         mLineChart = (LineChart) findViewById(R.id.chart_single_frequency_line);
         YAxis leftAxis = mLineChart.getAxisLeft();
@@ -137,8 +143,8 @@ public class MPSingleFrequencyMeasureActivity extends FragmentActivity implement
     }
 
     private void initService() {
-        mServiceHelper = new ServiceHelper();
-        mServiceHelper.setOnServiceConnectListener(new ServiceHelper.OnServiceConnectListener() {
+        mServiceHelper = new ServiceHelper(this);
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(DataProviderService.SocketBinder service) {
                 service.addDataReceiver(MPSingleFrequencyMeasureActivity.this);
@@ -146,7 +152,6 @@ public class MPSingleFrequencyMeasureActivity extends FragmentActivity implement
                 service.setLevelRange(DeviceConfig.MIN_LEVEL, DeviceConfig.MAX_LEVEL);
             }
         });
-        mServiceHelper.bindService(this);
     }
 
     private boolean isHit(float level) {

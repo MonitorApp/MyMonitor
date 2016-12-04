@@ -1,0 +1,11 @@
+bin
+.DS_Store
+*.iml
+local.properties
+.gradle
+.idea
+gradlew
+gradlew.bat
+gen
+build
+gradle

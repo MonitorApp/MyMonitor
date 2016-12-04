@@ -23,33 +23,32 @@ public class DataProviderService extends Service {
         mBinder = new SocketBinder();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        LogUtils.d("onStartCommand");
-        isStart = true;
-        return super.onStartCommand(intent, flags, startId);
-    }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        LogUtils.d("onBind");
         if (!isStart) {
-//            startService(new Intent(this, DataProviderService.class));
+            try {
+                startService(new Intent(this, DataProviderService.class));
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
         }
         return mBinder;
     }
 
+    //每次调用startService此方法都会执行
     @Override
-    public boolean onUnbind(Intent intent) {
-        LogUtils.d("onUnbind");
-        return super.onUnbind(intent);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) return Service.START_STICKY_COMPATIBILITY;
+        isStart = true;
+        return Service.START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtils.d("onDestroy");
+        isStart = false;
     }
 
     public class SocketBinder extends Binder {

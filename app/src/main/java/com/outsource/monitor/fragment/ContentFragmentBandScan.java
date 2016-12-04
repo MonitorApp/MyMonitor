@@ -121,8 +121,8 @@ public class ContentFragmentBandScan extends Fragment implements DataReceiver {
         mChart.setData(data);
         mChart.invalidate();
 
-        mServiceHelper = new ServiceHelper();
-        mServiceHelper.setOnServiceConnectListener(new ServiceHelper.OnServiceConnectListener() {
+        mServiceHelper = new ServiceHelper(getActivity());
+        mServiceHelper.setOnServiceConnectedListener(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(DataProviderService.SocketBinder service) {
                 service.addDataReceiver(ContentFragmentBandScan.this);
@@ -130,10 +130,15 @@ public class ContentFragmentBandScan extends Fragment implements DataReceiver {
                 service.setLevelRange(MIN_LEVEL, MAX_LEVEL);
             }
         });
-        mServiceHelper.bindService(getActivity());
 
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH, 1000);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mServiceHelper.release();
     }
 
     private LineData generateLineData() {

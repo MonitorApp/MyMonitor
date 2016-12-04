@@ -127,10 +127,7 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        DataProviderService.SocketBinder service = mServiceHelper.getService();
-        if (service != null) {
-            service.disconnect();
-        }
+        mServiceHelper.release();
     }
 
     private void initCombineChart(View view) {
@@ -210,8 +207,8 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
     }
 
     private void initService() {
-        mServiceHelper = new ServiceHelper();
-        mServiceHelper.setOnServiceConnectListener(new ServiceHelper.OnServiceConnectListener() {
+        mServiceHelper = new ServiceHelper(getActivity());
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
                 service.addIfpanDataReceiver(ContentFragmentMiddleFrequencyAnalyse.this);
@@ -232,8 +229,8 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
                 });
             }
         });
-        mServiceHelper.bindService(getActivity());
     }
+
 
     private LineData defaultLineData() {
 

@@ -268,8 +268,8 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
     }
 
     private void initService() {
-        mServiceHelper = new ServiceHelper();
-        mServiceHelper.setOnServiceConnectListener(new ServiceHelper.OnServiceConnectListener() {
+        mServiceHelper = new ServiceHelper(getActivity());
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
                 service.addItuDataReceiver(ContentFragmentSingleFrequencyMeasure.this);
@@ -292,16 +292,12 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
                 });
             }
         });
-        mServiceHelper.bindService(getActivity());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        DataProviderService.SocketBinder service = mServiceHelper.getService();
-        if (service != null) {
-            service.disconnect();
-        }
+        mServiceHelper.release();
     }
 
     private boolean isHit(float level) {

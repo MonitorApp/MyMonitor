@@ -7,21 +7,29 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.buffer.ColorBuffer;
+import com.github.mikephil.charting.components.XAxis;
+import com.outsource.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.model.FrequencyLevel;
+import com.outsource.monitor.parser.IfpanParser48278;
 import com.outsource.monitor.service.DataReceiver;
+import com.outsource.monitor.service.IfpanDataReceiver;
+import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DateUtils;
 import com.outsource.monitor.utils.DisplayUtils;
+import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by Administrator on 2016/10/6.
  */
-public class FallsLevelView extends BaseTextureView implements DataReceiver {
+public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver {
 
     private static final int LINE_HEIGHT = DisplayUtils.dp2px(1);//横线高度
     private static int LINE_COUNT;//一屏最大显示的横线数量
@@ -42,6 +50,12 @@ public class FallsLevelView extends BaseTextureView implements DataReceiver {
     private int mMarkTextHeight;
 
     public ConcurrentLinkedQueue<List<FrequencyLevel>> mLevels = new ConcurrentLinkedQueue<>();
+
+    private static final long FALL_YAXIS_UNIT = 1000;//瀑布图两行之间的最小时间间隔
+    private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
+    //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
+    private FallRow mAverageFallRow;
+    private int averageCount;//当前的平均值是由多少条数据算出来的
 
     public FallsLevelView(Context context) {
         super(context);
@@ -158,4 +172,91 @@ public class FallsLevelView extends BaseTextureView implements DataReceiver {
         Paint.FontMetrics fm = mMarkTextPaint.getFontMetrics();
         mMarkTextHeight = (int) Math.ceil(fm.descent - fm.ascent);
     }
+
+    @Override
+    public void onReceiveIfpanData(IfpanParser48278.DataValue ifpanData) {
+        if (ifpanData == null || CollectionUtils.isEmpty(ifpanData.levelList)) {
+            LogUtils.d("中频分析接受数据为空！");
+            return;
+        }
+        if (ColorBuffer.valueCount == 0) {
+            ColorBuffer.valueCount = ifpanData.dotCount;
+        }
+        mCurrentData.set(ifpanData.levelList);
+        refreshFallLevels(new FallRow(System.currentTimeMillis(), ifpanData.levelList));
+    }
+
+    @Override
+    public void onReceiveIfpanHead(IfpanParser48278.DataHead ifpanHeads) {
+        if (ifpanHeads == null) {
+            LogUtils.d("中频分析帧头为空！");
+            return;
+        }
+        mDataHead.set(ifpanHeads);
+        float axisSpan = getDisplaySpan(ifpanHeads.span);
+
+        XAxis fallXAxis = mFallChart.getXAxis();
+        fallXAxis.setAxisMinimum(0);
+        fallXAxis.setAxisMaximum(axisSpan);
+    }
+
+    private void refreshFallLevels(FallRow row) {
+        if (mAverageFallRow == null) {
+            mAverageFallRow = row;
+            averageCount++;
+        } else {
+            long lastTime = mAverageFallRow.timestamp;
+            if (row.timestamp - lastTime > FALL_YAXIS_UNIT) {
+                calcNewAverageRow(row);
+                addFallRow(mAverageFallRow);
+                mAverageFallRow = null;
+                averageCount = 0;
+            } else {
+                calcNewAverageRow(row);
+                averageCount++;
+            }
+        }
+    }
+
+    private void addFallRow(FallRow averageFallRow) {
+        long timestamp = averageFallRow.timestamp;
+//        averageFallRow.timestamp = (timestamp / FALL_YAXIS_UNIT) * FALL_YAXIS_UNIT;//去掉毫秒，防止出现2条数据在同一行的现象
+        mFallRows.add(averageFallRow);
+        FallRow head = mFallRows.peek();
+        if (head != null) {
+            if (averageFallRow.timestamp - head.timestamp > BAR_COUNT * FALL_YAXIS_UNIT) {
+                mFallRows.poll();
+            }
+        }
+    }
+
+    private void calcNewAverageRow(FallRow row) {
+        List<Float> avgLevels = mAverageFallRow.mValues;
+        int avgSize = avgLevels.size();
+        int valueSize = row.mValues.size();
+        for (int i = 0; i < valueSize; i++) {
+            if (i < avgSize) {
+                float resultLevel = (avgLevels.get(i) * averageCount + row.mValues.get(i)) / (averageCount + 1);
+                avgLevels.set(i, resultLevel);
+            } else {
+                avgLevels.add(row.mValues.get(i));
+            }
+        }
+    }
+
+    private void removeExpiredFallRows() {
+        long currentTime = System.currentTimeMillis();
+        FallRow head = mFallRows.peek();
+        if (head == null || (System.currentTimeMillis() - head.timestamp < BAR_COUNT * FALL_YAXIS_UNIT)) {
+            return;
+        }
+        Iterator<FallRow> iterator = mFallRows.iterator();
+        while (iterator.hasNext()) {
+            FallRow row = iterator.next();
+            if (currentTime - row.timestamp > BAR_COUNT * FALL_YAXIS_UNIT) {
+                iterator.remove();
+            }
+        }
+    }
+
 }

@@ -8,70 +8,78 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 
 /**
  * Created by Administrator on 2016/10/2.
  */
 public class ServiceHelper {
 
-    public interface OnServiceConnectListener {
+    public interface OnServiceConnectedListener {
         void onServiceConnected(DataProviderService.SocketBinder service);
     }
 
-    private OnServiceConnectListener mListener;
     private DataProviderService.SocketBinder mService;
-    private SoftReference<Activity> mActivity = new SoftReference<Activity>(null);
+    private SoftReference<Activity> mActivitySoftReference;
+    private OnServiceConnectedListener mOnServiceConnectedListener;
 
-    public void setOnServiceConnectListener(OnServiceConnectListener listener) {
-        mListener = listener;
+    public ServiceHelper(Activity activity) {
+        mActivitySoftReference = new SoftReference<>(activity);
     }
 
-    public void bindService(Activity activity) {
-        Intent intent = new Intent(activity, DataProviderService.class);
-        ServiceConnection serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mService = (DataProviderService.SocketBinder) service;
-                if (mListener != null) {
-                    mListener.onServiceConnected(mService);
+    private void bindService(Activity activity) {
+        activity.bindService(new Intent(activity, DataProviderService.class), mServiceConnection, Service.BIND_AUTO_CREATE);
+    }
+
+    //在Activity的onDestroy方法里调用
+    public void release() {
+        if (mActivitySoftReference != null && mActivitySoftReference.get() != null && mService != null) {
+            mService.disconnect();
+            mActivitySoftReference.get().unbindService(mServiceConnection);
+            mActivitySoftReference.clear();
+            mService = null;
+        }
+        mActivitySoftReference = null;
+    }
+
+    public void fetchService(final OnServiceConnectedListener listener) {
+        Activity activity = mActivitySoftReference.get();
+        if (activity == null || activity.isFinishing()) return;
+        DataProviderService.SocketBinder service = getService();
+        if (service == null) {
+            setOnServiceConnectedListener(new OnServiceConnectedListener() {
+                @Override
+                public void onServiceConnected(DataProviderService.SocketBinder service) {
+                    if (listener != null) {
+                        listener.onServiceConnected(service);
+                    }
                 }
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
-        activity.bindService(intent, serviceConnection, Service.BIND_AUTO_CREATE);
-        mActivity = new SoftReference<Activity>(activity);
+            });
+            bindService(activity);
+        } else {
+            listener.onServiceConnected(service);
+        }
     }
 
     public DataProviderService.SocketBinder getService() {
         return mService;
     }
 
-    public void fetchService(final OnServiceConnectListener listener) {
-        if (listener == null) return;
-        if (mService == null) {
-            Activity activity = mActivity.get();
-            if (activity != null) {
-                ServiceConnection serviceConnection = new ServiceConnection() {
-                    @Override
-                    public void onServiceConnected(ComponentName name, IBinder service) {
-                        mService = (DataProviderService.SocketBinder) service;
-                        listener.onServiceConnected(mService);
-                    }
-
-                    @Override
-                    public void onServiceDisconnected(ComponentName name) {
-
-                    }
-                };
-                activity.bindService(new Intent(activity, DataProviderService.class), serviceConnection, Service.BIND_AUTO_CREATE);
-            }
-        } else {
-            listener.onServiceConnected(mService);
-        }
+    public void setOnServiceConnectedListener(OnServiceConnectedListener listener) {
+        mOnServiceConnectedListener = listener;
     }
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mService = (DataProviderService.SocketBinder) service;
+            if (mOnServiceConnectedListener != null) {
+                mOnServiceConnectedListener.onServiceConnected(mService);
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 }
