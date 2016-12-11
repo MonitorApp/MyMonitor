@@ -60,6 +60,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
 
     @Override
     void drawCanvas(Canvas canvas) {
+        float lastY = 0;
         for (FallRow row : mFallRows) {
             float y = LINE_HEIGHT * (float) (System.currentTimeMillis() - row.timestamp) / FALL_YAXIS_UNIT;
             List<Float> levels = row.mValues;
@@ -67,6 +68,12 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
             int start = Y_AXIS_WIDTH;
             float distance = chartWidth / (float) size;
             y = Math.min(y, mHeight - X_AXIS_HEIGHT - distance);
+            float gap = y - lastY - mLevelPaint.getStrokeWidth();
+            if (gap > 0 && gap < LINE_HEIGHT) {//去掉中间的细微间隙
+                y -= gap;
+                mLevelPaint.setStrokeWidth(LINE_HEIGHT + gap);
+            }
+            lastY = y;
             for (Float level : levels) {
                 mLevelPaint.setColor(Utils.level2Color(level));
                 canvas.drawLine(start, y, start + distance, y, mLevelPaint);
