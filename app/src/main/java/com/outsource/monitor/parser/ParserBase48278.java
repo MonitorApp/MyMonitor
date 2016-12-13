@@ -47,7 +47,7 @@ public abstract class ParserBase48278
 
     public int ParserData(byte[] bytes) {
         ByteArray byteArray = new ByteArray(bytes);
-        Log(byteArray.toHexString());
+        //Log(byteArray.toHexString());
         //Log("Head==="+ByteUtil.byte2HexStr(byteArray.getSubBytes(4)));
 
         byteArray.movePostion(4);
@@ -57,7 +57,7 @@ public abstract class ParserBase48278
         byteArray.movePostion(4); //crcУ����
         byteArray.movePostion(16); //ʱ���
 
-        System.out.println("get type:"+byteArray.getPostion());
+        //System.out.println("get type:"+byteArray.getPostion());
         m_frameType = byteArray.getByte();
 
         //System.out.println("get type:"+m_frameType);

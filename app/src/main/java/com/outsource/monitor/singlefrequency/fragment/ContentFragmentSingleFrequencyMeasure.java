@@ -299,8 +299,8 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
                 service.connect(ip, port, new ConnectCallback() {
                     @Override
                     public void onConnectSuccess() {
-//                        String cmd = "RMTP:SGLFREQ:4403000100113:frequency:97.1MHz\nifbw:15kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
-//                        Command command = new Command(cmd, Command.Type.ITU);
+                     //   String cmd = "RMTP:SGLFREQ:4403000100113:frequency:97.1MHz\nifbw:15kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
+                     //   Command command = new Command(cmd, Command.Type.ITU);
                         Command command = ((TemplateActivity)getActivity()).getCmd();
                         if(command != null) {
                             Log.i("SingleFrequencyMeasure", "send command: "+command.command);

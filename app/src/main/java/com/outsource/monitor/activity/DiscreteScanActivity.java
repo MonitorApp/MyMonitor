@@ -50,7 +50,7 @@ public class DiscreteScanActivity extends TemplateActivity {
     }
 
     @Override
-    protected void onOptionChange() {
+    public void onOptionChange() {
         //// TODO: 2016/10/2
     }
 }

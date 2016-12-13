@@ -18,9 +18,11 @@ import com.outsource.monitor.parser.Command;
 /**
  * Created by Administrator on 2016/10/2.
  */
-public abstract class TemplateActivity extends BaseActivity implements View.OnClickListener {
-
+public abstract class TemplateActivity extends BaseActivity
+{
     private DrawerLayout mDrawerLayout;
+    protected Fragment mMenuFragment;
+    protected Fragment mContentFragment;
 
     public abstract Fragment createMenuFragment();
 
@@ -50,12 +52,12 @@ public abstract class TemplateActivity extends BaseActivity implements View.OnCl
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        Fragment menuFragment = createMenuFragment();
-        Fragment contentFragment = createContentFragment();
+        mMenuFragment = createMenuFragment();
+        mContentFragment = createContentFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fl_menu_container, menuFragment, menuFragment.getClass().getSimpleName())
-                .add(R.id.fl_main_container, contentFragment, contentFragment.getClass().getSimpleName())
+                .add(R.id.fl_menu_container, mMenuFragment, mMenuFragment.getClass().getSimpleName())
+                .add(R.id.fl_main_container, mContentFragment, mContentFragment.getClass().getSimpleName())
                 .commitAllowingStateLoss();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.dl_left);
@@ -84,17 +86,7 @@ public abstract class TemplateActivity extends BaseActivity implements View.OnCl
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId())
-        {
-            case R.id.btn_ok:
-                onOptionChange();
-                break;
-        }
-    }
-
-    protected void onOptionChange()
+    public void onOptionChange()
     {
         Log.i("TemplateActivity","onOptionChange");
     }
