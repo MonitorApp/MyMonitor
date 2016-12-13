@@ -1,17 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-//apply plugin: 'com.github.dcendents.android-maven'
-//apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
-    // resourcePrefix 'mpcht'
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 23
-        versionCode 3
-        versionName '3.0.0'
     }
     buildTypes {
         release {

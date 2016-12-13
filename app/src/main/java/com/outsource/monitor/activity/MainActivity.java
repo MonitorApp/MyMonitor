@@ -38,7 +38,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 startActivity(new Intent(MainActivity.this, SingleFrequencyMeasureActivity.class));
                 break;
             case R.id.tv_midddle_analyse:
-                startActivity(new Intent(MainActivity.this, MiddleFrequencyAnalyseActivity.class));
+                startActivity(new Intent(MainActivity.this, BaseSlidingMenuActivity.class));
                 break;
             case R.id.tv_band_scan:
                 startActivity(new Intent(MainActivity.this, BandScanActivity.class));

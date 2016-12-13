@@ -1,3 +1,4 @@
 include ':app', ':protocol'
 include ':MPChartLib'
 project(':MPChartLib').projectDir = new File('MPChartLib')
+include ':SlidingMenu'
