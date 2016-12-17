@@ -3,7 +3,6 @@ package com.outsource.monitor.singlefrequency.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,8 @@ import android.widget.TextView;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.activity.SingleFrequencyMeasureActivity;
-import com.outsource.monitor.activity.TemplateActivity;
 import com.outsource.monitor.singlefrequency.event.ReceiveItuHeadEvent;
 import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
-import com.outsource.monitor.utils.ParamChangeEvent;
 import com.outsource.monitor.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,7 +54,7 @@ public class MenuFragmentSingleFrequencyMeasure extends Fragment implements View
         mTvIncreaseMode = (TextView) view.findViewById(R.id.tv_increase_mode);
         mTvRfAttenuation = (TextView) view.findViewById(R.id.tv_rf_attenuation);
         mCbRecord = (CheckBox) view.findViewById(R.id.cb_record);
-        view.findViewById(R.id.btn_ok).setOnClickListener(this);
+        view.findViewById(R.id.btn_ifpan_change_param).setOnClickListener(this);
 
         SetParam2UI(SingleFrequencyParam.LoadParam());
         ((SingleFrequencyMeasureActivity)getActivity()).onOptionChange();
@@ -102,7 +99,7 @@ public class MenuFragmentSingleFrequencyMeasure extends Fragment implements View
     public void onClick(View v) {
         switch (v.getId())
         {
-            case R.id.btn_ok:
+            case R.id.btn_ifpan_change_param:
                 ((SingleFrequencyMeasureActivity)getActivity()).onOptionChange();
                 break;
         }

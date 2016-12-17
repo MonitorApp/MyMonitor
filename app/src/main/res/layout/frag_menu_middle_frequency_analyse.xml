@@ -1,111 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="频率"/>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal"
+                      android:paddingBottom="@dimen/activity_vertical_margin"
+                      android:paddingLeft="@dimen/activity_horizontal_margin"
+                      android:paddingRight="@dimen/activity_horizontal_margin"
+                      android:paddingTop="@dimen/activity_vertical_margin">
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="中频带宽"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="解调模式"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="频率(单位：MHz)"/>
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="跨距"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="中频带宽(单位：kHz)"/>
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="检波方式"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="解调模式"/>
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="带宽测量模式"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="跨距(单位：kHz)"/>
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="增益模式"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="检波方式"/>
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="射频衰减"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="带宽测量模式"/>
 
-        <TextView
-            style="@style/ContentActMenuDesc"
-            android:text="记录保存"/>
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="增益模式"/>
+
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="射频衰减"/>
+
+                <TextView
+                    style="@style/ContentActMenuDesc"
+                    android:text="记录保存"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_ifpan_frequence"
+                    style="@style/ContentActMenuValue.Edit.NumberDecimal"
+                    android:text="97.1"/>
+
+                <EditText
+                    android:id="@+id/et_ifpan_band"
+                    style="@style/ContentActMenuValue.Edit.Number"
+                    android:text="25"/>
+
+                <TextView
+                    android:id="@+id/tv_ifpan_demodulate"
+                    style="@style/ContentActMenuValue"
+                    android:text="FM"/>
+
+                <EditText
+                    android:id="@+id/et_ifpan_span"
+                    style="@style/ContentActMenuValue.Edit.Number"
+                    android:text="100"/>
+
+                <TextView
+                    android:id="@+id/tv_detection_mode"
+                    style="@style/ContentActMenuValue"
+                    android:text="AVG"/>
+
+                <TextView
+                    android:id="@+id/tv_band_scan_mode"
+                    style="@style/ContentActMenuValue"
+                    android:text="xdb"/>
+
+                <TextView
+                    android:id="@+id/tv_increase_mode"
+                    style="@style/ContentActMenuValue"
+                    android:text="无"/>
+
+                <TextView
+                    android:id="@+id/tv_rf_attenuation"
+                    style="@style/ContentActMenuValue"
+                    android:text="关"/>
+
+                <CheckBox
+                    android:id="@+id/cb_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <Button
-            android:id="@+id/btn_ok"
+            android:id="@+id/btn_ifpan_change_param"
             style="@style/MenuButton"/>
-
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/tv_frequence"
-            style="@style/ContentActMenuValue"
-            android:text="97.1"/>
-
-        <TextView
-            android:id="@+id/tv_mdl_band"
-            style="@style/ContentActMenuValue"
-            android:text="25"/>
-
-        <TextView
-            android:id="@+id/tv_demodulate"
-            style="@style/ContentActMenuValue"
-            android:text="FM"/>
-
-        <EditText
-            android:id="@+id/tv_step"
-            style="@style/ContentActMenuValue"
-            android:text="100"/>
-
-        <TextView
-            android:id="@+id/tv_detection_mode"
-            style="@style/ContentActMenuValue"
-            android:text="AVG"/>
-
-        <TextView
-            android:id="@+id/tv_band_scan_mode"
-            style="@style/ContentActMenuValue"
-            android:text="xdb"/>
-
-        <TextView
-            android:id="@+id/tv_increase_mode"
-            style="@style/ContentActMenuValue"
-            android:text="无"/>
-
-        <TextView
-            android:id="@+id/tv_rf_attenuation"
-            style="@style/ContentActMenuValue"
-            android:text="关"/>
-
-        <CheckBox
-            android:id="@+id/cb_record"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

@@ -115,4 +115,12 @@ public class DisplayUtils {
     public static int getDimensionPixelSize(int dimenResId) {
         return mRes.getDimensionPixelSize(dimenResId);
     }
+
+    public static float toDisplaySpan(long realSpan) {
+        return  realSpan / 1000f;
+    }
+
+    public static float toDisplayFrequency(long realFrequency) {
+        return  realFrequency / 1000000f;
+    }
 }

@@ -10,7 +10,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.base.BaseActivity;
@@ -61,7 +60,7 @@ public abstract class TemplateActivity extends BaseActivity
                 .add(R.id.fl_main_container, mContentFragment, mContentFragment.getClass().getSimpleName())
                 .commitAllowingStateLoss();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.dl_right);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
 //        findViewById(R.id.btn_ok).setOnClickListener(this);
     }
