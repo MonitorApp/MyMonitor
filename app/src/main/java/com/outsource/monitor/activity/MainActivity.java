@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.base.Tab;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener{
 
@@ -30,24 +31,28 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-
-        //Toast.makeText(this, ((TextView)v).getText(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, MonitorCenterActivity.class);
         switch (v.getId())
         {
             case R.id.tv_sgl_scan:
-                startActivity(new Intent(MainActivity.this, SingleFrequencyMeasureActivity.class));
+                intent.putExtra(MonitorCenterActivity.TAB, Tab.ITU);
+                startActivity(intent);
                 break;
             case R.id.tv_midddle_analyse:
-                startActivity(new Intent(MainActivity.this, BaseSlidingMenuActivity.class));
+                intent.putExtra(MonitorCenterActivity.TAB, Tab.IFPAN);
+                startActivity(intent);
                 break;
             case R.id.tv_band_scan:
-                startActivity(new Intent(MainActivity.this, BandScanActivity.class));
+                intent.putExtra(MonitorCenterActivity.TAB, Tab.BAND_SCAN);
+                startActivity(intent);
                 break;
             case R.id.tv_discrete_scan:
-                startActivity(new Intent(MainActivity.this, DiscreteScanActivity.class));
+                intent.putExtra(MonitorCenterActivity.TAB, Tab.DISCRETE_SCAN);
+                startActivity(intent);
                 break;
             case R.id.tv_digit_scan:
-                startActivity(new Intent(MainActivity.this, DigitScanActivity.class));
+                intent.putExtra(MonitorCenterActivity.TAB, Tab.DIGIT_SCAN);
+                startActivity(intent);
                 break;
             case R.id.tv_map:
                 break;

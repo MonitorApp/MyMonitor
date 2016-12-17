@@ -3,7 +3,6 @@ package com.outsource.monitor.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -12,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.base.BaseActivity;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.utils.InputMethodUtils;
 import com.outsource.monitor.utils.PreferenceUtils;

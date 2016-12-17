@@ -88,4 +88,13 @@
         <item name="android:layout_height">1px</item>
         <item name="android:background">@color/color_ccc</item>
     </style>
+
+    <style name="TabLeftMenu">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/sel_pressed_bg</item>
+    </style>
 </resources>

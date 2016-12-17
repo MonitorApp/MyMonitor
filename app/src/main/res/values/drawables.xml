@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="white">@android:color/white</drawable>
+    <drawable name="transparent">@android:color/transparent</drawable>
+    <drawable name="pressed_white_color">@color/white_pressed_color</drawable>
+    <drawable name="pressed_white_light_color">#e3e3e2</drawable>
+    <drawable name="pressed_color">@color/pressed_color</drawable>
+    <drawable name="divider_color">@color/divider_color</drawable>
+</resources>

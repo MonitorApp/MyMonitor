@@ -40,8 +40,7 @@
         <activity android:name=".activity.OptionActivity" android:screenOrientation="landscape" android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".mpchart.MPBandScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".mpchart.MPSingleFrequencyMeasureActivity" android:screenOrientation="landscape"/>
-        <activity android:name=".activity.BaseSlidingMenuActivity" android:screenOrientation="landscape"/>
-
+        <activity android:name=".activity.MonitorCenterActivity" android:screenOrientation="landscape"/>
         <service android:name=".service.DataProviderService" android:exported="false"/>
     </application>
 

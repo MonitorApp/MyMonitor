@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.base.BaseActivity;
 import com.outsource.monitor.parser.Command;
 
 /**
@@ -56,11 +57,11 @@ public abstract class TemplateActivity extends BaseActivity
         mContentFragment = createContentFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fl_menu_container, mMenuFragment, mMenuFragment.getClass().getSimpleName())
+                .add(R.id.right_menu_container, mMenuFragment, mMenuFragment.getClass().getSimpleName())
                 .add(R.id.fl_main_container, mContentFragment, mContentFragment.getClass().getSimpleName())
                 .commitAllowingStateLoss();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.dl_left);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.dl_right);
 
 //        findViewById(R.id.btn_ok).setOnClickListener(this);
     }

@@ -1,10 +1,8 @@
 package com.outsource.monitor.activity;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +14,7 @@ import android.view.MenuItem;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.adapter.RecordAdapter;
+import com.outsource.monitor.base.BaseActivity;
 
 public class RecordActivity extends BaseActivity {
 

@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center">
+
         <TextView
             android:id="@+id/tv_sgl_scan"
             style="@style/MainActMenuText"

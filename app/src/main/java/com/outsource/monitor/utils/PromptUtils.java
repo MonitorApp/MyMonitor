@@ -5,7 +5,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.outsource.monitor.ActivityManager;
-import com.outsource.monitor.activity.BaseActivity;
+import com.outsource.monitor.base.BaseActivity;
 
 /**
  * 提示Util总汇
