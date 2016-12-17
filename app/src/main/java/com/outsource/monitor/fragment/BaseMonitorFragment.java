@@ -26,9 +26,9 @@ public abstract class BaseMonitorFragment extends Fragment {
     protected Fragment mContentFragment;
     protected Fragment mMenuFragment;
 
+    public abstract Tab tab();
     public abstract Fragment createContentFragment();
     public abstract Fragment createMenuFragment();
-    public abstract Tab tab();
 
     public BaseMonitorFragment() {
         mCurrentTab = tab();

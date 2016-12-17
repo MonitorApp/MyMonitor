@@ -29,9 +29,6 @@
 
         </activity>
 
-        <activity android:name=".activity.SingleFrequencyMeasureActivity" android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.FullScreen"/>
-        <activity android:name=".activity.MiddleFrequencyAnalyseActivity"  android:screenOrientation="landscape"/>
         <activity android:name=".activity.BandScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.DiscreteScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.DigitScanActivity" android:screenOrientation="landscape"/>

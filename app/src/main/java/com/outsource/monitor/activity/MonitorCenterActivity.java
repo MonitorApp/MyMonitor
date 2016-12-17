@@ -10,7 +10,8 @@ import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fragment.TabMenuFragment;
-import com.outsource.monitor.ifpan.fragment.FragmentIfpan;
+import com.outsource.monitor.ifpan.fragment.IfpanFragment;
+import com.outsource.monitor.singlefrequency.fragment.ItuFragment;
 import com.outsource.monitor.utils.DisplayUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -73,15 +74,13 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     private BaseMonitorFragment createContentFragment(Tab tab) {
         switch (tab) {
             case ITU:
-//                return ContentFragmentSingleFrequencyMeasure.newInstance();
+                return ItuFragment.newInstance();
             case IFPAN:
-                return FragmentIfpan.newInstance();
+                return IfpanFragment.newInstance();
             case BAND_SCAN:
-//                return ContentFragmentBandScan.newInstance();
             case DISCRETE_SCAN:
-//                return ContentFragmentDiscreteScan.newInstance();
             case DIGIT_SCAN:
-//                return ContentFragmentDigitScan.newInstance();
+                return IfpanFragment.newInstance();
             default:
                 break;
         }

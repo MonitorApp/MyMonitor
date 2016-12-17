@@ -9,16 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.github.mikephil.charting.components.XAxis;
 import com.outsource.monitor.R;
-import com.outsource.monitor.ifpan.IfpanParam;
-import com.outsource.monitor.ifpan.IfpanParamsChangeEvent;
+import com.outsource.monitor.ifpan.model.IfpanParam;
+import com.outsource.monitor.ifpan.event.IfpanParamsChangeEvent;
 import com.outsource.monitor.parser.IfpanParser48278;
 import com.outsource.monitor.service.IfpanDataReceiver;
 import com.outsource.monitor.utils.DisplayUtils;
-import com.outsource.monitor.utils.LogUtils;
-import com.outsource.monitor.utils.ParamChangeEvent;
-import com.outsource.monitor.utils.ParamsUtils;
 import com.outsource.monitor.utils.PromptUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,12 +43,12 @@ public class MenuFragmentMiddleFrequencyAnalyse extends Fragment implements Ifpa
         mEtFrequency = (EditText) view.findViewById(R.id.et_ifpan_frequence);
         mEtBand = (EditText) view.findViewById(R.id.et_ifpan_band);
         mEtSpan = (EditText) view.findViewById(R.id.et_ifpan_span);
-        view.findViewById(R.id.btn_ifpan_change_param).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_change_param).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkInput(true)) {
                     IfpanParam param = new IfpanParam(getInputFrequency(), getInputBand(), getInputSpan());
-                    ParamsUtils.saveIfpanParam(param);
+                    param.save();
                     EventBus.getDefault().post(new IfpanParamsChangeEvent(param));
                 }
             }

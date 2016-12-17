@@ -125,7 +125,7 @@
             android:id="@+id/chart_single_frequency_max_level"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:layout_marginTop="40dp"/>
+            android:layout_marginTop="12dp"/>
 
     </LinearLayout>
     

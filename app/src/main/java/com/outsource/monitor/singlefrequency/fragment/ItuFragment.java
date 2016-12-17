@@ -1,24 +1,20 @@
-package com.outsource.monitor.ifpan.fragment;
+package com.outsource.monitor.singlefrequency.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
-import com.outsource.monitor.ifpan.IfpanParam;
-import com.outsource.monitor.ifpan.IfpanParamsChangeEvent;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
-import com.outsource.monitor.service.IfpanDataReceiver;
+import com.outsource.monitor.service.ItuDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
-import com.outsource.monitor.utils.ParamsUtils;
+import com.outsource.monitor.singlefrequency.event.ItuParamChangeEvent;
+import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 
@@ -30,57 +26,55 @@ import org.greenrobot.eventbus.ThreadMode;
  * Created by xionghao on 2016/12/17.
  */
 
-public class FragmentIfpan extends BaseMonitorFragment {
+public class ItuFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
-    public IfpanParam mIfpanParam;
+    public SingleFrequencyParam mItuParam;
+
+    @Override
+    public Tab tab() {
+        return Tab.ITU;
+    }
 
     @Override
     public Fragment createContentFragment() {
-        return ContentFragmentMiddleFrequencyAnalyse.newInstance();
+        return ContentFragmentSingleFrequencyMeasure.newInstance();
     }
 
     @Override
     public Fragment createMenuFragment() {
-        return MenuFragmentMiddleFrequencyAnalyse.newInstance();
+        return MenuFragmentSingleFrequencyMeasure.newInstance();
     }
 
-    @Override
-    public Tab tab() {
-        return Tab.IFPAN;
-    }
-
-    public FragmentIfpan() {
+    public ItuFragment() {
         super();
     }
 
-    public static FragmentIfpan newInstance() {
-        return new FragmentIfpan();
+    public static ItuFragment newInstance() {
+        return new ItuFragment();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mIfpanParam = ParamsUtils.getIfpanParam();
+        mItuParam = SingleFrequencyParam.loadFromCache();
         initService();
         EventBus.getDefault().register(this);
     }
 
-    private void initService() {
+    private  void initService() {
         mServiceHelper = new ServiceHelper(getActivity());
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
-                service.addIfpanDataReceiver((IfpanDataReceiver) mContentFragment);
-                service.addIfpanDataReceiver((IfpanDataReceiver) mMenuFragment);
+                service.addItuDataReceiver((ItuDataReceiver) mContentFragment);
+                service.addItuDataReceiver((ItuDataReceiver) mMenuFragment);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);
                 int port = PreferenceUtils.getInt(PreferenceKey.DEVICE_PORT);
                 service.connect(ip, port, new ConnectCallback() {
                     @Override
                     public void onConnectSuccess() {
-                        String format = "RMTP:IFANALYSIS:4403000100113:frequency:%.1fMHz\nifbw:%dkHz\nspan:%dkHz\nrecordthreshold:=40\ndemodmode:FM\n#";
-                        String cmd = String.format(format, mIfpanParam.frequency, mIfpanParam.band, mIfpanParam.span);
-                        Command command = new Command(cmd, Command.Type.IFPAN);
+                        Command command = new Command(mItuParam.getCommand(), Command.Type.ITU);
                         service.sendCommand(command);
                     }
 
@@ -94,17 +88,17 @@ public class FragmentIfpan extends BaseMonitorFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIfpanParamChanged(IfpanParamsChangeEvent event) {
+    public void onItuParamChanged(ItuParamChangeEvent event) {
         mServiceHelper.release();
-        mIfpanParam = event.param;
+        mItuParam = event.param;
         initService();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mServiceHelper.release();
         EventBus.getDefault().unregister(this);
+        mServiceHelper.release();
     }
 
 }

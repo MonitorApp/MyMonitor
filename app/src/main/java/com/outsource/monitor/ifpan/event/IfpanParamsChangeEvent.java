@@ -1,4 +1,6 @@
-package com.outsource.monitor.ifpan;
+package com.outsource.monitor.ifpan.event;
+
+import com.outsource.monitor.ifpan.model.IfpanParam;
 
 /**
  * Created by xionghao on 2016/12/17.

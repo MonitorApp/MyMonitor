@@ -51,7 +51,7 @@
             android:text="记录保存"/>
 
         <Button
-            android:id="@+id/btn_ifpan_change_param"
+            android:id="@+id/btn_change_param"
             style="@style/MenuButton"/>
     </LinearLayout>
 

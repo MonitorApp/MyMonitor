@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +26,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.outsource.monitor.R;
-import com.outsource.monitor.activity.TemplateActivity;
 import com.outsource.monitor.config.Consts;
-import com.outsource.monitor.config.DeviceConfig;
-import com.outsource.monitor.config.PreferenceKey;
-import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.parser.ItuParser48278;
-import com.outsource.monitor.service.ConnectCallback;
-import com.outsource.monitor.service.DataProviderService;
 import com.outsource.monitor.service.ItuDataReceiver;
-import com.outsource.monitor.service.ServiceHelper;
 import com.outsource.monitor.singlefrequency.adapter.MeasureItemAdapter;
 import com.outsource.monitor.singlefrequency.chartformatter.ITUXAxisTimeValueFormatter;
 import com.outsource.monitor.singlefrequency.chartformatter.ITUXAxisValueFormatter;
@@ -45,13 +37,6 @@ import com.outsource.monitor.singlefrequency.model.ItuItemData;
 import com.outsource.monitor.singlefrequency.model.ItuLevel;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.LogUtils;
-import com.outsource.monitor.utils.ParamChangeEvent;
-import com.outsource.monitor.utils.PreferenceUtils;
-import com.outsource.monitor.utils.PromptUtils;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +54,6 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
         return new ContentFragmentSingleFrequencyMeasure();
     }
 
-    private ServiceHelper mServiceHelper;
     private static final int MAX_LINE_X_AXIS = Consts.SECONDS * 2;//最多显示2秒前的数据，单位为ms
     private static final int MIN_MEASURE_LEVEL = 0;
     private static final int MAX_MEASURE_LEVEL = 100;
@@ -152,19 +136,12 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
         initLineChart(view);
         initTimeBarChart(view);
         initMaxLevelBarChart(view);
-        initService();
 
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_LINE, REFRESH_LINE_INTERVAL);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_BAR, REFRESH_BAR_INTERVAL);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_BAR_INTERVAL);
 
-        EventBus.getDefault().register(this);
         return view;
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(ParamChangeEvent event) {
-        SendCommand();
     }
 
     @Override
@@ -281,53 +258,6 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
         mMaxLevelBarChart.invalidate();
     }
 
-    private void initService() {
-        mServiceHelper = new ServiceHelper(getActivity());
-        SendCommand();
-    }
-
-    private  void SendCommand()
-    {
-        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
-            @Override
-            public void onServiceConnected(final DataProviderService.SocketBinder service) {
-                service.addItuDataReceiver(ContentFragmentSingleFrequencyMeasure.this);
-                service.setFrequencyRange(DeviceConfig.MIN_FREQUENCY, DeviceConfig.MAX_FREQUENCY);
-                service.setLevelRange(DeviceConfig.MIN_LEVEL, DeviceConfig.MAX_LEVEL);
-                String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);
-                int port = PreferenceUtils.getInt(PreferenceKey.DEVICE_PORT);
-                service.connect(ip, port, new ConnectCallback() {
-                    @Override
-                    public void onConnectSuccess() {
-                     //   String cmd = "RMTP:SGLFREQ:4403000100113:frequency:97.1MHz\nifbw:15kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
-                     //   Command command = new Command(cmd, Command.Type.ITU);
-                        Command command = ((TemplateActivity)getActivity()).getCmd();
-                        if(command != null) {
-                            Log.i("SingleFrequencyMeasure", "send command: "+command.command);
-                            service.sendCommand(command);
-                        }
-                        else
-                        {
-                            Log.w("SingleFrequencyMeasure", "GetCommond is null!");
-                        }
-                    }
-
-                    @Override
-                    public void onConnectFail(String message) {
-                        PromptUtils.showToast(message);
-                    }
-                });
-            }
-        });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-        mServiceHelper.release();
-    }
-
     private boolean isHit(float level) {
         return level >= MIN_MEASURE_LEVEL && level <= MAX_MEASURE_LEVEL;
     }
@@ -399,22 +329,23 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
     }
 
     @Override
-    public void onReceiveItuHead(List<ItuParser48278.DataHead.HeadItem> ituHeads) {
-        mItuHead.set(ituHeads);
-        if (!CollectionUtils.isEmpty(ituHeads)) {
-            int size = ituHeads.size();
+    public void onReceiveItuHead(ItuParser48278.DataHead ituHead) {
+        if (ituHead == null) return;
+        mItuHead.set(ituHead.dataHead);
+        if (!CollectionUtils.isEmpty(ituHead.dataHead)) {
+            int size = ituHead.dataHead.size();
             for (int i = 0; i < size; i++) {
                 mRealTimeLevels.add(new ConcurrentLinkedQueue<ItuLevel>());
                 mTimePercentages.add(new ConcurrentLinkedQueue<Float>());
                 mMaxLevels.add(new ConcurrentLinkedQueue<Float>());
                 hitCountPerScreen.add(0);
                 totalCountPerScreen.add(0);
-                maxLevelPerScreen.add(ituHeads.get(i).minVal);
+                maxLevelPerScreen.add(ituHead.dataHead.get(i).minVal);
                 mCurrentItemsData.add(new ItuItemData());
             }
             mRefreshHandler.sendEmptyMessage(MSG_ID_INIT_MEASURE_ITEM);
         }
-        measureItemCount = ituHeads != null ? ituHeads.size() : 0;
+        measureItemCount = ituHead.dataHead != null ? ituHead.dataHead.size() : 0;
     }
 
     private LineDataSet generateLineDataSet() {

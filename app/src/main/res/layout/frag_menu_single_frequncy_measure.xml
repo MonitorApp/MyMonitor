@@ -24,11 +24,11 @@
 
                 <TextView
                     style="@style/ContentActMenuDesc"
-                    android:text="频率" />
+                    android:text="频率(单位：MHz)" />
 
                 <TextView
                     style="@style/ContentActMenuDesc"
-                    android:text="中频带宽" />
+                    android:text="中频带宽(单位：kHz)" />
 
                 <TextView
                     style="@style/ContentActMenuDesc"
@@ -36,7 +36,7 @@
 
                 <TextView
                     style="@style/ContentActMenuDesc"
-                    android:text="跨距" />
+                    android:text="跨距(单位：kHz)" />
 
                 <TextView
                     style="@style/ContentActMenuDesc"
@@ -59,7 +59,7 @@
                     android:text="记录保存" />
 
                 <Button
-                    android:id="@+id/btn_ifpan_change_param"
+                    android:id="@+id/btn_change_param"
                     style="@style/MenuButton" />
 
             </LinearLayout>
@@ -71,12 +71,12 @@
                 android:orientation="vertical">
 
                 <EditText
-                    android:id="@+id/tv_frequence"
+                    android:id="@+id/et_itu_frequence"
                     style="@style/ContentActMenuValue.Edit.NumberDecimal" />
 
-                <TextView
-                    android:id="@+id/tv_mdl_band"
-                    style="@style/ContentActMenuValue"
+                <EditText
+                    android:id="@+id/et_itu_mdl_band"
+                    style="@style/ContentActMenuValue.Edit.NumberDecimal"
                     android:text="25" />
 
                 <TextView
@@ -85,8 +85,8 @@
                     android:text="FM" />
 
                 <EditText
-                    android:id="@+id/tv_step"
-                    style="@style/ContentActMenuValue"
+                    android:id="@+id/et_itu_step"
+                    style="@style/ContentActMenuValue.Edit.Number"
                     android:text="100" />
 
                 <TextView

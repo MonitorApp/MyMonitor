@@ -8,11 +8,8 @@ import android.text.TextUtils;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.parser.IfpanParser48278;
 import com.outsource.monitor.parser.ItuParser48278;
-import com.outsource.monitor.singlefrequency.event.ReceiveItuHeadEvent;
 import com.outsource.monitor.singlefrequency.model.ItuHead;
 import com.outsource.monitor.utils.PromptUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -235,9 +232,8 @@ public class SocketThread extends Thread {
         switch (data.m_frameType) {
             case ItuParser48278.FRAME_TYPE_HEAD:
                 if (data.m_dataHead != null) {
-                    EventBus.getDefault().post(new ReceiveItuHeadEvent(data.m_dataHead));
                     for (ItuDataReceiver receiver : mItuDataReceivers) {
-                        receiver.onReceiveItuHead(data.m_dataHead.dataHead);
+                        receiver.onReceiveItuHead(data.m_dataHead);
                     }
                 }
                 break;

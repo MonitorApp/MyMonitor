@@ -12,5 +12,5 @@ public interface ItuDataReceiver {
     //单频测量接收到itu数据
     void onReceiveItuData(List<Float> ituData);
     //单频测量接收到itu描述头
-    void onReceiveItuHead(List<ItuParser48278.DataHead.HeadItem> ituHeads);
+    void onReceiveItuHead(ItuParser48278.DataHead ituHead);
 }
