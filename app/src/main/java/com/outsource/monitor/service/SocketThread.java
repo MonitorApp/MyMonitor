@@ -120,7 +120,7 @@ public class SocketThread extends Thread {
         if (!isConnected()) {
             connect(ip, port, new ConnectCallback() {
                 @Override
-                public void onConnectSuccess() {
+                public synchronized void onConnectSuccess() {
                     synchronized (SocketThread.this) {
                         notify();
                     }

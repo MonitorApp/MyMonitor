@@ -17,7 +17,6 @@ import com.outsource.monitor.service.ItuDataReceiver;
 import com.outsource.monitor.singlefrequency.event.ItuParamChangeEvent;
 import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.PromptUtils;
-import com.outsource.monitor.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -68,18 +67,18 @@ public class MenuFragmentSingleFrequencyMeasure extends Fragment implements View
     {
         SingleFrequencyParam param = new SingleFrequencyParam();
         param.frequecy = getInputFrequency();
-        param.mdlFrequencyBand = getInputBand();
-        param.demodulate = mTvDemodulate.getText().toString();
-        param.step = getInputStep();
+        param.ifbw = getInputBand();
+        param.demodmode = mTvDemodulate.getText().toString();
+        param.span = getInputStep();
         return param;
     }
 
     public void SetParam2UI(SingleFrequencyParam param)
     {
         mEtFrequency.setText(String.format ("%.1f", param.frequecy));
-        mEtMdlFrequencyBand.setText(String.format("%.1f", param.mdlFrequencyBand));
-        mTvDemodulate.setText(param.demodulate);
-        mEtStep.setText(String.format("%d", param.step));
+        mEtMdlFrequencyBand.setText(String.format("%.1f", param.ifbw));
+        mTvDemodulate.setText(param.demodmode);
+        mEtStep.setText(String.format("%d", param.span));
     }
 
     @Override
