@@ -162,6 +162,7 @@ public class SocketThread extends Thread {
                 InputStream inputStream = null;
                 try {
                     //发送命令
+                    if (mSocket == null) return;
                     outputStream = mSocket.getOutputStream();
                     bos.write(bytes);
                     outputStream.write(bos.toByteArray(), 0, bos.size());
@@ -174,6 +175,7 @@ public class SocketThread extends Thread {
                         e.printStackTrace();
                     }
                     //接受数据
+                    if (mSocket == null) return;
                     inputStream = mSocket.getInputStream();
                     byte[] buffer = new byte[4 * 1024];
                     int byteOffset = 0;
