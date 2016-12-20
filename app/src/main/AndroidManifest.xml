@@ -3,12 +3,15 @@
     package="com.outsource.monitor">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- 友盟 begin-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!-- 友盟 end-->
 
     <application
         android:name=".App"
@@ -39,6 +42,9 @@
         <activity android:name=".mpchart.MPSingleFrequencyMeasureActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.MonitorCenterActivity" android:screenOrientation="landscape"/>
         <service android:name=".service.DataProviderService" android:exported="false"/>
+
+        <meta-data android:value="58593f632ae85b2e99001f5a" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="test" android:name="UMENG_CHANNEL"/>
     </application>
 
 </manifest>
