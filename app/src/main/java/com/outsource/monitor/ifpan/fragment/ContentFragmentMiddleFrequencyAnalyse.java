@@ -29,7 +29,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.outsource.monitor.R;
+import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.config.PreferenceKey;
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.ifpan.chartformatter.IFPANXAxisValueFormatter;
 import com.outsource.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.parser.Command;
@@ -46,6 +48,10 @@ import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 import com.outsource.monitor.utils.Utils;
 import com.outsource.monitor.widget.FallsLevelView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -80,23 +86,28 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
 
     private TextView mTvCurrentFrequencyLevel;
     private TextView mTvAnalyseInfo;
+    private boolean isPlay = true;
 
     private Handler mRefreshHandler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_ID_REFRESH_CHART) {
-                refreshTitle();
-                refreshLineChart();
-                refreshBarChart();
-                CombinedData data = mChart.getData();
-                data.notifyDataChanged();
-                mChart.notifyDataSetChanged();
-                mChart.invalidate();
+                if (isPlay) {
+                    refreshTitle();
+                    refreshLineChart();
+                    refreshBarChart();
+                    CombinedData data = mChart.getData();
+                    data.notifyDataChanged();
+                    mChart.notifyDataSetChanged();
+                    mChart.invalidate();
+                }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, REFRESH_CHART_INTERVAL);
             } else if (msg.what == MSG_ID_REFRESH_FALL) {
-                removeExpiredFallRows();
-                refreshFallChart();
+                if (isPlay) {
+                    removeExpiredFallRows();
+                    refreshFallChart();
+                }
 //                CombinedData data = mFallChart.getData();
 //                data.notifyDataChanged();
 //                mFallChart.notifyDataSetChanged();
@@ -132,6 +143,11 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent event) {
+        isPlay = event.isPlay;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -156,14 +172,16 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
 //        initService();
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, 500);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_FALL, 1500);
+
+        EventBus.getDefault().register(this);
         return view;
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        mServiceHelper.release();
-//    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
 
     private void initCombineChart(View view) {
         mChart = (CombinedChart) view.findViewById(R.id.chart_middle_frequency_analyse);

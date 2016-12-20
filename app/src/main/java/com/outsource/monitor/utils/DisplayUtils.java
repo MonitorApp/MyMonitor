@@ -34,7 +34,7 @@ public class DisplayUtils {
      *
      * @return 屏幕宽度
      */
-    public static int getWidthPixels() {
+    public static int getScreenWidth() {
         return sDisplayMetrics.widthPixels;
     }
 
@@ -43,7 +43,7 @@ public class DisplayUtils {
      *
      * @return 屏幕高度
      */
-    public static int getHeightPixels() {
+    public static int getScreenHeight() {
         return sDisplayMetrics.heightPixels;
     }
 

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.model.FrequencyLevel;
 import com.outsource.monitor.parser.IfpanParser48278;
@@ -14,6 +15,10 @@ import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Iterator;
 import java.util.List;
@@ -132,6 +137,28 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
         mMarkTextPaint.setTextSize(DisplayUtils.dp2px(11));
         Paint.FontMetrics fm = mMarkTextPaint.getFontMetrics();
         mMarkTextHeight = (int) ((fm.descent - fm.ascent) / 2) - DisplayUtils.dp2px(4);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent event) {
+        if (event.isPlay) {
+            resume();
+        } else {
+            pause();
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

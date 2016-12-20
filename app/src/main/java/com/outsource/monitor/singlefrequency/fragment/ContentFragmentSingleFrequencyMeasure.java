@@ -27,6 +27,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.outsource.monitor.R;
 import com.outsource.monitor.config.Consts;
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.parser.ItuParser48278;
 import com.outsource.monitor.service.ItuDataReceiver;
 import com.outsource.monitor.singlefrequency.adapter.MeasureItemAdapter;
@@ -37,6 +38,10 @@ import com.outsource.monitor.singlefrequency.model.ItuItemData;
 import com.outsource.monitor.singlefrequency.model.ItuLevel;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +96,8 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
     private long lastRefreshBarTime;
     private long lastRefreshListTime;
 
+    private boolean isPlay = true;
+
     private Handler mRefreshHandler = new Handler() {
 
         @Override
@@ -103,7 +110,9 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
                     sendEmptyMessageDelayed(msg.what, REFRESH_LINE_INTERVAL - System.currentTimeMillis() + lastRefreshLineTime);
                     return;
                 }
-                refreshLineChart();
+                if (isPlay) {
+                    refreshLineChart();
+                }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_LINE, REFRESH_LINE_INTERVAL);
                 lastRefreshLineTime = System.currentTimeMillis();
             } else if (msg.what == MSG_ID_REFRESH_BAR) {
@@ -111,8 +120,10 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
                     sendEmptyMessageDelayed(msg.what, REFRESH_BAR_INTERVAL - System.currentTimeMillis() + lastRefreshBarTime);
                     return;
                 }
-                refreshTimeBarChart();
-                refreshMaxLevelBarChart();
+                if (isPlay) {
+                    refreshTimeBarChart();
+                    refreshMaxLevelBarChart();
+                }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_LINE, REFRESH_BAR_INTERVAL);
                 lastRefreshBarTime = System.currentTimeMillis();
             } else if (msg.what == MSG_ID_REFRESH_MEASURE_ITEM) {
@@ -120,7 +131,9 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
                     sendEmptyMessageDelayed(msg.what, REFRESH_MEASURE_ITEM_INTERVAL - System.currentTimeMillis() + lastRefreshListTime);
                     return;
                 }
-                refreshMeasureItemList();
+                if (isPlay) {
+                    refreshMeasureItemList();
+                }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_MEASURE_ITEM_INTERVAL);
                 lastRefreshListTime = System.currentTimeMillis();
             }
@@ -141,7 +154,14 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_BAR, REFRESH_BAR_INTERVAL);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_BAR_INTERVAL);
 
+        EventBus.getDefault().register(this);
         return view;
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent event) {
+        isPlay = event.isPlay;
     }
 
     @Override
@@ -154,6 +174,12 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
     public void onPause() {
         super.onPause();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
 
     private void initMeasureTypes(View view) {

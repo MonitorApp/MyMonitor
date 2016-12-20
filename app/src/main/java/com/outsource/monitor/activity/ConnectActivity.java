@@ -2,7 +2,6 @@ package com.outsource.monitor.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -14,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.base.BaseActivity;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
@@ -23,7 +23,7 @@ import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 import com.outsource.monitor.utils.Utils;
 
-public class ConnectActivity extends AppCompatActivity {
+public class ConnectActivity extends BaseActivity {
 
     public static final String DEVICE_IP = "DEVICE_IP";
     public static final String DEVICE_PORT = "DEVICE_PORT";

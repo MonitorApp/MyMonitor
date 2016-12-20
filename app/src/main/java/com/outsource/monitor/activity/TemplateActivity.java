@@ -42,16 +42,6 @@ public abstract class TemplateActivity extends BaseActivity
     }
 
     private void initViews() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getMyTitle());
-        toolbar.setSubtitle("");
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
         mMenuFragment = createMenuFragment();
         mContentFragment = createContentFragment();
         getSupportFragmentManager()

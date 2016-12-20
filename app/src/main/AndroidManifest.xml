@@ -40,7 +40,7 @@
         <activity android:name=".activity.OptionActivity" android:screenOrientation="landscape" android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".mpchart.MPBandScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".mpchart.MPSingleFrequencyMeasureActivity" android:screenOrientation="landscape"/>
-        <activity android:name=".activity.MonitorCenterActivity" android:screenOrientation="landscape"/>
+        <activity android:name=".activity.MonitorCenterActivity" android:screenOrientation="landscape" android:theme="@style/AppTheme.FullScreen"/>
         <service android:name=".service.DataProviderService" android:exported="false"/>
 
         <meta-data android:value="58593f632ae85b2e99001f5a" android:name="UMENG_APPKEY"/>
