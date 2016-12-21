@@ -19,7 +19,7 @@ public class IfpanParam {
     }
 
     public static IfpanParam loadFromCache() {
-        return new IfpanParam(PreferenceUtils.getFloat("ifpan_frequency", 98.1f), PreferenceUtils.getInt("ifpan_band", 30), PreferenceUtils.getInt("ifpan_span", 15));
+        return new IfpanParam(PreferenceUtils.getFloat("ifpan_frequency", 0), PreferenceUtils.getInt("ifpan_band", 0), PreferenceUtils.getInt("ifpan_span", 0));
     }
 
     public void save() {

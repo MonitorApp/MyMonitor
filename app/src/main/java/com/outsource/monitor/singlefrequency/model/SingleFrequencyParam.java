@@ -48,12 +48,12 @@ public class SingleFrequencyParam {
     public static SingleFrequencyParam loadFromCache() {
         SingleFrequencyParam param = new SingleFrequencyParam();
         param.devId = "4403000100113";
-        param.frequecy = PreferenceUtils.getFloat("Sgl_frequency", 97.1f);
-        param.ifbw = PreferenceUtils.getFloat("Sgl_ifbw", 30f);
+        param.frequecy = PreferenceUtils.getFloat("Sgl_frequency", 0);
+        param.ifbw = PreferenceUtils.getFloat("Sgl_ifbw", 0);
         param.demodmode = PreferenceUtils.getString("Sgl_demodmode", "FM");
         param.detector = PreferenceUtils.getString("Sgl_detector", "AVG");
         param.gainctrl = PreferenceUtils.getInt("Sgl_gainctrl", 0);
-        param.span = PreferenceUtils.getInt("Sgl_span", 15);
+        param.span = PreferenceUtils.getInt("Sgl_span", 0);
         return param;
     }
 

@@ -24,7 +24,7 @@ public class FloatingViewWrapper extends FrameLayout {
     private static final long HIDE_DURATION = 2000;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mParams;
-    private int mInitX = DisplayUtils.dp2px(0);
+    private int mInitX = DisplayUtils.getScreenWidth() - DisplayUtils.dp2px(32);
     private int mInitY = DisplayUtils.dp2px(0);
     private int mTouchDownX = -1;
     private int mTouchDownY = -1;

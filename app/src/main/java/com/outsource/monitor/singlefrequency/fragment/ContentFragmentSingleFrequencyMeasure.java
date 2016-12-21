@@ -26,7 +26,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.outsource.monitor.R;
+import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.config.Consts;
+import com.outsource.monitor.event.PlayBallStateEvent;
 import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.parser.ItuParser48278;
 import com.outsource.monitor.service.ItuDataReceiver;
@@ -36,8 +38,10 @@ import com.outsource.monitor.singlefrequency.chartformatter.ITUXAxisValueFormatt
 import com.outsource.monitor.singlefrequency.chartformatter.ITUYAxisValueFormatter;
 import com.outsource.monitor.singlefrequency.model.ItuItemData;
 import com.outsource.monitor.singlefrequency.model.ItuLevel;
+import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.LogUtils;
+import com.outsource.monitor.utils.PromptUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -96,7 +100,7 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
     private long lastRefreshBarTime;
     private long lastRefreshListTime;
 
-    private boolean isPlay = true;
+    private boolean isPlay = false;
 
     private Handler mRefreshHandler = new Handler() {
 
@@ -155,12 +159,29 @@ public class ContentFragmentSingleFrequencyMeasure extends Fragment implements I
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_BAR_INTERVAL);
 
         EventBus.getDefault().register(this);
+
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            SingleFrequencyParam param = SingleFrequencyParam.loadFromCache();
+            if (param.frequecy == 0 || param.ifbw == 0 || param.span == 0) {
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                isPlay = true;
+            }
+        }
         return view;
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayPauseEvent(PlayPauseEvent event) {
+        if (event.isPlay) {
+            SingleFrequencyParam param = SingleFrequencyParam.loadFromCache();
+            if (param.frequecy == 0 || param.ifbw == 0 || param.span == 0) {
+                PromptUtils.showToast("请先设置有效的单频测量参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+                return;
+            }
+        }
         isPlay = event.isPlay;
     }
 

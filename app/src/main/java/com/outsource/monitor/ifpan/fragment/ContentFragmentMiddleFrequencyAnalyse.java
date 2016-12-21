@@ -29,11 +29,14 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.outsource.monitor.R;
+import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.config.PreferenceKey;
+import com.outsource.monitor.event.PlayBallStateEvent;
 import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.ifpan.chartformatter.IFPANXAxisValueFormatter;
 import com.outsource.monitor.ifpan.model.FallRow;
+import com.outsource.monitor.ifpan.model.IfpanParam;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.parser.IfpanParser48278;
 import com.outsource.monitor.service.ConnectCallback;
@@ -41,6 +44,7 @@ import com.outsource.monitor.service.DataProviderService;
 import com.outsource.monitor.service.IfpanDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
 import com.outsource.monitor.singlefrequency.chartformatter.ITUYAxisValueFormatter;
+import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
@@ -86,7 +90,7 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
 
     private TextView mTvCurrentFrequencyLevel;
     private TextView mTvAnalyseInfo;
-    private boolean isPlay = true;
+    private boolean isPlay = false;
 
     private Handler mRefreshHandler = new Handler() {
 
@@ -145,6 +149,14 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayPauseEvent(PlayPauseEvent event) {
+        if (event.isPlay) {
+            IfpanParam param = IfpanParam.loadFromCache();
+            if (param.frequency == 0 || param.band == 0 || param.span == 0) {
+                PromptUtils.showToast("请先设置有效的中频分析参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+                return;
+            }
+        }
         isPlay = event.isPlay;
     }
 
@@ -174,6 +186,15 @@ public class ContentFragmentMiddleFrequencyAnalyse extends Fragment implements I
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_FALL, 1500);
 
         EventBus.getDefault().register(this);
+
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            IfpanParam param = IfpanParam.loadFromCache();
+            if (param.frequency == 0 || param.band == 0 || param.span == 0) {
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                isPlay = true;
+            }
+        }
         return view;
     }
 

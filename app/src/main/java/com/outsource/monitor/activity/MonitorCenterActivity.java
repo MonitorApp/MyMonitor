@@ -126,6 +126,13 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
 
+    public boolean isPlaying() {
+        if (mFloatingViewWrapper != null && mFloatingViewWrapper.getChildCount() > 0) {
+            FloatingBall floatingBall = (FloatingBall) mFloatingViewWrapper.getChildAt(0);
+            return floatingBall.isPlaying();
+        }
+        return false;
     }
 }
