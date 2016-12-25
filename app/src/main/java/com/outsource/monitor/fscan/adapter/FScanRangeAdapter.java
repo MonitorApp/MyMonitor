@@ -9,12 +9,8 @@ import android.widget.TextView;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.parser.FscanParser48278;
-import com.outsource.monitor.parser.ItuParser48278;
-import com.outsource.monitor.singlefrequency.model.ItuItemData;
-import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -1,6 +1,6 @@
-package com.outsource.monitor.singlefrequency.event;
+package com.outsource.monitor.itu.event;
 
-import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
+import com.outsource.monitor.itu.model.SingleFrequencyParam;
 
 /**
  * Created by xionghao on 2016/12/17.

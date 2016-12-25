@@ -1,4 +1,4 @@
-package com.outsource.monitor.singlefrequency.chartformatter;
+package com.outsource.monitor.itu.chartformatter;
 
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;

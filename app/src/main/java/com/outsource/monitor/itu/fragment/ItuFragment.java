@@ -1,4 +1,4 @@
-package com.outsource.monitor.singlefrequency.fragment;
+package com.outsource.monitor.itu.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +13,8 @@ import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
 import com.outsource.monitor.service.ItuDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
-import com.outsource.monitor.singlefrequency.event.ItuParamChangeEvent;
-import com.outsource.monitor.singlefrequency.model.SingleFrequencyParam;
+import com.outsource.monitor.itu.event.ItuParamChangeEvent;
+import com.outsource.monitor.itu.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 
@@ -38,12 +38,12 @@ public class ItuFragment extends BaseMonitorFragment {
 
     @Override
     public Fragment createContentFragment() {
-        return ContentFragmentSingleFrequencyMeasure.newInstance();
+        return ContentFragmentItu.newInstance();
     }
 
     @Override
     public Fragment createMenuFragment() {
-        return MenuFragmentSingleFrequencyMeasure.newInstance();
+        return MenuFragmentItu.newInstance();
     }
 
     public ItuFragment() {
