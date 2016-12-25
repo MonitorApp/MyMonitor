@@ -9,6 +9,7 @@ public enum  Tab {
     ITU("单频测量"),
     IFPAN("中频分析"),
     BAND_SCAN("频段扫描"),
+    DF("单频测向"),
     DISCRETE_SCAN("离散扫描"),
     DIGIT_SCAN("数字扫描");
 

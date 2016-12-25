@@ -17,4 +17,8 @@
     <color name="pressed_color">#33000000</color>
     <color name="white_pressed_color">#c3c3c2</color>
     <color name="divider_color">#e4e4e4</color>
+
+    <color name="compass_background_color">#F555</color>
+    <color name="compass_marker_color">#AFFF</color>
+    <color name="compass_text_color">@color/text_color_333</color>
 </resources>

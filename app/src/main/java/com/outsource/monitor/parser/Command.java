@@ -15,6 +15,6 @@ public class Command {
     }
 
     public enum Type {
-        ITU, IFPAN, FSCAN
+        ITU, IFPAN, FSCAN, DF
     }
 }

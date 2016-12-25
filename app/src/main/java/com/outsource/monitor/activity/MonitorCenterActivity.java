@@ -11,6 +11,7 @@ import com.outsource.monitor.R;
 import com.outsource.monitor.base.BaseSlidingMenuActivity;
 import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
+import com.outsource.monitor.df.fragment.DfFragment;
 import com.outsource.monitor.floating.FloatingBall;
 import com.outsource.monitor.floating.FloatingViewWrapper;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
@@ -115,6 +116,8 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
                 return IfpanFragment.newInstance();
             case BAND_SCAN:
                 return FscanFragment.newInstance();
+            case DF:
+                return DfFragment.newInstance();
             case DISCRETE_SCAN:
             case DIGIT_SCAN:
                 return IfpanFragment.newInstance();

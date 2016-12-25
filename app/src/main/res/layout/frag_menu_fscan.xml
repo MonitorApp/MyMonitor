@@ -26,15 +26,15 @@
 
         <TextView
             style="@style/ContentActMenuDesc"
-            android:text="起始频率"/>
+            android:text="起始频率(单位MHz)"/>
 
         <TextView
             style="@style/ContentActMenuDesc"
-            android:text="终止频率"/>
+            android:text="终止频率(单位MHz)"/>
 
         <TextView
             style="@style/ContentActMenuDesc"
-            android:text="步长"/>
+            android:text="步长(单位kHz)"/>
 
         <TextView
             style="@style/ContentActMenuDesc"

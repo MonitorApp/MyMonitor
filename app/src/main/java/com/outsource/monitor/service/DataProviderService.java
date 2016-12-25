@@ -75,6 +75,10 @@ public class DataProviderService extends Service {
             mThread.addFscanDataReceiver(receiver);
         }
 
+        public void addDfDataReceiver(DfDataReceiver receiver) {
+            mThread.addDfDataReceiver(receiver);
+        }
+
         public void connect(String ip, int port, ConnectCallback callback) {
             mThread.connect(ip, port, callback);
         }

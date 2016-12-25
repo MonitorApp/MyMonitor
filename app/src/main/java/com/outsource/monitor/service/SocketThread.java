@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import com.outsource.monitor.parser.Command;
+import com.outsource.monitor.parser.DFParser48278;
 import com.outsource.monitor.parser.FscanParser48278;
 import com.outsource.monitor.parser.IfpanParser48278;
 import com.outsource.monitor.parser.ItuParser48278;
@@ -33,6 +34,7 @@ public class SocketThread extends Thread {
     private List<ItuDataReceiver> mItuDataReceivers = new ArrayList<>(0);
     private List<IfpanDataReceiver> mIfpanDataReceivers = new ArrayList<>(0);
     private List<FscanDataReceiver> mFScanDataReceivers = new ArrayList<>(0);
+    private List<DfDataReceiver> mDfDataReceivers = new ArrayList<>(0);
     private Socket mSocket;
     private Handler mUiHandler;
     private AtomicReference<Command> mCommand = new AtomicReference<>();
@@ -64,6 +66,12 @@ public class SocketThread extends Thread {
     public void addFscanDataReceiver(FscanDataReceiver receiver) {
         if (receiver != null) {
             mFScanDataReceivers.add(receiver);
+        }
+    }
+
+    public void addDfDataReceiver(DfDataReceiver receiver) {
+        if (receiver != null) {
+            mDfDataReceivers.add(receiver);
         }
     }
 
@@ -212,6 +220,15 @@ public class SocketThread extends Thread {
                                     onFScanDataReceived(data);
                                 }
                             }
+                            case DF:
+                            {
+                                DFParser48278 data = DFParser48278.TryParse(buffer, byteOffset);
+                                if (data != null) {
+                                    System.arraycopy(buffer, data.byteLen, buffer, 0, buffer.length - data.byteLen);
+                                    byteOffset -= data.byteLen;
+                                    onDfDataReceived(data);
+                                }
+                            }
                             break;
                             default:
                                 break;
@@ -301,6 +318,29 @@ public class SocketThread extends Thread {
                 if (data.m_dataValue != null) {
                     for (FscanDataReceiver receiver : mFScanDataReceivers) {
                         receiver.onReceiveFScanData(data.m_dataValue);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void onDfDataReceived(DFParser48278 data) {
+        switch (data.m_frameType) {
+            case DFParser48278.FRAME_TYPE_HEAD:
+                if (data.m_dataHead != null) {
+                    for (DfDataReceiver receiver : mDfDataReceivers) {
+                        receiver.onReceiveDfHead(data.m_dataHead);
+                    }
+                }
+                break;
+            case DFParser48278.FRAME_TYPE_INFO:
+                break;
+            case DFParser48278.FRAME_TYPE_DATA:
+                if (data.m_dataValue != null) {
+                    for (DfDataReceiver receiver : mDfDataReceivers) {
+                        receiver.onReceiveDfData(data.m_dataValue);
                     }
                 }
                 break;

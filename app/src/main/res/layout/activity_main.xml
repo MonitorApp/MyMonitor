@@ -34,6 +34,11 @@
             android:text="频段扫描"/>
 
         <TextView
+            android:id="@+id/tv_df"
+            style="@style/MainActMenuText"
+            android:text="单频测向"/>
+
+        <TextView
             android:id="@+id/tv_discrete_scan"
             style="@style/MainActMenuText"
             android:text="离散扫描"/>

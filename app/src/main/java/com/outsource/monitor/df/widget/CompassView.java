@@ -1,340 +1,146 @@
 package com.outsource.monitor.df.widget;
 
 import android.content.Context;
-import android.content.res.TypedArray;
+import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.os.Bundle;
-import android.os.Parcelable;
+import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.utils.DisplayUtils;
 
+/**
+ * Created by C.L.Wang on 14-3-16.
+ */
 public class CompassView extends View {
-    OnCompassDragListener mListener;
 
-    public interface OnCompassDragListener {
-        /**
-         * Indicates when a drag event has ocurred
-         *
-         * @param degrees Actual value of the compass
-         */
-        public void onCompassDragListener(float degrees);
+    private float bearing; //方位
+
+    public void setBearing(float _bearing) {
+        bearing = _bearing;
+        invalidate();
     }
 
-    private Paint mTextPaint, mMainLinePaint, mSecondaryLinePaint, mTerciaryLinePaint, mMarkerPaint;
-    private Path pathMarker;
+    public float getBearing() {
+        return bearing;
+    }
 
-    private int mTextColor, mBackgroundColor, mLineColor, mMarkerColor;
-    private float mDegrees, mTextSize, mRangeDegrees;
-    private boolean mShowMarker;
+    private Paint bgPaint;
+    private Paint markerPaint;
+    private Paint textPaint;
+    private float textHeight;
+    private static final int MIN_MARK_DEGREE = 5;
+    private static final int TEXT_MARK_DEGREE = 90;
+    private static final int MARK_LENGTH = DisplayUtils.dp2px(16);
+    private static final int POINTER_LENGTH = DisplayUtils.dp2px(64);
+    private RectF mMarkRect = new RectF();
+    private RectF mPointerRect = new RectF();
 
-    private GestureDetector mDetector;
+    public CompassView(Context context) {
+        super(context);
+        initCompassView();
+    }
 
     public CompassView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CompassView, 0, 0);
-
-        mBackgroundColor = a.getColor(R.styleable.CompassView_backgroundColor, Color.BLACK);
-        mMarkerColor = a.getColor(R.styleable.CompassView_markerColor, Color.RED);
-        mShowMarker = a.getBoolean(R.styleable.CompassView_showMarker, true);
-        mLineColor = a.getColor(R.styleable.CompassView_lineColor, Color.WHITE);
-        mTextColor = a.getColor(R.styleable.CompassView_textColor, Color.WHITE);
-        mTextSize = a.getDimension(R.styleable.CompassView_textSize, 15 * getResources().getDisplayMetrics().scaledDensity);
-        mDegrees = a.getFloat(R.styleable.CompassView_degrees, 0);
-        mRangeDegrees = a.getFloat(R.styleable.CompassView_rangeDegrees, 180f);
-
-        a.recycle();
-
-        checkValues();
-        init();
+        initCompassView();
     }
 
-    private void checkValues() {
-        if ((mDegrees < 0) || (mDegrees > 359))
-            throw new IndexOutOfBoundsException(getResources()
-                    .getString(R.string.out_index_degrees, mDegrees));
-
-        if ((mRangeDegrees < 90) || (mRangeDegrees > 360))
-            throw new IndexOutOfBoundsException(getResources().getString(
-                    R.string.out_index_range_degrees, mRangeDegrees));
+    public CompassView(Context context, AttributeSet attrs, int defaultStyle) {
+        super(context, attrs, defaultStyle);
+        initCompassView();
     }
 
-    private void init() {
-        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
+    private void initCompassView() {
+        setFocusable(true);
 
-        mMainLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mMainLinePaint.setStrokeWidth(8f);
+        Resources r = this.getResources();
 
-        mSecondaryLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mSecondaryLinePaint.setStrokeWidth(6f);
+        bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bgPaint.setColor(r.getColor(R.color.compass_background_color));
+        bgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        bgPaint.setStrokeWidth(1);
 
-        mTerciaryLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTerciaryLinePaint.setStrokeWidth(3f);
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setColor(r.getColor(R.color.compass_text_color));
+        textPaint.setTextSize(DisplayUtils.dp2px(22));
 
-        mMarkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mMarkerPaint.setStyle(Paint.Style.FILL);
-        pathMarker = new Path();
+        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+        textHeight = fontMetrics.bottom - fontMetrics.top;
 
-        mDetector = new GestureDetector(getContext(), new mGestureListener());
-    }
-
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Bundle b = new Bundle();
-        b.putParcelable("instanceState", super.onSaveInstanceState());
-        b.putFloat("degrees", mDegrees);
-
-        return b;
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle) {
-            Bundle b = (Bundle) state;
-            mDegrees = b.getFloat("degrees", 0);
-
-            state = b.getParcelable("instanceState");
-        }
-
-        super.onRestoreInstanceState(state);
+        markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        markerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        markerPaint.setColor(r.getColor(R.color.compass_marker_color));
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(measureWidth(widthMeasureSpec), measureHeight(heightMeasureSpec));
-    }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int radius = Math.min(getMeasuredWidth() / 2, getMeasuredHeight() / 2);
+        mMarkRect.left = 0;
+        mMarkRect.top = 0;
+        mMarkRect.right = 2 * radius;
+        mMarkRect.bottom = 2 * radius;
 
-    private int measureWidth(int measureSpec) {
-        int result = 0;
-        int specMode = MeasureSpec.getMode(measureSpec);
-        int specSize = MeasureSpec.getSize(measureSpec);
-
-        int minWidth = (int) Math.floor(50 * getResources().getDisplayMetrics().density);
-
-        if (specMode == MeasureSpec.EXACTLY) {
-            result = specSize;
-
-        } else {
-            result = minWidth + getPaddingLeft() + getPaddingRight();
-            if (specMode == MeasureSpec.AT_MOST) {
-                result = Math.min(result, specSize);
-            }
-        }
-
-        return result;
-    }
-
-    private int measureHeight(int measureSpec) {
-        int result = 0;
-        int specMode = MeasureSpec.getMode(measureSpec);
-        int specSize = MeasureSpec.getSize(measureSpec);
-
-        int minHeight = (int) Math.floor(30 * getResources().getDisplayMetrics().density);
-
-        if (specMode == MeasureSpec.EXACTLY) {
-            result = specSize;
-
-        } else {
-            result = minHeight + getPaddingTop() + getPaddingBottom();
-            if (specMode == MeasureSpec.AT_MOST) {
-                result = Math.min(result, specSize);
-            }
-        }
-        return result;
+        mPointerRect.left = radius - POINTER_LENGTH;
+        mPointerRect.top = radius - POINTER_LENGTH;
+        mPointerRect.right = radius + POINTER_LENGTH;
+        mPointerRect.bottom = radius + POINTER_LENGTH;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        int mMeasuredWidth = getMeasuredWidth();
+        int mMeasuredHeight = getMeasuredHeight();
 
-        mTextPaint.setColor(mTextColor);
-        mTextPaint.setTextSize(mTextSize);
+        int px = mMeasuredWidth / 2;
+        int py = mMeasuredHeight / 2;
 
-        mMainLinePaint.setColor(mLineColor);
-        mSecondaryLinePaint.setColor(mLineColor);
-        mTerciaryLinePaint.setColor(mLineColor);
+        int radius = Math.min(px, py);
 
-        mMarkerPaint.setColor(mMarkerColor);
+        canvas.drawCircle(px, py, radius, bgPaint);
 
-        canvas.drawColor(mBackgroundColor);
+        for (int i = 0; i < 360; i += MIN_MARK_DEGREE) {
+            if (i % TEXT_MARK_DEGREE == 0) {
+                canvas.drawArc(mMarkRect, i, 1f, true, markerPaint);
+            } else {
+                canvas.drawArc(mMarkRect, i, 0.1f, true, markerPaint);
+            }
+        }
 
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
+        canvas.drawCircle(px, py, radius - MARK_LENGTH, bgPaint);
 
-        int paddingTop = getPaddingTop();
-        int paddingBottom = getPaddingBottom();
-        int paddingLeft = getPaddingLeft();
-        int paddingRight = getPaddingRight();
-
-        int unitHeight = (height - paddingTop - paddingBottom) / 12;
-
-        float pixDeg = (width - paddingLeft - paddingRight) / mRangeDegrees;
-
-        int minDegrees = Math.round(mDegrees - mRangeDegrees / 2), maxDegrees = Math.round(mDegrees
-                + mRangeDegrees / 2);
-
-        for (int i = -180; i < 540; i += 15) {
-            if ((i >= minDegrees) && (i <= maxDegrees)) {
-                canvas.drawLine(paddingLeft + pixDeg * (i - minDegrees), height - paddingBottom,
-                        paddingLeft + pixDeg * (i - minDegrees), 10 * unitHeight + paddingTop,
-                        mTerciaryLinePaint);
-
-                if (i % 45 == 0) {
-                    canvas.drawLine(paddingLeft + pixDeg * (i - minDegrees),
-                            height - paddingBottom, paddingLeft + pixDeg * (i - minDegrees),
-                            8 * unitHeight + paddingTop, mSecondaryLinePaint);
+        for (int i = 0; i < 360; i += TEXT_MARK_DEGREE) {
+            String text = i + "°";
+            float textWidth = textPaint.measureText(text);
+            switch (i) {
+                case 0:
+                {
+                    canvas.drawText(text, px - textWidth / 2, MARK_LENGTH + textHeight / 2, textPaint);
+                    break;
                 }
-
-                if (i % 90 == 0) {
-                    canvas.drawLine(paddingLeft + pixDeg * (i - minDegrees),
-                            height - paddingBottom, paddingLeft + pixDeg * (i - minDegrees),
-                            6 * unitHeight + paddingTop, mMainLinePaint);
-
-                    String coord = "";
-                    switch (i) {
-                        case -90:
-                        case 270:
-                            coord = getResources().getString(R.string.compass_west);
-                            break;
-
-                        case 0:
-                        case 360:
-                            coord = getResources().getString(R.string.compass_north);
-                            break;
-
-                        case 90:
-                        case 450:
-                            coord = getResources().getString(R.string.compass_east);
-                            break;
-
-                        case -180:
-                        case 180:
-                            coord = getResources().getString(R.string.compass_south);
-                            break;
-                    }
-
-                    canvas.drawText(coord, paddingLeft + pixDeg * (i - minDegrees), 5 * unitHeight
-                            + paddingTop, mTextPaint);
+                case 90:
+                {
+                    canvas.drawText(text, mMeasuredWidth - textWidth - MARK_LENGTH, py + textHeight / 2, textPaint);
+                    break;
                 }
-            }
-        }
-
-        if (mShowMarker) {
-            pathMarker.moveTo(width / 2, 3 * unitHeight + paddingTop);
-            pathMarker.lineTo((width / 2) + 20, paddingTop);
-            pathMarker.lineTo((width / 2) - 20, paddingTop);
-            pathMarker.close();
-            canvas.drawPath(pathMarker, mMarkerPaint);
-        }
-    }
-
-    public void setDegrees(float degrees) {
-        if ((mDegrees < 0) || (mDegrees >= 360))
-            throw new IndexOutOfBoundsException(getResources()
-                    .getString(R.string.out_index_degrees) + mDegrees);
-
-        mDegrees = degrees;
-        invalidate();
-        requestLayout();
-    }
-
-    @Override
-    public void setBackgroundColor(int color) {
-        mBackgroundColor = color;
-        invalidate();
-        requestLayout();
-    }
-
-    public void setLineColor(int color) {
-        mLineColor = color;
-        invalidate();
-        requestLayout();
-    }
-
-    public void setMarkerColor(int color) {
-        mMarkerColor = color;
-        invalidate();
-        requestLayout();
-    }
-
-    public void setTextColor(int color) {
-        mTextColor = color;
-        invalidate();
-        requestLayout();
-    }
-
-    public void setShowMarker(boolean show) {
-        mShowMarker = show;
-        invalidate();
-        requestLayout();
-    }
-
-    public void setTextSize(int size) {
-        mTextSize = size;
-        invalidate();
-        requestLayout();
-    }
-
-    public void setRangeDegrees(float range) {
-        if ((mRangeDegrees < 90) || (mRangeDegrees > 360))
-            throw new IndexOutOfBoundsException(getResources().getString(
-                    R.string.out_index_range_degrees)
-                    + mRangeDegrees);
-
-        mRangeDegrees = range;
-        invalidate();
-        requestLayout();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (mListener != null) {
-            boolean result = mDetector.onTouchEvent(event);
-            if (!result) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    result = true;
+                case 180:
+                {
+                    canvas.drawText(text, px - textWidth / 2, mMeasuredHeight - MARK_LENGTH, textPaint);
+                    break;
                 }
+                case 270:
+                {
+                    canvas.drawText(text, MARK_LENGTH, py + textHeight / 2, textPaint);
+                    break;
+                }
+                default:
+                    break;
             }
-            return result;
-        } else {
-            return true;
-        }
-    }
-
-    private class mGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
         }
 
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            mDegrees += distanceX / 5;
-            if (mDegrees < 0) {
-                mDegrees += 360;
-            } else if (mDegrees >= 360) {
-                mDegrees -= 360;
-            }
-
-            if (mListener != null) {
-                mListener.onCompassDragListener(mDegrees);
-            }
-
-            postInvalidate();
-            return true;
-        }
-    }
-
-    public void setOnCompassDragListener(OnCompassDragListener onCompassDragListener) {
-        this.mListener = onCompassDragListener;
+        canvas.drawArc(mPointerRect, bearing - 90, 2f, true, markerPaint);
     }
 }

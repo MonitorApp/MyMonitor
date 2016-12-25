@@ -21,6 +21,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         findViewById(R.id.tv_sgl_scan).setOnClickListener(this); //单频扫描
         findViewById(R.id.tv_midddle_analyse).setOnClickListener(this);
         findViewById(R.id.tv_band_scan).setOnClickListener(this);
+        findViewById(R.id.tv_df).setOnClickListener(this);
         findViewById(R.id.tv_discrete_scan).setOnClickListener(this);
         findViewById(R.id.tv_digit_scan).setOnClickListener(this);
         findViewById(R.id.tv_map).setOnClickListener(this);
@@ -44,6 +45,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.tv_band_scan:
                 intent.putExtra(MonitorCenterActivity.TAB, Tab.BAND_SCAN);
+                startActivity(intent);
+                break;
+            case R.id.tv_df:
+                intent.putExtra(MonitorCenterActivity.TAB, Tab.DF);
                 startActivity(intent);
                 break;
             case R.id.tv_discrete_scan:
