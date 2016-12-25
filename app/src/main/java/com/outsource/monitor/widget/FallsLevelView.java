@@ -43,12 +43,11 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
 
     private int mMarkTextHeight;
 
-    private static final int FALL_COUNT = 50;//最大显示的横线数量
-    private static final long FALL_YAXIS_UNIT = 1000;//瀑布图两行之间的最小时间间隔
+    public static final int FALL_COUNT = 50;//最大显示的横线数量
+    private static final long FALL_YAXIS_UNIT = 50;//瀑布图两行之间的最小时间间隔
     private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private FallRow mAverageFallRow;
-    private long lastFallTime;
     private int averageCount;//当前的平均值是由多少条数据算出来的
     private float span;//跨距
     private float frequency;
@@ -65,25 +64,20 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
 
     @Override
     void drawCanvas(Canvas canvas) {
-        float lastY = 0;
+        int rowCount = mFallRows.size();
+        int index = 0;
         for (FallRow row : mFallRows) {
-            float y = LINE_HEIGHT * (float) (System.currentTimeMillis() - row.timestamp) / FALL_YAXIS_UNIT;
+            float y = LINE_HEIGHT * (rowCount - index - 1);
             List<Float> levels = row.mValues;
             int size = levels.size();
             int start = Y_AXIS_WIDTH;
             float distance = chartWidth / (float) size;
-            y = Math.min(y, mHeight - X_AXIS_HEIGHT - distance);
-            float gap = y - lastY - mLevelPaint.getStrokeWidth();
-            if (gap > 0 && gap < LINE_HEIGHT) {//去掉中间的细微间隙
-                y -= gap;
-                mLevelPaint.setStrokeWidth(LINE_HEIGHT + gap);
-            }
-            lastY = y;
             for (Float level : levels) {
                 mLevelPaint.setColor(Utils.level2Color(level));
                 canvas.drawLine(start, y, start + distance, y, mLevelPaint);
                 start += distance;
             }
+            index++;
         }
 
         canvas.drawLine(Y_AXIS_WIDTH - DisplayUtils.dp2px(1), mHeight - X_AXIS_HEIGHT, mWidth, mHeight - X_AXIS_HEIGHT, mXyAxisPaint);//x轴刻度线
@@ -199,18 +193,10 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
     }
 
     private void addFallRow(FallRow averageFallRow) {
-//        if (Math.abs(averageFallRow.timestamp - lastFallTime - FALL_YAXIS_UNIT) < FALL_YAXIS_UNIT) {
-//            averageFallRow.timestamp = lastFallTime + FALL_YAXIS_UNIT;
-//        }
-//        averageFallRow.timestamp = (timestamp / FALL_YAXIS_UNIT) * FALL_YAXIS_UNIT;//去掉毫秒，防止出现2条数据在同一行的现象
         mFallRows.add(averageFallRow);
-        FallRow head = mFallRows.peek();
-        if (head != null) {
-            if (averageFallRow.timestamp - head.timestamp > FALL_COUNT * FALL_YAXIS_UNIT) {
-                mFallRows.poll();
-            }
+        if (mFallRows.size() > FALL_COUNT) {
+            mFallRows.poll();
         }
-        lastFallTime = averageFallRow.timestamp;
     }
 
     private void calcNewAverageRow(FallRow row) {
@@ -223,21 +209,6 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
                 avgLevels.set(i, resultLevel);
             } else {
                 avgLevels.add(row.mValues.get(i));
-            }
-        }
-    }
-
-    private void removeExpiredFallRows() {
-        long currentTime = System.currentTimeMillis();
-        FallRow head = mFallRows.peek();
-        if (head == null || (System.currentTimeMillis() - head.timestamp < FALL_COUNT * FALL_YAXIS_UNIT)) {
-            return;
-        }
-        Iterator<FallRow> iterator = mFallRows.iterator();
-        while (iterator.hasNext()) {
-            FallRow row = iterator.next();
-            if (currentTime - row.timestamp > FALL_COUNT * FALL_YAXIS_UNIT) {
-                iterator.remove();
             }
         }
     }
