@@ -28,7 +28,7 @@ public class MonitorSocketClient {
         String sr = null ;
         int pos = 0;
         try {
-            socket = new Socket("127.0.0.1", 5050);
+            socket = new Socket("127.0.0.1", 4050);
             socket.setSoTimeout(6 * 1000);
             // ��������
             ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
@@ -37,10 +37,10 @@ public class MonitorSocketClient {
             //中频分析
             //String cmd = "RMTP:IFANALYSIS:4403000100113:frequency:98.1MHz\nifbw:30kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
             //频段扫描
-            //String cmd = "RMTP:FSCAN:4403000100113:frequency:98.1MHz\nifbw:30kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
+            String cmd = "RMTP:FSCAN:4403000100113:frequency:98.1MHz\nifbw:30kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
 
             //单频测向
-            String cmd = "RMTP:DF:4403000100113:frequency:98.1MHz\nifbw:30kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
+            //String cmd = "RMTP:DF:4403000100113:frequency:98.1MHz\nifbw:30kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
 
             //String cmd = "RMTP:ALTER:frequency:98.1MHz\nifbw:30kHz\n#";
             bos.write(cmd.getBytes());
@@ -76,39 +76,39 @@ public class MonitorSocketClient {
 //                }
                 //中频分析 end
 
-                //频段扫描
-//                FscanParser48278 fsan =  FscanParser48278.TryParse(recvBuff, pos);
-//                if(fsan != null)
-//                {
-//                    if(fsan.m_dataHead != null)
-//                    {
-//                        System.out.println("Get Head data:" + fsan.m_dataHead.nFscanSegment);
-//                    }
-//
-//                    if(fsan.m_dataValue != null)
-//                    {
-//                        System.out.println("Get Value data:" + fsan.m_dataValue.dataNum+" valuelen:" +fsan.m_dataValue.values.size());
-//                    }
+                频段扫描
+                FscanParser48278 fsan =  FscanParser48278.TryParse(recvBuff, pos);
+                if(fsan != null)
+                {
+                    if(fsan.m_dataHead != null)
+                    {
+                        System.out.println("Get Head data:" + fsan.m_dataHead.nFscanSegment);
+                    }
+
+                    if(fsan.m_dataValue != null)
+                    {
+                        System.out.println("Get Value data:" + fsan.m_dataValue.dataNum+" valuelen:" +fsan.m_dataValue.values.size());
+                    }
 
                 //单频测向
-                DFParser48278 dfParser = DFParser48278.TryParse(recvBuff, pos);
-                parser = dfParser;
-                if(dfParser != null)
-                {
-                    if(dfParser.m_dataHead != null)
-                    {
-                        System.out.println("Get Head data:" + dfParser.m_dataHead.freq);
-                    }
-
-                    if(dfParser.m_dataValue != null)
-                    {
-                        System.out.println("Get Value data:" + dfParser.m_dataValue.value+" valuelen:" +dfParser.m_dataValue.dfValue);
-                    }
-                    //单频测向 end
-
-                    System.arraycopy(recvBuff, pos, recvBuff, 0, parser.byteLen);
-                    pos -= parser.byteLen;
-               }
+//                DFParser48278 dfParser = DFParser48278.TryParse(recvBuff, pos);
+//                parser = dfParser;
+//                if(dfParser != null)
+//                {
+//                    if(dfParser.m_dataHead != null)
+//                    {
+//                        System.out.println("Get Head data:" + dfParser.m_dataHead.freq);
+//                    }
+//
+//                    if(dfParser.m_dataValue != null)
+//                    {
+//                        System.out.println("Get Value data:" + dfParser.m_dataValue.value+" valuelen:" +dfParser.m_dataValue.dfValue);
+//                    }
+//                    //单频测向 end
+//
+//                    System.arraycopy(recvBuff, pos, recvBuff, 0, parser.byteLen);
+//                    pos -= parser.byteLen;
+//                }
                 //频段扫描 end
             }
 
