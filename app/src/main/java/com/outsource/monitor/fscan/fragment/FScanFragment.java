@@ -1,4 +1,4 @@
-package com.outsource.monitor.ifpan.fragment;
+package com.outsource.monitor.fscan.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,12 +8,14 @@ import android.view.View;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
+import com.outsource.monitor.fscan.event.FscanParamsChangeEvent;
+import com.outsource.monitor.fscan.model.FscanParam;
 import com.outsource.monitor.ifpan.model.IfpanParam;
-import com.outsource.monitor.ifpan.event.IfpanParamsChangeEvent;
 import com.outsource.monitor.parser.Command;
+import com.outsource.monitor.parser.FscanParser48278;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
-import com.outsource.monitor.service.IfpanDataReceiver;
+import com.outsource.monitor.service.FscanDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
@@ -26,19 +28,19 @@ import org.greenrobot.eventbus.ThreadMode;
  * Created by xionghao on 2016/12/17.
  */
 
-public class IfpanFragment extends BaseMonitorFragment {
+public class FscanFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
-    public IfpanParam mIfpanParam;
+    public FscanParam mParam;
 
     @Override
     public Fragment createContentFragment() {
-        return ContentFragmentIfpan.newInstance();
+        return ContentFragmentFscan.newInstance();
     }
 
     @Override
     public Fragment createMenuFragment() {
-        return MenuFragmentIfpan.newInstance();
+        return MenuFragmentFscan.newInstance();
     }
 
     @Override
@@ -46,18 +48,18 @@ public class IfpanFragment extends BaseMonitorFragment {
         return Tab.IFPAN;
     }
 
-    public IfpanFragment() {
+    public FscanFragment() {
         super();
     }
 
-    public static IfpanFragment newInstance() {
-        return new IfpanFragment();
+    public static FscanFragment newInstance() {
+        return new FscanFragment();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mIfpanParam = IfpanParam.loadFromCache();
+        mParam = FscanParam.loadFromCache();
         initService();
         EventBus.getDefault().register(this);
     }
@@ -67,16 +69,16 @@ public class IfpanFragment extends BaseMonitorFragment {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
-                service.addIfpanDataReceiver((IfpanDataReceiver) mContentFragment);
-                service.addIfpanDataReceiver((IfpanDataReceiver) mMenuFragment);
+                service.addFscanDataReceiver((FscanDataReceiver) mContentFragment);
+                service.addFscanDataReceiver((FscanDataReceiver) mMenuFragment);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);
                 int port = PreferenceUtils.getInt(PreferenceKey.DEVICE_PORT);
                 service.connect(ip, port, new ConnectCallback() {
                     @Override
                     public void onConnectSuccess() {
-                        String format = "RMTP:IFANALYSIS:4403000100113:frequency:%.1fMHz\nifbw:%dkHz\nspan:%dkHz\nrecordthreshold:=40\ndemodmode:FM\n#";
-                        String cmd = String.format(format, mIfpanParam.frequency, mIfpanParam.band, mIfpanParam.span);
-                        Command command = new Command(cmd, Command.Type.IFPAN);
+                        String cmd = "\"RMTP:FSCAN:4403000100113:frequency:98.1MHz\\nifbw:30kHz\\nspan:15kHz\\nrecordthreshold:=40\\ndemodmode:FM\\n#\";";
+//                        String cmd = String.format(format, mIfpanParam.frequency, mIfpanParam.band, mIfpanParam.span);
+                        Command command = new Command(cmd, Command.Type.FSCAN);
                         service.sendCommand(command);
                     }
 
@@ -90,9 +92,9 @@ public class IfpanFragment extends BaseMonitorFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIfpanParamChanged(IfpanParamsChangeEvent event) {
+    public void onFscanParamChanged(FscanParamsChangeEvent event) {
         mServiceHelper.release();
-        mIfpanParam = event.param;
+        mParam = event.param;
         initService();
     }
 

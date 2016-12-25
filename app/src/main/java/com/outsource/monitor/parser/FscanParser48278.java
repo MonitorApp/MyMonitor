@@ -28,7 +28,7 @@ public class FscanParser48278 extends  ParserBase48278
     {
         public int dataNum; //数据个数
         public long startFreq;  //起始电频
-        public ArrayList<Short> values = new ArrayList<>(); //实际电频*100
+        public ArrayList<Float> values = new ArrayList<>(); //实际电频*100
     }
 
     public DataHead m_dataHead;
@@ -62,7 +62,7 @@ public class FscanParser48278 extends  ParserBase48278
         int i;
         for(i=0; i<m_dataValue.dataNum; ++i)
         {
-            m_dataValue.values.add(byteArray.getShort());
+            m_dataValue.values.add(byteArray.getShort() / 100f);
         }
     }
 

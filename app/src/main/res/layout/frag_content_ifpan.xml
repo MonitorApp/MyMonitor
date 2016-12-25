@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="8dp"
+            android:textSize="15sp"
+            android:textColor="@color/text_color_ccc"
+            android:text="中频分析"/>
+
+        <TextView
+            android:id="@+id/tv_ifpan_current_frequency_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_color_999"
+            android:text="频率：0.0MHz，电平：0.0dBpV"/>
+
+        <TextView
+            android:id="@+id/tv_ifpan_analyse_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_color_999"
+            android:text="峰值：0.0MHz，0.0dBpV，△f:0.0kHz"/>
+
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/chart_middle_frequency_analyse"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:orientation="horizontal">
+
+            <com.outsource.monitor.widget.PaletteView
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"/>
+
+            <com.outsource.monitor.widget.FallsLevelView
+                android:id="@+id/fall_middle_frequency_analyse"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

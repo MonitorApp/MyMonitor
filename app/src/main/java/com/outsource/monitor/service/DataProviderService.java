@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.outsource.monitor.parser.Command;
-import com.outsource.monitor.utils.LogUtils;
 
 /**
  * Created by Administrator on 2016/10/2.
@@ -72,12 +71,8 @@ public class DataProviderService extends Service {
             mThread.addIfpanDataReceiver(receiver);
         }
 
-        public void setFrequencyRange(float min, float max) {
-            mThread.setFrequencyRange(min, max);
-        }
-
-        public void setLevelRange(float min, float max) {
-            mThread.setLevelRange(min, max);
+        public void addFscanDataReceiver(FscanDataReceiver receiver) {
+            mThread.addFscanDataReceiver(receiver);
         }
 
         public void connect(String ip, int port, ConnectCallback callback) {

@@ -47,7 +47,7 @@ public class IfpanParser48278 extends  ParserBase48278
         while (byteArray.getPostion() < m_frameDataLen + 4)    //head "FFFFFFFF"
         {
             short data = byteArray.getShort();
-            m_dataValue.levelList.add((float) data / 100);
+            m_dataValue.levelList.add(data / 100f);
         }
     }
 

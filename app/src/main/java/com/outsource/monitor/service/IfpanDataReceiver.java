@@ -10,8 +10,8 @@ import java.util.List;
  * Created by Administrator on 2016/10/2.
  */
 public interface IfpanDataReceiver {
-    //单频测量接收到itu数据
+    //中频分析接收到数据
     void onReceiveIfpanData(IfpanParser48278.DataValue ifpanData);
-    //单频测量接收到itu描述头
-    void onReceiveIfpanHead(IfpanParser48278.DataHead ifpanHeads);
+    //中频分析接收到描述头
+    void onReceiveIfpanHead(IfpanParser48278.DataHead ifpanHead);
 }

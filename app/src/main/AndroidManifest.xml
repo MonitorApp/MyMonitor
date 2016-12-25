@@ -32,14 +32,11 @@
 
         </activity>
 
-        <activity android:name=".activity.BandScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.DiscreteScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.DigitScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.RecordActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.AboutActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.OptionActivity" android:screenOrientation="landscape" android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity android:name=".mpchart.MPBandScanActivity" android:screenOrientation="landscape"/>
-        <activity android:name=".mpchart.MPSingleFrequencyMeasureActivity" android:screenOrientation="landscape"/>
         <activity android:name=".activity.MonitorCenterActivity" android:screenOrientation="landscape" android:theme="@style/AppTheme.FullScreen"/>
         <service android:name=".service.DataProviderService" android:exported="false"/>
 

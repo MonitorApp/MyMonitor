@@ -123,4 +123,8 @@ public class DisplayUtils {
     public static float toDisplayFrequency(long realFrequency) {
         return  realFrequency / 1000000f;
     }
+
+    public static float toDisplayStep(long step) {
+        return step / 1000f;
+    }
 }

@@ -6,9 +6,9 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import com.outsource.monitor.parser.Command;
+import com.outsource.monitor.parser.FscanParser48278;
 import com.outsource.monitor.parser.IfpanParser48278;
 import com.outsource.monitor.parser.ItuParser48278;
-import com.outsource.monitor.singlefrequency.model.ItuHead;
 import com.outsource.monitor.utils.PromptUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -21,7 +21,6 @@ import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -33,12 +32,7 @@ public class SocketThread extends Thread {
     private List<DataReceiver> mDataReceivers = new ArrayList<>(0);
     private List<ItuDataReceiver> mItuDataReceivers = new ArrayList<>(0);
     private List<IfpanDataReceiver> mIfpanDataReceivers = new ArrayList<>(0);
-    private float minFrequency;
-    private float maxFrequency;
-    private float frequencyRange;
-    private float minLevel;
-    private float maxLevel;
-    private float levelRange;
+    private List<FscanDataReceiver> mFScanDataReceivers = new ArrayList<>(0);
     private Socket mSocket;
     private Handler mUiHandler;
     private AtomicReference<Command> mCommand = new AtomicReference<>();
@@ -64,6 +58,12 @@ public class SocketThread extends Thread {
     public void addIfpanDataReceiver(IfpanDataReceiver receiver) {
         if (receiver != null) {
             mIfpanDataReceivers.add(receiver);
+        }
+    }
+
+    public void addFscanDataReceiver(FscanDataReceiver receiver) {
+        if (receiver != null) {
+            mFScanDataReceivers.add(receiver);
         }
     }
 
@@ -203,6 +203,16 @@ public class SocketThread extends Thread {
                                 }
                             }
                                 break;
+                            case FSCAN:
+                            {
+                                FscanParser48278 data = FscanParser48278.TryParse(buffer, byteOffset);
+                                if (data != null) {
+                                    System.arraycopy(buffer, data.byteLen, buffer, 0, buffer.length - data.byteLen);
+                                    byteOffset -= data.byteLen;
+                                    onFScanDataReceived(data);
+                                }
+                            }
+                            break;
                             default:
                                 break;
                         }
@@ -276,36 +286,26 @@ public class SocketThread extends Thread {
         }
     }
 
-    private List<ItuHead> mockItuHeads() {
-        List<ItuHead> heads = new ArrayList<>(3);
-        heads.add(new ItuHead("电平", "dbUv", -40f));
-        heads.add(new ItuHead("实时频率", "MHz", -20f));
-        heads.add(new ItuHead("频差", "kHz", -30f));
-        return heads;
-    }
-
-    private float[] mockItuData() {
-        float level = minLevel + new Random().nextInt((int) levelRange);
-        return new float[]{level, level, level};
-    }
-
-    private float randomLevel() {
-        return minLevel + new Random().nextInt((int) levelRange);
-    }
-
-    private float randomFrequency() {
-        return minFrequency + new Random().nextInt((int) frequencyRange);
-    }
-
-    public void setFrequencyRange(float min, float max) {
-        this.minFrequency = min;
-        this.maxFrequency = max;
-        frequencyRange = max - min;
-    }
-
-    public void setLevelRange(float min, float max) {
-        this.minLevel = min;
-        this.maxLevel = max;
-        levelRange = max - min;
+    private void onFScanDataReceived(FscanParser48278 data) {
+        switch (data.m_frameType) {
+            case FscanParser48278.FRAME_TYPE_HEAD:
+                if (data.m_dataHead != null) {
+                    for (FscanDataReceiver receiver : mFScanDataReceivers) {
+                        receiver.onReceiveFScanHead(data.m_dataHead);
+                    }
+                }
+                break;
+            case FscanParser48278.FRAME_TYPE_INFO:
+                break;
+            case FscanParser48278.FRAME_TYPE_DATA:
+                if (data.m_dataValue != null) {
+                    for (FscanDataReceiver receiver : mFScanDataReceivers) {
+                        receiver.onReceiveFScanData(data.m_dataValue);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
