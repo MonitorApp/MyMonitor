@@ -44,8 +44,8 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
     private boolean isPlay = false;
 
     private TextView mTvFrequency;
+    private TextView mTvAngle;
     private CompassView mCompassView;
-
 
     private Handler mRefreshHandler = new Handler() {
 
@@ -54,7 +54,9 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
             if (msg.what == MSG_ID_REFRESH_COMPASS) {
                 if (isPlay) {
                     if (mCurrentData.get() != null) {
-                        mCompassView.setBearing(mCurrentData.get().pitchAngle);
+                        float angle = mCurrentData.get().pitchAngle;
+                        mCompassView.setBearing(angle);
+                        mTvAngle.setText(String.format("角度：%.1f°", angle));
                     }
                 }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_COMPASS, REFRESH_CHART_INTERVAL);
@@ -93,6 +95,7 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_content_df, null);
         mTvFrequency = (TextView) view.findViewById(R.id.tv_df_frequency);
+        mTvAngle = (TextView) view.findViewById(R.id.tv_df_angle);
         mCompassView = (CompassView) view.findViewById(R.id.df_compassView);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_COMPASS, 500);
 
