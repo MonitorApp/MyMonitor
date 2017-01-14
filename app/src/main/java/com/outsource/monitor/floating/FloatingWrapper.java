@@ -19,7 +19,7 @@ import com.outsource.monitor.utils.DisplayUtils;
 /**
  * Created by hao.xiong on 2016/6/24.
  */
-public class FloatingViewWrapper extends FrameLayout {
+public class FloatingWrapper extends FrameLayout {
 
     private static final long HIDE_DURATION = 2000;
     private WindowManager mWindowManager;
@@ -32,37 +32,35 @@ public class FloatingViewWrapper extends FrameLayout {
     private int mTouchDownPosY;
     private boolean mIsMoveAccept;
     private long mTouchDownTime;
+    private boolean isAttachToWindow = false;
 
     private Handler mAutoHideHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (isFloatingViewExpanded()) {
-                return;
-            }
             int viewWidth = getMeasuredWidth();
             int viewHeight = getMeasuredHeight();
             if (mParams.x == 0) {
                 mParams.x -= viewWidth / 2;
-                mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
             } else if (mParams.x == DisplayUtils.getScreenWidth() - viewWidth) {
                 mParams.x += viewWidth / 2;
-                mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
             } else if (mParams.y == 0) {
                 mParams.y -= viewHeight / 2;
-                mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
             } else if (mParams.y == DisplayUtils.getScreenHeight() - viewHeight) {
                 mParams.y += viewHeight / 2;
-                mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
             }
         }
     };
 
-    public FloatingViewWrapper(Context context) {
+    public FloatingWrapper(Context context) {
         super(context);
         init(context);
     }
 
-    public FloatingViewWrapper(Context context, AttributeSet attrs) {
+    public FloatingWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
@@ -136,28 +134,17 @@ public class FloatingViewWrapper extends FrameLayout {
         if (isShouldHide()) {
             mAutoHideHandler.sendEmptyMessageDelayed(0, HIDE_DURATION);
         }
+        isAttachToWindow = true;
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mAutoHideHandler.removeMessages(0);
-    }
-
-    private boolean isFloatingViewExpanded() {
-        if (getChildCount() > 0) {
-            FloatingBall floatingBall = (FloatingBall) getChildAt(0);
-            if (floatingBall.isExpanded()) {
-                return true;
-            }
-        }
-        return false;
+        isAttachToWindow = false;
     }
 
     private boolean isShouldHide() {
-        if (isFloatingViewExpanded()) {
-            return false;
-        }
         int viewWidth = getMeasuredWidth();
         int viewHeight = getMeasuredHeight();
         return mParams.x == 0 || mParams.y == 0 || mParams.x == DisplayUtils.getScreenWidth() - viewWidth || mParams.y == DisplayUtils.getScreenHeight() - viewHeight;
@@ -168,16 +155,20 @@ public class FloatingViewWrapper extends FrameLayout {
         int viewHeight = getMeasuredHeight();
         if (mParams.x < 0) {
             mParams.x = 0;
-            mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+            mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
         } else if (mParams.x > DisplayUtils.getScreenWidth() - viewWidth) {
             mParams.x = DisplayUtils.getScreenWidth() - viewWidth;
-            mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+            mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
         } else if (mParams.y < 0) {
             mParams.y = 0;
-            mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+            mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
         } else if (mParams.y > DisplayUtils.getScreenHeight() - viewHeight) {
             mParams.y = DisplayUtils.getScreenHeight() - viewHeight;
-            mWindowManager.updateViewLayout(FloatingViewWrapper.this, mParams);
+            mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
         }
+    }
+
+    public boolean isAttachToWindow() {
+        return isAttachToWindow;
     }
 }

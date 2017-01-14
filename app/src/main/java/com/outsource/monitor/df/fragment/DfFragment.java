@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.df.event.DfParamChangeEvent;
@@ -13,8 +14,7 @@ import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
-import com.outsource.monitor.service.DfDataReceiver;
-import com.outsource.monitor.service.FscanDataReceiver;
+import com.outsource.monitor.df.DfDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
@@ -68,6 +68,9 @@ public class DfFragment extends BaseMonitorFragment {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
+                if (getActivity() != null) {
+                    service.addDfDataReceiver(((MonitorCenterActivity) getActivity()).getMapFragment());
+                }
                 service.addDfDataReceiver((DfDataReceiver) mContentFragment);
                 service.addDfDataReceiver((DfDataReceiver) mMenuFragment);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);

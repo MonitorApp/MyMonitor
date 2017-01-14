@@ -127,4 +127,8 @@ public class DisplayUtils {
     public static float toDisplayStep(long step) {
         return step / 1000f;
     }
+
+    public static String toDisplayLevel(float level) {
+        return String.format("%.1fdpUv", level);
+    }
 }

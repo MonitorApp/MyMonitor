@@ -20,7 +20,7 @@ import com.outsource.monitor.event.PlayBallStateEvent;
 import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.fscan.model.FscanParam;
 import com.outsource.monitor.parser.DFParser48278;
-import com.outsource.monitor.service.DfDataReceiver;
+import com.outsource.monitor.df.DfDataReceiver;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.PromptUtils;

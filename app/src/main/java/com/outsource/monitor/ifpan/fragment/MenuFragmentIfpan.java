@@ -13,7 +13,7 @@ import com.outsource.monitor.R;
 import com.outsource.monitor.ifpan.model.IfpanParam;
 import com.outsource.monitor.ifpan.event.IfpanParamsChangeEvent;
 import com.outsource.monitor.parser.IfpanParser48278;
-import com.outsource.monitor.service.IfpanDataReceiver;
+import com.outsource.monitor.ifpan.IfpanDataReceiver;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.PromptUtils;
 

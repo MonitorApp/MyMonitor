@@ -1,10 +1,9 @@
 package com.outsource.monitor.activity;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
-import android.view.WindowManager;
+import android.view.View;
+import android.widget.Button;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.outsource.monitor.R;
@@ -13,12 +12,13 @@ import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.df.fragment.DfFragment;
 import com.outsource.monitor.floating.FloatingBall;
-import com.outsource.monitor.floating.FloatingViewWrapper;
+import com.outsource.monitor.floating.FloatingManager;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fragment.TabMenuFragment;
 import com.outsource.monitor.fscan.fragment.FscanFragment;
 import com.outsource.monitor.ifpan.fragment.IfpanFragment;
 import com.outsource.monitor.itu.fragment.ItuFragment;
+import com.outsource.monitor.map.MapFragment;
 import com.outsource.monitor.utils.DisplayUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -34,7 +34,8 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     public static final String TAB = "tab";
     private BaseMonitorFragment mCurrentFragment;
     private Tab mCurrentTab = Tab.ITU;
-    private FloatingViewWrapper mFloatingViewWrapper;
+    private MapFragment mMapFragment;
+    private Button mBtnSwitch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,20 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
         mCurrentFragment = createContentFragment(mCurrentTab);
         fragmentManager.beginTransaction().add(R.id.fl_monitor_container, mCurrentFragment).commitAllowingStateLoss();
 
+        mMapFragment = MapFragment.newInstance();
+        fragmentManager.beginTransaction().add(R.id.fl_map_container, mMapFragment).hide(mMapFragment).commitAllowingStateLoss();
+        mBtnSwitch = (Button) findViewById(R.id.btn_map_switch);
+        mBtnSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMapFragment.isVisible()) {
+                    hideMapFragment();
+                } else {
+                    showMapFragment();
+                }
+            }
+        });
+
         EventBus.getDefault().register(this);
     }
 
@@ -68,29 +83,10 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
-            inflateFloatingBall();
+            FloatingManager.getInstance().show();
+        } else {
+            FloatingManager.getInstance().hide();
         }
-    }
-
-    private void inflateFloatingBall() {
-        IBinder token = getWindow().getDecorView().getWindowToken();
-        if (token == null) {
-           return;
-        }
-        if (mFloatingViewWrapper == null) {
-            FloatingBall floatingBall = new FloatingBall(this);
-            mFloatingViewWrapper = new FloatingViewWrapper(this);
-            mFloatingViewWrapper.addViewToWindow(floatingBall);
-        }
-    }
-
-    @Override
-    public void finish() {
-        if (mFloatingViewWrapper != null) {
-            WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-            windowManager.removeViewImmediate(mFloatingViewWrapper);
-        }
-        super.finish();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -134,10 +130,24 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     }
 
     public boolean isPlaying() {
-        if (mFloatingViewWrapper != null && mFloatingViewWrapper.getChildCount() > 0) {
-            FloatingBall floatingBall = (FloatingBall) mFloatingViewWrapper.getChildAt(0);
+        FloatingBall floatingBall = (FloatingBall) FloatingManager.getInstance().getFloatingView();
+        if (floatingBall != null) {
             return floatingBall.isPlaying();
         }
         return false;
     }
-}
+
+    public MapFragment getMapFragment() {
+        return mMapFragment;
+    }
+
+    private void showMapFragment() {
+        mBtnSwitch.setText("地图模式");
+        getSupportFragmentManager().beginTransaction().show(mMapFragment).commitAllowingStateLoss();
+    }
+
+    private void hideMapFragment() {
+        mBtnSwitch.setText("图表模式");
+        getSupportFragmentManager().beginTransaction().hide(mMapFragment).commitAllowingStateLoss();
+    }
+ }

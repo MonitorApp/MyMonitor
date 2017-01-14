@@ -5,6 +5,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.outsource.monitor.df.DfDataReceiver;
+import com.outsource.monitor.fscan.FscanDataReceiver;
+import com.outsource.monitor.ifpan.IfpanDataReceiver;
+import com.outsource.monitor.itu.ItuDataReceiver;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.parser.DFParser48278;
 import com.outsource.monitor.parser.FscanParser48278;

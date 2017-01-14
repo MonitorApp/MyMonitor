@@ -5,17 +5,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fscan.event.FscanParamsChangeEvent;
 import com.outsource.monitor.fscan.model.FscanParam;
-import com.outsource.monitor.ifpan.model.IfpanParam;
 import com.outsource.monitor.parser.Command;
-import com.outsource.monitor.parser.FscanParser48278;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
-import com.outsource.monitor.service.FscanDataReceiver;
+import com.outsource.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
@@ -69,6 +68,9 @@ public class FscanFragment extends BaseMonitorFragment {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
+                if (getActivity() != null) {
+                    service.addFscanDataReceiver(((MonitorCenterActivity) getActivity()).getMapFragment());
+                }
                 service.addFscanDataReceiver((FscanDataReceiver) mContentFragment);
                 service.addFscanDataReceiver((FscanDataReceiver) mMenuFragment);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);

@@ -60,6 +60,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 startActivity(intent);
                 break;
             case R.id.tv_map:
+                startActivity(new Intent(MainActivity.this, MapActivity.class));
                 break;
             case R.id.tv_record:
                 startActivity(new Intent(MainActivity.this, RecordActivity.class));

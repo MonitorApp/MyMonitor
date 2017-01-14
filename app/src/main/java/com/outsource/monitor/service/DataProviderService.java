@@ -6,6 +6,10 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.outsource.monitor.df.DfDataReceiver;
+import com.outsource.monitor.fscan.FscanDataReceiver;
+import com.outsource.monitor.ifpan.IfpanDataReceiver;
+import com.outsource.monitor.itu.ItuDataReceiver;
 import com.outsource.monitor.parser.Command;
 
 /**

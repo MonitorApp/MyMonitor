@@ -1,4 +1,4 @@
-package com.outsource.monitor.service;
+package com.outsource.monitor.fscan;
 
 import com.outsource.monitor.parser.FscanParser48278;
 

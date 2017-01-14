@@ -5,13 +5,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
-import com.outsource.monitor.service.ItuDataReceiver;
+import com.outsource.monitor.itu.ItuDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
 import com.outsource.monitor.itu.event.ItuParamChangeEvent;
 import com.outsource.monitor.itu.model.SingleFrequencyParam;
@@ -67,6 +68,9 @@ public class ItuFragment extends BaseMonitorFragment {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
+                if (getActivity() != null) {
+                    service.addItuDataReceiver(((MonitorCenterActivity) getActivity()).getMapFragment());
+                }
                 service.addItuDataReceiver((ItuDataReceiver) mContentFragment);
                 service.addItuDataReceiver((ItuDataReceiver) mMenuFragment);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);

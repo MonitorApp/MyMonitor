@@ -34,7 +34,7 @@ import com.outsource.monitor.ifpan.chartformatter.IFPANXAxisValueFormatter;
 import com.outsource.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.ifpan.model.IfpanParam;
 import com.outsource.monitor.parser.IfpanParser48278;
-import com.outsource.monitor.service.IfpanDataReceiver;
+import com.outsource.monitor.ifpan.IfpanDataReceiver;
 import com.outsource.monitor.itu.chartformatter.ITUYAxisValueFormatter;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;

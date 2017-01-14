@@ -13,7 +13,7 @@ import com.outsource.monitor.R;
 import com.outsource.monitor.fscan.event.FscanParamsChangeEvent;
 import com.outsource.monitor.fscan.model.FscanParam;
 import com.outsource.monitor.parser.FscanParser48278;
-import com.outsource.monitor.service.FscanDataReceiver;
+import com.outsource.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.PromptUtils;
 

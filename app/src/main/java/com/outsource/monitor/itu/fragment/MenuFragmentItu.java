@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.parser.ItuParser48278;
-import com.outsource.monitor.service.ItuDataReceiver;
+import com.outsource.monitor.itu.ItuDataReceiver;
 import com.outsource.monitor.itu.event.ItuParamChangeEvent;
 import com.outsource.monitor.itu.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.PromptUtils;

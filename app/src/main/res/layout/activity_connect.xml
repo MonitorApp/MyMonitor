@@ -15,6 +15,11 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".activity.ConnectActivity">
 
+        <TextView
+            android:id="@+id/text_Info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"

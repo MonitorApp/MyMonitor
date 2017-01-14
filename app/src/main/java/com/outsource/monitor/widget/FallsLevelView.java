@@ -8,9 +8,8 @@ import android.util.AttributeSet;
 
 import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.ifpan.model.FallRow;
-import com.outsource.monitor.model.FrequencyLevel;
 import com.outsource.monitor.parser.IfpanParser48278;
-import com.outsource.monitor.service.IfpanDataReceiver;
+import com.outsource.monitor.ifpan.IfpanDataReceiver;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
@@ -20,7 +19,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

@@ -1,4 +1,4 @@
-package com.outsource.monitor.service;
+package com.outsource.monitor.df;
 
 import com.outsource.monitor.parser.DFParser48278;
 
