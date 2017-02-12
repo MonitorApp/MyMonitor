@@ -53,6 +53,7 @@ import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.PromptUtils;
+import com.outsource.monitor.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
 
         mMapView = (MapView) view.findViewById(R.id.map_view);
 
-        mLocationMockHandler.sendEmptyMessage(1);
+//        mLocationMockHandler.sendEmptyMessage(1);
 
         mBasePoi = new MyPoi();
         mBasePoi.longitude = 120.19;
@@ -98,20 +99,20 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
 
     private Handler mUIHandler = new Handler();
 
-    private Handler mLocationMockHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (getActivity() == null) return;
-            MyPoi newPoi = new MyPoi();
-            newPoi.latitude = mBasePoi.latitude + t * 0.0002;
-            newPoi.longitude = mBasePoi.longitude + t * 0.0001;
-            newPoi.level = mCurrentLevel;
-            t++;
-            mPois.add(newPoi);
-            refreshMapInfo();
-            sendEmptyMessageDelayed(1, 2000);
-        }
-    };
+//    private Handler mLocationMockHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            if (getActivity() == null) return;
+//            MyPoi newPoi = new MyPoi();
+//            newPoi.latitude = mBasePoi.latitude + t * 0.0002;
+//            newPoi.longitude = mBasePoi.longitude + t * 0.0001;
+//            newPoi.level = mCurrentLevel;
+//            t++;
+//            mPois.add(newPoi);
+//            refreshMapInfo();
+//            sendEmptyMessageDelayed(1, 2000);
+//        }
+//    };
 
     private void startLocation() {
         LocationService locationService = LocationManager.getInstance(getActivity()).getLocationService();
@@ -207,7 +208,6 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
                 }
                 if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR ||
                         CollectionUtils.isEmpty(result.getRouteLines())) {
-                    PromptUtils.showToast("抱歉，未找到线路信息");
                     return;
                 }
 
@@ -278,22 +278,22 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
         public void onReceiveLocation(BDLocation location) {
             startLocation();
             if (null != location && location.getLocType() != BDLocation.TypeServerError) {
-//                MyPoi myPoi = new MyPoi();
-//                myPoi.latitude = location.getLatitude();
-//                myPoi.longitude = location.getLongitude();
-//                myPoi.level = mCurrentLevel;
-//                myPoi.timestamp = System.currentTimeMillis();
-//                if (mPois.size() == 0) {
-//                    mPois.add(myPoi);
-//                } else {
-//                    MyPoi lastPoi = mPois.get(mPois.size() - 1);
-//                    if (Utils.distance(myPoi.longitude, myPoi.latitude, lastPoi.longitude, lastPoi.latitude) >= MIN_DISTANCE) {
-//                        mPois.add(myPoi);
-//                    } else {
-//                        lastPoi.level = myPoi.level;
-//                    }
-//                }
-//                refreshMapInfo(mPois);
+                MyPoi myPoi = new MyPoi();
+                myPoi.latitude = location.getLatitude();
+                myPoi.longitude = location.getLongitude();
+                myPoi.level = mCurrentLevel;
+                myPoi.timestamp = System.currentTimeMillis();
+                if (mPois.size() == 0) {
+                    mPois.add(myPoi);
+                } else {
+                    MyPoi lastPoi = mPois.get(mPois.size() - 1);
+                    if (Utils.distance(myPoi.longitude, myPoi.latitude, lastPoi.longitude, lastPoi.latitude) >= MIN_DISTANCE) {
+                        mPois.add(myPoi);
+                    } else {
+                        lastPoi.level = myPoi.level;
+                    }
+                }
+                refreshMapInfo();
                 StringBuffer sb = new StringBuffer(256);
                 sb.append("time : ");
                 /**
