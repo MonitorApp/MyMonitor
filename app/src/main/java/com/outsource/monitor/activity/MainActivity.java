@@ -55,9 +55,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             if(checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
                 permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
             }
-//            if(checkSelfPermission(Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED){
-//                permissions.add(Manifest.permission.WRITE_SETTINGS);
-//            }
 			/*
 			 * 读写权限和电话状态权限非必要权限(建议授予)只会申请一次，用户同意或者禁止，只会弹一次
 			 */
