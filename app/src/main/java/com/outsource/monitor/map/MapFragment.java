@@ -64,6 +64,9 @@ import java.util.List;
 
 public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataReceiver, FscanDataReceiver, DfDataReceiver {
 
+    private static final int MIN_DISTANCE = 50;
+    private float mCurrentLevel;
+
     public static MapFragment newInstance() {
         return new MapFragment();
     }
@@ -93,6 +96,8 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
     private int t = 1;
     private boolean zoomed = false;
 
+    private Handler mUIHandler = new Handler();
+
     private Handler mLocationMockHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -100,10 +105,10 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
             MyPoi newPoi = new MyPoi();
             newPoi.latitude = mBasePoi.latitude + t * 0.0002;
             newPoi.longitude = mBasePoi.longitude + t * 0.0001;
-            newPoi.level = 40 + t;
+            newPoi.level = mCurrentLevel;
             t++;
             mPois.add(newPoi);
-            refreshMapInfo(mPois);
+            refreshMapInfo();
             sendEmptyMessageDelayed(1, 2000);
         }
     };
@@ -114,10 +119,20 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
         locationService.start();
     }
 
-    private void refreshMapInfo(List<MyPoi> pois) {
+    private void refreshMapInfo() {
         mMapView.getMap().clear();
         refreshMarkOverlays();
-        refreshDrivingRoute(pois);
+        refreshDrivingRoute();
+    }
+
+    private void clearMapInfo() {
+        mUIHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mPois.clear();
+                refreshMapInfo();
+            }
+        });
     }
 
     private void refreshMarkOverlays() {
@@ -156,25 +171,26 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
         }
     }
 
-    private void refreshDrivingRoute(final List<MyPoi> pois) {
-        if (pois.size() < 2) {
+    private void refreshDrivingRoute() {
+        if (mPois.size() == 0) return;
+        if (mPois.size() == 1) {
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (MyPoi poi : pois) {
+            for (MyPoi poi : mPois) {
                 builder.include(new LatLng(poi.latitude, poi.longitude));
             }
             mMapView.getMap().animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(builder.build()), 500);
             return;
         }
-        ArrayList<MyPoi> passByPoiList = new ArrayList<>(pois.size());
-        passByPoiList.addAll(pois);
+        ArrayList<MyPoi> passByPoiList = new ArrayList<>(mPois.size());
+        passByPoiList.addAll(mPois);
         passByPoiList.remove(0);
         passByPoiList.remove(passByPoiList.size() - 1);
         ArrayList<PlanNode> passByPlanNodes = new ArrayList<>(passByPoiList.size());
         for (MyPoi poi : passByPoiList) {
             passByPlanNodes.add(PlanNode.withLocation(new LatLng(poi.latitude, poi.longitude)));
         }
-        MyPoi startPoi = pois.get(0);
-        MyPoi endPoi = pois.get(pois.size() - 1);
+        MyPoi startPoi = mPois.get(0);
+        MyPoi endPoi = mPois.get(mPois.size() - 1);
         PlanNode startNode = PlanNode.withLocation(new LatLng(startPoi.latitude, startPoi.longitude));
         PlanNode endNode = PlanNode.withLocation(new LatLng(endPoi.latitude, endPoi.longitude));
         RoutePlanSearch search = RoutePlanSearch.newInstance();
@@ -201,7 +217,14 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
                 overlay.addToMap();
 //                overlay.zoomToSpan();
 //                popupGetOnOffStationWindow(mPois.get(0));
-                moveToCenterPoint(pois.get(pois.size() - 1));
+                mUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mPois.size() > 0) {
+                            moveToCenterPoint(mPois.get(mPois.size() - 1));
+                        }
+                    }
+                });
             }
         });
         search.drivingSearch((new DrivingRoutePlanOption()).from(startNode).to(endNode).passBy(passByPlanNodes));
@@ -258,9 +281,18 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
 //                MyPoi myPoi = new MyPoi();
 //                myPoi.latitude = location.getLatitude();
 //                myPoi.longitude = location.getLongitude();
-//                myPoi.level = 57.1f;
+//                myPoi.level = mCurrentLevel;
 //                myPoi.timestamp = System.currentTimeMillis();
-//                mPois.add(myPoi);
+//                if (mPois.size() == 0) {
+//                    mPois.add(myPoi);
+//                } else {
+//                    MyPoi lastPoi = mPois.get(mPois.size() - 1);
+//                    if (Utils.distance(myPoi.longitude, myPoi.latitude, lastPoi.longitude, lastPoi.latitude) >= MIN_DISTANCE) {
+//                        mPois.add(myPoi);
+//                    } else {
+//                        lastPoi.level = myPoi.level;
+//                    }
+//                }
 //                refreshMapInfo(mPois);
                 StringBuffer sb = new StringBuffer(256);
                 sb.append("time : ");
@@ -334,7 +366,9 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
                     sb.append("\ndescribe : ");
                     sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
                 }
-                LogUtils.d(sb.toString());
+                LogUtils.d("定位成功>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + sb.toString());
+            } else {
+                LogUtils.d("定位失败！！！！！！！!!!!!!!!!!!!!!!!!!!");
             }
         }
 
@@ -342,42 +376,50 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
 
     @Override
     public void onReceiveItuData(List<Float> ituData) {
-
+        if (!CollectionUtils.isEmpty(ituData)) {
+            mCurrentLevel = ituData.get(0);
+        }
     }
 
     @Override
     public void onReceiveItuHead(ItuParser48278.DataHead ituHead) {
-
+        clearMapInfo();
     }
 
     @Override
     public void onReceiveIfpanData(IfpanParser48278.DataValue ifpanData) {
-
+        if (ifpanData != null && !CollectionUtils.isEmpty(ifpanData.levelList)) {
+            mCurrentLevel = ifpanData.levelList.get(0);
+        }
     }
 
     @Override
     public void onReceiveIfpanHead(IfpanParser48278.DataHead ifpanHead) {
-
+        clearMapInfo();
     }
 
     @Override
     public void onReceiveFScanData(FscanParser48278.DataValue fscanData) {
-
+        if (fscanData != null && !CollectionUtils.isEmpty(fscanData.values)) {
+            mCurrentLevel = fscanData.values.get(0);
+        }
     }
 
     @Override
     public void onReceiveFScanHead(FscanParser48278.DataHead fscanHead) {
-
+        clearMapInfo();
     }
 
     @Override
     public void onReceiveDfData(DFParser48278.DataValue dfData) {
-
+        if (dfData != null) {
+            mCurrentLevel = dfData.value;
+        }
     }
 
     @Override
     public void onReceiveDfHead(DFParser48278.DataHead dfHead) {
-
+        clearMapInfo();
     }
 
     // 由于原生的Overlay无法获取起点和终点的点击事件，所以这里隐藏掉原生的起点和终点Marker，改用自定义的Maker

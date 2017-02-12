@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.outsource.monitor.activity.MonitorCenterActivity;
+
 /**
  * Created by xionghao on 2017/1/4.
  */
@@ -23,12 +25,16 @@ public class FloatingActivityLifecycleCallback implements Application.ActivityLi
 
     @Override
     public void onActivityResumed(Activity activity) {
-        FloatingManager.getInstance().onActivityResume(activity);
+        if (activity instanceof MonitorCenterActivity) {
+            FloatingManager.getInstance().onActivityResume(activity);
+        }
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        FloatingManager.getInstance().onActivityPause(activity);
+        if (activity instanceof MonitorCenterActivity) {
+            FloatingManager.getInstance().onActivityPause(activity);
+        }
     }
 
     @Override

@@ -75,9 +75,16 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
                 }
             }
         });
+        mBtnSwitch.post(new Runnable() {
+            @Override
+            public void run() {
+                showMenu();
+            }
+        });
 
         EventBus.getDefault().register(this);
     }
+
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {

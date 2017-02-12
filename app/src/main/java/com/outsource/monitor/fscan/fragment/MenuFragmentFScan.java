@@ -72,9 +72,9 @@ public class MenuFragmentFscan extends Fragment implements FscanDataReceiver {
         return true;
     }
 
-    private int getInputEndFrequency() {
+    private float getInputEndFrequency() {
         if (checkEndFrequency(false)) {
-            return Integer.valueOf(mEtEndFrequency.getText().toString());
+            return Float.valueOf(mEtEndFrequency.getText().toString());
         }
         return 0;
     }

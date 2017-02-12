@@ -261,6 +261,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
         LineData lineData = new LineData(generateLineDataSet());
         mLineChart.setData(lineData);
         mLineChart.invalidate();
+        mLineChart.getLegend().setEnabled(false);
     }
 
     private void initTimeBarChart(View view) {
@@ -282,6 +283,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
         barData.setBarWidth(BAR_WIDTH);
         mTimeBarChart.setData(barData);
         mTimeBarChart.invalidate();
+        mTimeBarChart.getLegend().setEnabled(false);
     }
 
     private void initMaxLevelBarChart(View view) {
@@ -303,6 +305,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
         barData.setBarWidth(BAR_WIDTH);
         mMaxLevelBarChart.setData(barData);
         mMaxLevelBarChart.invalidate();
+        mMaxLevelBarChart.getLegend().setEnabled(false);
     }
 
     private boolean isHit(float level) {
@@ -403,7 +406,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
                 entries.add(0, new Entry(System.currentTimeMillis() - level.timestamp, level.level));
             }
         }
-        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        LineDataSet set = new LineDataSet(entries, null);
         set.setColor(Color.rgb(240, 238, 70));
         set.setLineWidth(1f);
         set.setDrawCircleHole(false);
@@ -440,7 +443,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
                 xAxis--;
             }
         }
-        return new BarDataSet(yVals1, "DataSet 1");
+        return new BarDataSet(yVals1, null);
     }
 
     private void refreshTimeBarChart() {
@@ -463,7 +466,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
                 xAxis--;
             }
         }
-        return new BarDataSet(yVals1, "DataSet 1");
+        return new BarDataSet(yVals1, null);
     }
 
     private void refreshMaxLevelBarChart() {

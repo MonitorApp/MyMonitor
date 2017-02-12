@@ -215,6 +215,7 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
 
         mChart.setData(data);
         mChart.invalidate();
+        mChart.getLegend().setEnabled(false);
     }
 
     private void initFallChart(View view) {

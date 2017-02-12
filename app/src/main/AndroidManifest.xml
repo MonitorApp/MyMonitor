@@ -15,7 +15,8 @@
 
     <!-- 百度地图 begin-->
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
-    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!--<uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />-->
     <!-- 这个权限用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 这个权限用于访问GPS定位 -->
@@ -55,6 +56,12 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="BtMGwUHgL8f3gFggrZvrGpQxI3GCE7O8" />
 
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
+
         <service android:name=".service.DataProviderService" android:exported="false"/>
 
         <activity android:name=".activity.MainActivity" android:screenOrientation="landscape"/>
@@ -65,6 +72,7 @@
         <activity android:name=".activity.OptionActivity" android:screenOrientation="landscape" android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".activity.MonitorCenterActivity" android:screenOrientation="landscape" android:theme="@style/AppTheme.FullScreen"/>
         <activity android:name=".activity.MapActivity" android:screenOrientation="landscape"/>
+        <activity android:name=".activity.LocationActivity" android:screenOrientation="landscape"/>
 
     </application>
 

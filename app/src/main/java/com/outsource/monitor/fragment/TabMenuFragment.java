@@ -39,11 +39,12 @@ public class TabMenuFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.frag_tab, container, false);
+        View view = inflater.inflate(R.layout.frag_tab, container, false);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_tab);
         mSelectedTab = (Tab) getArguments().get("tab");
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new TabAdapter());
-        return recyclerView;
+        return view;
     }
 
     class TabAdapter extends RecyclerView.Adapter {
