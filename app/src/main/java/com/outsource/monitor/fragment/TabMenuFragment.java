@@ -23,6 +23,8 @@ import org.greenrobot.eventbus.EventBus;
 public class TabMenuFragment extends Fragment {
 
     private Tab mSelectedTab = Tab.ITU;
+    private View.OnClickListener mMapSwitchClickListener;
+    private View mMapSwitcher;
 
     public TabMenuFragment() {
 
@@ -44,7 +46,16 @@ public class TabMenuFragment extends Fragment {
         mSelectedTab = (Tab) getArguments().get("tab");
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new TabAdapter());
+        mMapSwitcher = view.findViewById(R.id.tv_map_switch);
+        mMapSwitcher.setOnClickListener(mMapSwitchClickListener);
         return view;
+    }
+
+    public void setOnMapSwitchClickListener(View.OnClickListener listener) {
+        mMapSwitchClickListener = listener;
+        if (mMapSwitcher != null) {
+            mMapSwitcher.setOnClickListener(mMapSwitchClickListener);
+        }
     }
 
     class TabAdapter extends RecyclerView.Adapter {

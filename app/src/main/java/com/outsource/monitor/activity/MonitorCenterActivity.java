@@ -3,7 +3,6 @@ package com.outsource.monitor.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
-import android.widget.Button;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.outsource.monitor.R;
@@ -35,7 +34,6 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     private BaseMonitorFragment mCurrentFragment;
     private Tab mCurrentTab = Tab.ITU;
     private MapFragment mMapFragment;
-    private Button mBtnSwitch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,13 +44,24 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
         setBehindContentView(R.layout.left_menu_container);
         FragmentManager fragmentManager = getSupportFragmentManager();
         //left menu fragment
-        fragmentManager.beginTransaction().add(R.id.left_menu_container, TabMenuFragment.newInstance(mCurrentTab)).commitAllowingStateLoss();
+        TabMenuFragment menuFragment = TabMenuFragment.newInstance(mCurrentTab);
+        fragmentManager.beginTransaction().add(R.id.left_menu_container, menuFragment).commitAllowingStateLoss();
+        menuFragment.setOnMapSwitchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMapFragment.isVisible()) {
+                    hideMapFragment();
+                } else {
+                    showMapFragment();
+                }
+            }
+        });
 
         //SlidingMenu config
         SlidingMenu slidingMenu = getSlidingMenu();
         slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
         slidingMenu.setShadowDrawable(R.drawable.shadow);
-        slidingMenu.setBehindOffset(DisplayUtils.getScreenWidth() - DisplayUtils.dp2px(90));
+        slidingMenu.setBehindOffset(DisplayUtils.getScreenWidth() - DisplayUtils.dp2px(120));
         slidingMenu.setFadeDegree(0.35f);
         slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         slidingMenu.setMode(SlidingMenu.LEFT);
@@ -64,18 +73,7 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
 
         mMapFragment = MapFragment.newInstance();
         fragmentManager.beginTransaction().add(R.id.fl_map_container, mMapFragment).hide(mMapFragment).commitAllowingStateLoss();
-        mBtnSwitch = (Button) findViewById(R.id.btn_map_switch);
-        mBtnSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mMapFragment.isVisible()) {
-                    hideMapFragment();
-                } else {
-                    showMapFragment();
-                }
-            }
-        });
-        mBtnSwitch.post(new Runnable() {
+        findViewById(R.id.left_menu_container).post(new Runnable() {
             @Override
             public void run() {
                 showMenu();
@@ -149,12 +147,10 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     }
 
     private void showMapFragment() {
-        mBtnSwitch.setText("地图模式");
         getSupportFragmentManager().beginTransaction().show(mMapFragment).commitAllowingStateLoss();
     }
 
     private void hideMapFragment() {
-        mBtnSwitch.setText("图表模式");
         getSupportFragmentManager().beginTransaction().hide(mMapFragment).commitAllowingStateLoss();
     }
  }

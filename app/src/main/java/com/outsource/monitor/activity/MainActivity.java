@@ -4,13 +4,16 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.base.Tab;
+import com.outsource.monitor.utils.PromptUtils;
 
 import java.util.ArrayList;
 
@@ -41,9 +44,22 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         findViewById(R.id.tv_location).setOnClickListener(this);
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private void CheckPermission() {
+//        if (!Settings.System.canWrite(this)) {
+//            PromptUtils.showToast("请在该设置页面勾选，才可以使用路况提醒功能");
+//            Uri selfPackageUri = Uri.parse("package:"
+//                    + getPackageName());
+//            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+//                    selfPackageUri);
+//            startActivity(intent);
+//        }
+    }
+
     @TargetApi(23)
     private void getPersimmions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            CheckPermission();
             ArrayList<String> permissions = new ArrayList<String>();
             /***
              * 定位权限为必须权限，用户如果禁止，则每次进入都会申请

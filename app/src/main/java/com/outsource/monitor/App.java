@@ -30,5 +30,6 @@ public class App extends Application {
         FloatingManager.getInstance().setFloatingView(new FloatingBall(this));
         registerActivityLifecycleCallbacks(new FloatingActivityLifecycleCallback());
         locationService = new LocationService(getApplicationContext());
+        CrashHandler.getInstance().init(this);
     }
 }
