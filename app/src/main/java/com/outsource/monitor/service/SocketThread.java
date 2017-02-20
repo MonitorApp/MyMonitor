@@ -174,7 +174,7 @@ public class SocketThread extends Thread {
                 InputStream inputStream = null;
                 try {
                     //发送命令
-                    if (mSocket == null) return;
+                    if (mSocket == null || mSocket.isClosed()) return;
                     outputStream = mSocket.getOutputStream();
                     bos.write(bytes);
                     outputStream.write(bos.toByteArray(), 0, bos.size());
@@ -187,12 +187,12 @@ public class SocketThread extends Thread {
                         e.printStackTrace();
                     }
                     //接受数据
-                    if (mSocket == null) return;
+                    if (mSocket == null || mSocket.isClosed()) return;
                     inputStream = mSocket.getInputStream();
                     byte[] buffer = new byte[4 * 1024];
                     int byteOffset = 0;
                     int readLen = 0;
-                    while ((readLen = inputStream.read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {
+                    while (mSocket != null && !mSocket.isClosed() && (readLen = inputStream.read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {
                         byteOffset += readLen;
                         switch (command.type) {
                             case ITU:

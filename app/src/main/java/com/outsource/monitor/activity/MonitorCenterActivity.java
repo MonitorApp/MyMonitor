@@ -14,7 +14,7 @@ import com.outsource.monitor.floating.FloatingBall;
 import com.outsource.monitor.floating.FloatingManager;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fragment.TabMenuFragment;
-import com.outsource.monitor.fscan.fragment.FscanFragment;
+import com.outsource.monitor.fscan.fragment.FScanFragment;
 import com.outsource.monitor.ifpan.fragment.IfpanFragment;
 import com.outsource.monitor.itu.fragment.ItuFragment;
 import com.outsource.monitor.map.MapFragment;
@@ -116,7 +116,7 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
             case IFPAN:
                 return IfpanFragment.newInstance();
             case BAND_SCAN:
-                return FscanFragment.newInstance();
+                return FScanFragment.newInstance();
             case DF:
                 return DfFragment.newInstance();
             case DISCRETE_SCAN:

@@ -27,7 +27,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * Created by xionghao on 2016/12/17.
  */
 
-public class FscanFragment extends BaseMonitorFragment {
+public class FScanFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
     public FscanParam mParam;
@@ -47,12 +47,12 @@ public class FscanFragment extends BaseMonitorFragment {
         return Tab.IFPAN;
     }
 
-    public FscanFragment() {
+    public FScanFragment() {
         super();
     }
 
-    public static FscanFragment newInstance() {
-        return new FscanFragment();
+    public static FScanFragment newInstance() {
+        return new FScanFragment();
     }
 
     @Override
