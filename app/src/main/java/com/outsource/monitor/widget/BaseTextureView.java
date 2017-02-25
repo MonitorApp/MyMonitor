@@ -34,6 +34,7 @@ public abstract class BaseTextureView extends TextureView implements TextureView
 
     protected int mWidth;
     protected int mHeight;
+    boolean running = true;
 
     /**
      * @param context mContext
@@ -74,9 +75,9 @@ public abstract class BaseTextureView extends TextureView implements TextureView
             if (!mDrawThread.isStart) {
                 mDrawThread.start();
             } else {
-                synchronized (mDrawThread) {
-                    mDrawThread.notify();
-                }
+//                synchronized (mDrawThread) {
+//                    mDrawThread.notify();
+//                }
             }
         }
     }
@@ -98,9 +99,9 @@ public abstract class BaseTextureView extends TextureView implements TextureView
     public boolean resume() {
         if (mState == STATE_PAUSE) {
             mState = STATE_DRAWING;
-            synchronized (mDrawThread) {
-                mDrawThread.notify();
-            }
+//            synchronized (mDrawThread) {
+//                mDrawThread.notify();
+//            }
             return true;
         }
         return false;
@@ -124,17 +125,22 @@ public abstract class BaseTextureView extends TextureView implements TextureView
         int oldState = mState;
         mState = STATE_STOPPING;
         if (oldState == STATE_PAUSE) {
-            synchronized (mDrawThread) {
-                mDrawThread.notify();
-            }
+//            synchronized (mDrawThread) {
+//                mDrawThread.notify();
+//            }
         }
     }
 
     public void onDestroy() {
-        mDrawThread.interrupt();
-        synchronized (mDrawThread) {
-            mDrawThread.notify();
+        try {
+//            mDrawThread.interrupt();
+//            synchronized (mDrawThread) {
+//                mDrawThread.notify();
+//            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        running = true;
     }
 
 
@@ -149,14 +155,14 @@ public abstract class BaseTextureView extends TextureView implements TextureView
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         if (mState == STATE_BACKGROUND_WHEN_DRAWING) {
             mState = STATE_DRAWING;
-            synchronized (mDrawThread) {
-                mDrawThread.notify();
-            }
+//            synchronized (mDrawThread) {
+//                mDrawThread.notify();
+//            }
         } else if (mState == STATE_PAUSE) {
             mState = STATE_BACKGROUND_WHEN_PAUSE;
-            synchronized (mDrawThread) {
-                mDrawThread.notify();
-            }
+//            synchronized (mDrawThread) {
+//                mDrawThread.notify();
+//            }
         }
     }
 
@@ -193,15 +199,17 @@ public abstract class BaseTextureView extends TextureView implements TextureView
         public void run() {
             isStart = true;
             try {
-                while (!isInterrupted()) {
-                    if (mState == STATE_DRAWING || mState == STATE_STOPPING || mState == STATE_BACKGROUND_WHEN_PAUSE) {
-                        draw();
-                        Thread.sleep(FRAME_DURATION);
-                    } else {
-                        synchronized (this) {
-                            mDrawThread.wait();
-                        }
-                    }
+                while (running) {
+                    draw();
+                    Thread.sleep(FRAME_DURATION);
+//                    if (mState == STATE_DRAWING || mState == STATE_STOPPING || mState == STATE_BACKGROUND_WHEN_PAUSE) {
+//                        draw();
+//                        Thread.sleep(FRAME_DURATION);
+//                    } else {
+//                        synchronized (this) {
+//                            mDrawThread.wait();
+//                        }
+//                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -217,7 +225,7 @@ public abstract class BaseTextureView extends TextureView implements TextureView
                     mState = STATE_STOPPED;
                     return;
                 }
-                synchronized (BaseTextureView.this) {
+//                synchronized (BaseTextureView.this) {
                     if ((System.currentTimeMillis() - mLastDrawTime) >= FRAME_DURATION) {
                         mLastDrawTime = System.currentTimeMillis();
                     } else {
@@ -227,7 +235,7 @@ public abstract class BaseTextureView extends TextureView implements TextureView
                             e.printStackTrace();
                         }
                     }
-                }
+//                }
                 drawCanvas(canvas);
                 unlockCanvasAndPost(canvas);
                 if (mState == STATE_BACKGROUND_WHEN_PAUSE) { //Redraw the last frame when draw thread on pause state and app resume from background
