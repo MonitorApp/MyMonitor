@@ -120,7 +120,7 @@ public class SocketThread extends Thread {
             try {
                 mSocket.close();
                 mSocket = null;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -174,7 +174,7 @@ public class SocketThread extends Thread {
                 InputStream inputStream = null;
                 try {
                     //发送命令
-                    if (mSocket == null || mSocket.isClosed()) return;
+                    if (!isConnected()) break;
                     outputStream = mSocket.getOutputStream();
                     bos.write(bytes);
                     outputStream.write(bos.toByteArray(), 0, bos.size());
@@ -187,12 +187,11 @@ public class SocketThread extends Thread {
                         e.printStackTrace();
                     }
                     //接受数据
-                    if (mSocket == null || mSocket.isClosed()) return;
-                    inputStream = mSocket.getInputStream();
+                    if (!isConnected()) break;
                     byte[] buffer = new byte[4 * 1024];
                     int byteOffset = 0;
                     int readLen = 0;
-                    while (mSocket != null && !mSocket.isClosed() && (readLen = inputStream.read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {
+                    while (isConnected() && (readLen = mSocket.getInputStream().read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {
                         byteOffset += readLen;
                         switch (command.type) {
                             case ITU:
@@ -238,7 +237,7 @@ public class SocketThread extends Thread {
                                 break;
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     if (outputStream != null) {
@@ -248,13 +247,13 @@ public class SocketThread extends Thread {
                             e.printStackTrace();
                         }
                     }
-                    if (inputStream != null) {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+//                    if (inputStream != null) {
+//                        try {
+//                            inputStream.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                 }
             }
             disconnect();

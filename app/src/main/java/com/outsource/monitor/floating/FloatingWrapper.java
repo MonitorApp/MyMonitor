@@ -37,21 +37,21 @@ public class FloatingWrapper extends FrameLayout {
     private Handler mAutoHideHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            int viewWidth = getMeasuredWidth();
-            int viewHeight = getMeasuredHeight();
-            if (mParams.x == 0) {
-                mParams.x -= viewWidth / 2;
-                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
-            } else if (mParams.x == DisplayUtils.getScreenWidth() - viewWidth) {
-                mParams.x += viewWidth / 2;
-                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
-            } else if (mParams.y == 0) {
-                mParams.y -= viewHeight / 2;
-                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
-            } else if (mParams.y == DisplayUtils.getScreenHeight() - viewHeight) {
-                mParams.y += viewHeight / 2;
-                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
-            }
+//            int viewWidth = getMeasuredWidth();
+//            int viewHeight = getMeasuredHeight();
+//            if (mParams.x == 0) {
+//                mParams.x -= viewWidth / 2;
+//                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
+//            } else if (mParams.x == DisplayUtils.getScreenWidth() - viewWidth) {
+//                mParams.x += viewWidth / 2;
+//                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
+//            } else if (mParams.y == 0) {
+//                mParams.y -= viewHeight / 2;
+//                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
+//            } else if (mParams.y == DisplayUtils.getScreenHeight() - viewHeight) {
+//                mParams.y += viewHeight / 2;
+//                mWindowManager.updateViewLayout(FloatingWrapper.this, mParams);
+//            }
         }
     };
 

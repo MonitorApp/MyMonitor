@@ -16,6 +16,7 @@ import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
 import com.outsource.monitor.ifpan.IfpanDataReceiver;
 import com.outsource.monitor.service.ServiceHelper;
+import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 
@@ -105,6 +106,7 @@ public class IfpanFragment extends BaseMonitorFragment {
         super.onDestroyView();
         mServiceHelper.release();
         EventBus.getDefault().unregister(this);
+        LogUtils.e("onDestroyView " + this);
     }
 
 }
