@@ -75,10 +75,10 @@ public class MenuFragmentItu extends Fragment implements View.OnClickListener, I
 
     public void SetParam2UI(SingleFrequencyParam param)
     {
-        mEtFrequency.setText(String.format ("%.1f", param.frequecy));
-        mEtMdlFrequencyBand.setText(String.format("%.1f", param.ifbw));
-        mTvDemodulate.setText(param.demodmode);
-        mEtStep.setText(String.format("%d", param.span));
+        if (param.frequecy != 0) mEtFrequency.setText(String.format ("%.1f", param.frequecy));
+        if (param.ifbw != 0) mEtMdlFrequencyBand.setText(String.format("%.1f", param.ifbw));
+        if (param.demodmode != null) mTvDemodulate.setText(param.demodmode);
+        if (param.span != 0) mEtStep.setText(String.format("%d", param.span));
     }
 
     @Override

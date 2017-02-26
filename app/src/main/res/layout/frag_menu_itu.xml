@@ -72,7 +72,8 @@
 
                 <EditText
                     android:id="@+id/et_itu_frequence"
-                    style="@style/ContentActMenuValue.Edit.NumberDecimal" />
+                    style="@style/ContentActMenuValue.Edit.NumberDecimal"
+                    android:hint="请输入频率"/>
 
                 <EditText
                     android:id="@+id/et_itu_mdl_band"

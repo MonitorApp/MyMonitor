@@ -3,6 +3,7 @@ package com.outsource.monitor.df.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.View;
 
 import com.outsource.monitor.activity.MonitorCenterActivity;
@@ -10,6 +11,8 @@ import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.df.event.DfParamChangeEvent;
 import com.outsource.monitor.df.model.DfParam;
+import com.outsource.monitor.event.PlayBallStateEvent;
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.service.ConnectCallback;
@@ -30,7 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class DfFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
-    public DfParam mParam;
+    public DfParam mParam = DfParam.loadFromCache();
 
     @Override
     public Fragment createContentFragment() {
@@ -58,13 +61,20 @@ public class DfFragment extends BaseMonitorFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mParam = DfParam.loadFromCache();
-        initService();
+        mServiceHelper = new ServiceHelper(getActivity());
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            if (mParam.frequency == 0) {
+                PromptUtils.showToast("请先设置有效的参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                sendCommand();
+            }
+        }
+
         EventBus.getDefault().register(this);
     }
 
-    private void initService() {
-        mServiceHelper = new ServiceHelper(getActivity());
+    private void sendCommand() {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
@@ -95,9 +105,26 @@ public class DfFragment extends BaseMonitorFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFscanParamChanged(DfParamChangeEvent event) {
-        mServiceHelper.release();
+        mDrawerLayout.closeDrawer(Gravity.RIGHT);
         mParam = event.param;
-        initService();
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            disconnect();
+            sendCommand();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent playPauseEvent) {
+        if (playPauseEvent.isPlay) {
+            if (mParam.frequency == 0) {
+                PromptUtils.showToast("请先设置有效的参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                sendCommand();
+            }
+        } else {
+            disconnect();
+        }
     }
 
     @Override
@@ -107,4 +134,14 @@ public class DfFragment extends BaseMonitorFragment {
         EventBus.getDefault().unregister(this);
     }
 
+    private void disconnect() {
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
+            @Override
+            public void onServiceConnected(DataProviderService.SocketBinder service) {
+                if (service != null) {
+                    service.disconnect();
+                }
+            }
+        });
+    }
 }

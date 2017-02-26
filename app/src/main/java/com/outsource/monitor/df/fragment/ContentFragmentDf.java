@@ -41,7 +41,7 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final int MSG_ID_REFRESH_COMPASS = 1;
 
-    private boolean isPlay = false;
+    private boolean isPlay = true;
 
     private TextView mTvFrequency;
     private TextView mTvAngle;
@@ -98,15 +98,6 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
         mTvAngle = (TextView) view.findViewById(R.id.tv_df_angle);
         mCompassView = (CompassView) view.findViewById(R.id.df_compassView);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_COMPASS, 500);
-
-        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
-            FscanParam param = FscanParam.loadFromCache();
-            if (param.startFrequency == 0 || param.endFrequency == 0 || param.step == 0) {
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-            } else {
-                isPlay = true;
-            }
-        }
 
         EventBus.getDefault().register(this);
         return view;

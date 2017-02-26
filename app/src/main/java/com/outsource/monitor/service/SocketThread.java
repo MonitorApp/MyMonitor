@@ -51,13 +51,17 @@ public class SocketThread extends Thread {
 
     public void addDataReceiver(DataReceiver receiver) {
         if (receiver != null) {
-            mDataReceivers.add(receiver);
+            if (mDataReceivers.contains(receiver)) {
+                mDataReceivers.add(receiver);
+            }
         }
     }
 
     public void addItuDataReceiver(ItuDataReceiver receiver) {
         if (receiver != null) {
-            mItuDataReceivers.add(receiver);
+            if (!mItuDataReceivers.contains(receiver)) {
+                mItuDataReceivers.add(receiver);
+            }
         }
     }
 
@@ -69,13 +73,17 @@ public class SocketThread extends Thread {
 
     public void addFscanDataReceiver(FscanDataReceiver receiver) {
         if (receiver != null) {
-            mFScanDataReceivers.add(receiver);
+            if (!mFScanDataReceivers.contains(receiver)) {
+                mFScanDataReceivers.add(receiver);
+            }
         }
     }
 
     public void addDfDataReceiver(DfDataReceiver receiver) {
         if (receiver != null) {
-            mDfDataReceivers.add(receiver);
+            if (!mDfDataReceivers.contains(receiver)) {
+                mDfDataReceivers.add(receiver);
+            }
         }
     }
 

@@ -3,11 +3,14 @@ package com.outsource.monitor.itu.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.View;
 
 import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
+import com.outsource.monitor.event.PlayBallStateEvent;
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.parser.Command;
 import com.outsource.monitor.service.ConnectCallback;
@@ -30,7 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class ItuFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
-    public SingleFrequencyParam mItuParam;
+    public SingleFrequencyParam mItuParam = SingleFrequencyParam.loadFromCache();
 
     @Override
     public Tab tab() {
@@ -58,13 +61,18 @@ public class ItuFragment extends BaseMonitorFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mItuParam = SingleFrequencyParam.loadFromCache();
-        initService();
+        mServiceHelper = new ServiceHelper(getActivity());
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            if (mItuParam.frequecy == 0 || mItuParam.ifbw == 0 || mItuParam.span == 0) {
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                sendCommand();
+            }
+        }
         EventBus.getDefault().register(this);
     }
 
-    private  void initService() {
-        mServiceHelper = new ServiceHelper(getActivity());
+    private  void sendCommand() {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
@@ -93,9 +101,26 @@ public class ItuFragment extends BaseMonitorFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onItuParamChanged(ItuParamChangeEvent event) {
-        mServiceHelper.release();
+        mDrawerLayout.closeDrawer(Gravity.RIGHT);
         mItuParam = event.param;
-        initService();
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            disconnect();
+            sendCommand();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent playPauseEvent) {
+        if (playPauseEvent.isPlay) {
+            if (mItuParam == null || mItuParam.frequecy == 0 || mItuParam.ifbw == 0 || mItuParam.span == 0) {
+                PromptUtils.showToast("请先设置有效的单频测量参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                sendCommand();
+            }
+        } else {
+            disconnect();
+        }
     }
 
     @Override
@@ -103,6 +128,17 @@ public class ItuFragment extends BaseMonitorFragment {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
         mServiceHelper.release();
+    }
+
+    private void disconnect() {
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
+            @Override
+            public void onServiceConnected(DataProviderService.SocketBinder service) {
+                if (service != null) {
+                    service.disconnect();
+                }
+            }
+        });
     }
 
 }

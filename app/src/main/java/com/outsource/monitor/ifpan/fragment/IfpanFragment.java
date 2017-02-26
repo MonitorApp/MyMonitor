@@ -3,11 +3,14 @@ package com.outsource.monitor.ifpan.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.View;
 
 import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
+import com.outsource.monitor.event.PlayBallStateEvent;
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.ifpan.model.IfpanParam;
 import com.outsource.monitor.ifpan.event.IfpanParamsChangeEvent;
@@ -31,7 +34,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class IfpanFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
-    public IfpanParam mIfpanParam;
+    public IfpanParam mIfpanParam = IfpanParam.loadFromCache();
 
     @Override
     public Fragment createContentFragment() {
@@ -59,13 +62,18 @@ public class IfpanFragment extends BaseMonitorFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mIfpanParam = IfpanParam.loadFromCache();
-        initService();
+        mServiceHelper = new ServiceHelper(getActivity());
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            if (mIfpanParam.frequency == 0 || mIfpanParam.band == 0 || mIfpanParam.span == 0) {
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                sendCommand();
+            }
+        }
         EventBus.getDefault().register(this);
     }
 
-    private void initService() {
-        mServiceHelper = new ServiceHelper(getActivity());
+    private void sendCommand() {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
@@ -96,9 +104,26 @@ public class IfpanFragment extends BaseMonitorFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onIfpanParamChanged(IfpanParamsChangeEvent event) {
-        mServiceHelper.release();
+        mDrawerLayout.closeDrawer(Gravity.RIGHT);
         mIfpanParam = event.param;
-        initService();
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            disconnect();
+            sendCommand();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent event) {
+        if (event.isPlay) {
+            if (mIfpanParam.frequency == 0 || mIfpanParam.band == 0 || mIfpanParam.span == 0) {
+                PromptUtils.showToast("请先设置有效的中频分析参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                sendCommand();
+            }
+        } else {
+            disconnect();
+        }
     }
 
     @Override
@@ -107,6 +132,17 @@ public class IfpanFragment extends BaseMonitorFragment {
         mServiceHelper.release();
         EventBus.getDefault().unregister(this);
         LogUtils.e("onDestroyView " + this);
+    }
+
+    private void disconnect() {
+        mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
+            @Override
+            public void onServiceConnected(DataProviderService.SocketBinder service) {
+                if (service != null) {
+                    service.disconnect();
+                }
+            }
+        });
     }
 
 }

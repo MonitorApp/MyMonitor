@@ -42,7 +42,7 @@
         <EditText
             android:id="@+id/et_df_frequency"
             style="@style/ContentActMenuValue.Edit.NumberDecimal"
-            android:text="0"/>
+            android:hint="请输入频率"/>
 
     </LinearLayout>
 

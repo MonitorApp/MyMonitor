@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.fscan.event.FscanParamsChangeEvent;
 import com.outsource.monitor.fscan.model.FscanParam;
 import com.outsource.monitor.parser.FscanParser48278;
-import com.outsource.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.PromptUtils;
 
@@ -39,6 +39,7 @@ public class MenuFragmentFscan extends Fragment implements FscanDataReceiver {
         mEtStartFrequency = (EditText) view.findViewById(R.id.et_frequence_start);
         mEtEndFrequency = (EditText) view.findViewById(R.id.et_frequence_end);
         mEtStep = (EditText) view.findViewById(R.id.et_fscan_step);
+        initFromCache();
         view.findViewById(R.id.btn_change_param).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,6 +52,14 @@ public class MenuFragmentFscan extends Fragment implements FscanDataReceiver {
         });
         return view;
     }
+
+    private void initFromCache() {
+        FscanParam fscanParam = FscanParam.loadFromCache();
+        if (fscanParam.startFrequency != 0) mEtStartFrequency.setText(String.format("%.1f", fscanParam.startFrequency));
+        if (fscanParam.endFrequency != 0) mEtEndFrequency.setText(String.format("%.1f", fscanParam.endFrequency));
+        if (fscanParam.step != 0) mEtStep.setText(String.format("%d", fscanParam.step));
+    }
+
 
     private boolean checkInput(boolean showToast) {
         return checkStartFrequency(showToast) && checkEndFrequency(showToast) && checkStep(showToast) && checkFrequencyValueInvalid();

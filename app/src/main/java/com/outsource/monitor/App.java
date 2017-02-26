@@ -27,9 +27,9 @@ public class App extends Application {
         PromptUtils.init(this);
         PreferenceUtils.init(this);
         SDKInitializer.initialize(this);
-        FloatingManager.getInstance().setFloatingView(new FloatingBall(this));
+//        FloatingManager.getInstance().setFloatingView(new FloatingBall(this));
         registerActivityLifecycleCallbacks(new FloatingActivityLifecycleCallback());
         locationService = new LocationService(getApplicationContext());
-        CrashHandler.getInstance().init(this);
+//        CrashHandler.getInstance().init(this);
     }
 }

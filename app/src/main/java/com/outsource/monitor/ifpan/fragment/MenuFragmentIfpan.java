@@ -43,6 +43,7 @@ public class MenuFragmentIfpan extends Fragment implements IfpanDataReceiver {
         mEtFrequency = (EditText) view.findViewById(R.id.et_ifpan_frequence);
         mEtBand = (EditText) view.findViewById(R.id.et_ifpan_band);
         mEtSpan = (EditText) view.findViewById(R.id.et_ifpan_span);
+        initFromCache();
         view.findViewById(R.id.btn_change_param).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,6 +55,13 @@ public class MenuFragmentIfpan extends Fragment implements IfpanDataReceiver {
             }
         });
         return view;
+    }
+
+    private void initFromCache() {
+        IfpanParam ifpanParam = IfpanParam.loadFromCache();
+        if (ifpanParam.frequency != 0) mEtFrequency.setText(String.format("%.1f", ifpanParam.frequency));
+        if (ifpanParam.band != 0) mEtBand.setText(String.format("%d", ifpanParam.band));
+        if (ifpanParam.span != 0) mEtSpan.setText(String.format("%d", ifpanParam.span));
     }
 
     @Override
