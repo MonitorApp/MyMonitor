@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.outsource.monitor.R;
@@ -12,11 +11,10 @@ import com.outsource.monitor.base.BaseSlidingMenuActivity;
 import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.df.fragment.DfFragment;
-import com.outsource.monitor.floating.FloatingBall;
 import com.outsource.monitor.floating.FloatingManager;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fragment.TabMenuFragment;
-import com.outsource.monitor.fscan.fragment.FScanFragment;
+import com.outsource.monitor.fscan.fragment.FscanFragment;
 import com.outsource.monitor.ifpan.fragment.IfpanFragment;
 import com.outsource.monitor.itu.fragment.ItuFragment;
 import com.outsource.monitor.map.MapFragment;
@@ -121,7 +119,7 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
             case IFPAN:
                 return IfpanFragment.newInstance();
             case BAND_SCAN:
-                return FScanFragment.newInstance();
+                return FscanFragment.newInstance();
             case DF:
                 return DfFragment.newInstance();
             case DISCRETE_SCAN:

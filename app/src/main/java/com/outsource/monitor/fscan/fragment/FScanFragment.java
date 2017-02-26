@@ -30,7 +30,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * Created by xionghao on 2016/12/17.
  */
 
-public class FScanFragment extends BaseMonitorFragment {
+public class FscanFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
     public FscanParam mParam = FscanParam.loadFromCache();
@@ -50,12 +50,12 @@ public class FScanFragment extends BaseMonitorFragment {
         return Tab.IFPAN;
     }
 
-    public FScanFragment() {
+    public FscanFragment() {
         super();
     }
 
-    public static FScanFragment newInstance() {
-        return new FScanFragment();
+    public static FscanFragment newInstance() {
+        return new FscanFragment();
     }
 
     @Override
