@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.outsource.monitor.R;
@@ -12,7 +11,6 @@ import com.outsource.monitor.base.BaseSlidingMenuActivity;
 import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.df.fragment.DfFragment;
-import com.outsource.monitor.floating.FloatingBall;
 import com.outsource.monitor.floating.FloatingManager;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fragment.TabMenuFragment;
