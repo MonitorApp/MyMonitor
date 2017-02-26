@@ -54,7 +54,7 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
             if (msg.what == MSG_ID_REFRESH_COMPASS) {
                 if (isPlay) {
                     if (mCurrentData.get() != null) {
-                        float angle = mCurrentData.get().pitchAngle;
+                        float angle = mCurrentData.get().dir;
                         mCompassView.setBearing(angle);
                         mTvAngle.setText(String.format("角度：%.1f°", angle));
                     }
