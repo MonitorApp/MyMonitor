@@ -64,20 +64,20 @@ public class ContentFragmentDigitScan extends Fragment {
         mBtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLevelTextureView.isRunning()) {
-                    mLevelTextureView.pause();
-                    mFallsLevelView.pause();
-                    mBtnPlay.setText("开始");
-                } else {
-                    if (mLevelTextureView.isPaused()) {
-                        mLevelTextureView.resume();
-                        mFallsLevelView.start();
-                    } else {
-                        mLevelTextureView.start();
-                        mFallsLevelView.start();
-                    }
-                    mBtnPlay.setText("暂停");
-                }
+//                if (mLevelTextureView.isRunning()) {
+//                    mLevelTextureView.pause();
+//                    mFallsLevelView.pause();
+//                    mBtnPlay.setText("开始");
+//                } else {
+//                    if (mLevelTextureView.isPaused()) {
+//                        mLevelTextureView.resume();
+//                        mFallsLevelView.start();
+//                    } else {
+//                        mLevelTextureView.start();
+//                        mFallsLevelView.start();
+//                    }
+//                    mBtnPlay.setText("暂停");
+//                }
             }
         });
 

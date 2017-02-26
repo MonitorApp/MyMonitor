@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.support.v4.view.ScaleGestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,16 +13,13 @@ import android.view.ScaleGestureDetector;
 import com.outsource.monitor.model.FrequencyLevel;
 import com.outsource.monitor.model.Level;
 import com.outsource.monitor.service.DataReceiver;
-import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DateUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -31,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author xh2009cn
  * @version 1.0.0
  */
-public class LevelTextureView extends BaseTextureView implements DataReceiver, ScaleGestureDetector.OnScaleGestureListener {
+public class LevelTextureView extends BaseSurfaceView implements DataReceiver, ScaleGestureDetector.OnScaleGestureListener {
 
     private static final int DURATION_SPAN = 60 * 1000;//一屏显示的时长，单位毫秒
     private static final float LEVEL_SPAN = 100;//一屏显示的电平数
