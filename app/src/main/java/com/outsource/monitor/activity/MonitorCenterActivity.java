@@ -90,11 +90,11 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            FloatingManager.getInstance().show();
-        } else {
-            FloatingManager.getInstance().hide();
-        }
+//        if (hasFocus) {
+//            FloatingManager.getInstance().show();
+//        } else {
+//            FloatingManager.getInstance().hide();
+//        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

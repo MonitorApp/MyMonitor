@@ -366,9 +366,9 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
                     sb.append("\ndescribe : ");
                     sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
                 }
-                LogUtils.d("定位成功>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + sb.toString());
+//                LogUtils.d("定位成功>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + sb.toString());
             } else {
-                LogUtils.d("定位失败！！！！！！！!!!!!!!!!!!!!!!!!!!");
+//                LogUtils.d("定位失败！！！！！！！!!!!!!!!!!!!!!!!!!!");
             }
         }
 
