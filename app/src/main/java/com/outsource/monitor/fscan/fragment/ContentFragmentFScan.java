@@ -70,7 +70,7 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final int MSG_ID_REFRESH_CHART = 1;
 
-    private boolean isPlay = false;
+    private boolean isPlay = true;
     private boolean showLineChart = false;
 
     private int choosePosition;
@@ -98,19 +98,6 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
 
     };
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPlayPauseEvent(PlayPauseEvent event) {
-        if (event.isPlay) {
-            FscanParam param = FscanParam.loadFromCache();
-            if (param.startFrequency == 0 || param.endFrequency == 0 || param.step == 0) {
-                PromptUtils.showToast("请先设置有效的参数再开始");
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-                return;
-            }
-        }
-        isPlay = event.isPlay;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -132,16 +119,6 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
         initFallChart(view);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, 500);
 
-        EventBus.getDefault().register(this);
-
-        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
-            FscanParam param = FscanParam.loadFromCache();
-            if (param.startFrequency == 0 || param.endFrequency == 0 || param.step == 0) {
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-            } else {
-                isPlay = true;
-            }
-        }
         if (!isPlay) {
             mFallsLevelView.pause();
         }
@@ -170,12 +147,6 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setAxisMinimum(DisplayUtils.toDisplayFrequency(param.startFreq));
         xAxis.setAxisMaximum(DisplayUtils.toDisplayFrequency(param.endFreq));
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
     }
 
     private void initCombineChart(View view) {

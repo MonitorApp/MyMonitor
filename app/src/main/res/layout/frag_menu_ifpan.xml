@@ -69,12 +69,12 @@
                 <EditText
                     android:id="@+id/et_ifpan_frequence"
                     style="@style/ContentActMenuValue.Edit.NumberDecimal"
-                    android:text="97.1"/>
+                    android:hint="请输入频率"/>
 
                 <EditText
                     android:id="@+id/et_ifpan_band"
                     style="@style/ContentActMenuValue.Edit.Number"
-                    android:text="25"/>
+                    android:hint="请输入带宽"/>
 
                 <TextView
                     android:id="@+id/tv_ifpan_demodulate"
@@ -84,7 +84,7 @@
                 <EditText
                     android:id="@+id/et_ifpan_span"
                     style="@style/ContentActMenuValue.Edit.Number"
-                    android:text="100"/>
+                    android:hint="请输入跨距"/>
 
                 <TextView
                     android:id="@+id/tv_detection_mode"

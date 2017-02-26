@@ -3,11 +3,14 @@ package com.outsource.monitor.fscan.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.View;
 
 import com.outsource.monitor.activity.MonitorCenterActivity;
 import com.outsource.monitor.base.Tab;
 import com.outsource.monitor.config.PreferenceKey;
+import com.outsource.monitor.event.PlayBallStateEvent;
+import com.outsource.monitor.event.PlayPauseEvent;
 import com.outsource.monitor.fragment.BaseMonitorFragment;
 import com.outsource.monitor.fscan.event.FscanParamsChangeEvent;
 import com.outsource.monitor.fscan.model.FscanParam;
@@ -30,7 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class FscanFragment extends BaseMonitorFragment {
 
     private ServiceHelper mServiceHelper;
-    public FscanParam mParam;
+    public FscanParam mParam = FscanParam.loadFromCache();
 
     @Override
     public Fragment createContentFragment() {
@@ -58,13 +61,18 @@ public class FscanFragment extends BaseMonitorFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mParam = FscanParam.loadFromCache();
-        initService();
+        mServiceHelper = new ServiceHelper(getActivity());
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            if (mParam.startFrequency == 0 || mParam.endFrequency == 0 || mParam.step == 0) {
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                startService();
+            }
+        }
         EventBus.getDefault().register(this);
     }
 
-    private void initService() {
-        mServiceHelper = new ServiceHelper(getActivity());
+    private void startService() {
         mServiceHelper.fetchService(new ServiceHelper.OnServiceConnectedListener() {
             @Override
             public void onServiceConnected(final DataProviderService.SocketBinder service) {
@@ -95,9 +103,27 @@ public class FscanFragment extends BaseMonitorFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFscanParamChanged(FscanParamsChangeEvent event) {
-        mServiceHelper.release();
+        mDrawerLayout.closeDrawer(Gravity.RIGHT);
         mParam = event.param;
-        initService();
+        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+            mServiceHelper.release();
+            startService();
+        }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseEvent playPauseEvent) {
+        if (playPauseEvent.isPlay) {
+            if (mParam.startFrequency == 0 || mParam.endFrequency == 0 || mParam.step == 0) {
+                PromptUtils.showToast("请先设置有效的参数再开始");
+                EventBus.getDefault().post(new PlayBallStateEvent(false));
+            } else {
+                startService();
+            }
+        } else {
+            mServiceHelper.release();
+        }
     }
 
     @Override

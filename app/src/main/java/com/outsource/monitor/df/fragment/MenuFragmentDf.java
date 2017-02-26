@@ -35,6 +35,7 @@ public class MenuFragmentDf extends Fragment implements DfDataReceiver {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_menu_df, container, false);
         mEtFrequency = (EditText) view.findViewById(R.id.et_df_frequency);
+        initFromCache();
         view.findViewById(R.id.btn_change_param).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,6 +47,13 @@ public class MenuFragmentDf extends Fragment implements DfDataReceiver {
             }
         });
         return view;
+    }
+
+    private void initFromCache() {
+        DfParam param = DfParam.loadFromCache();
+        if (param.frequency != 0) {
+            mEtFrequency.setText(String.format("%.1f", param.frequency));
+        }
     }
 
 

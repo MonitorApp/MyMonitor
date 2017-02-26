@@ -74,17 +74,17 @@
         <EditText
             android:id="@+id/et_frequence_start"
             style="@style/ContentActMenuValue.Edit.NumberDecimal"
-            android:text="400"/>
+            android:hint="请输入起始频率"/>
 
         <EditText
             android:id="@+id/et_frequence_end"
             style="@style/ContentActMenuValue.Edit.NumberDecimal"
-            android:text="480"/>
+            android:hint="请输入终止频率"/>
 
         <EditText
             android:id="@+id/et_fscan_step"
             style="@style/ContentActMenuValue.Edit.Number"
-            android:text="12"/>
+            android:hint="请输入步长"/>
 
         <TextView
             android:id="@+id/tv_duration"

@@ -115,7 +115,7 @@ public class ConnectActivity extends BaseActivity {
                                 public void onConnectSuccess() {
                                     if (isFinishing()) return;
                                     PromptUtils.showToast("设备连接成功！");
-                                    startActivity(new Intent(ConnectActivity.this, MainActivity.class));
+                                    startActivity(new Intent(ConnectActivity.this, MonitorCenterActivity.class));
                                     finish();
                                 }
 

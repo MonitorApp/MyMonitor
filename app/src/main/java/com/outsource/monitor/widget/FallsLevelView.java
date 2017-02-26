@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by Administrator on 2016/10/6.
  */
-public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver {
+public class FallsLevelView extends BaseSurfaceView implements IfpanDataReceiver {
 
     private static final int X_AXIS_HEIGHT = DisplayUtils.dp2px(15);//x轴刻度区域的高度
     private static final int Y_AXIS_WIDTH = DisplayUtils.dp2px(15);//y轴刻度区域的宽度
@@ -135,7 +135,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayPauseEvent(PlayPauseEvent event) {
         if (event.isPlay) {
-            resume();
+            start();
         } else {
             pause();
         }

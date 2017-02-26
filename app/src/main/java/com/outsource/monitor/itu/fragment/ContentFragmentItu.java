@@ -100,7 +100,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
     private long lastRefreshBarTime;
     private long lastRefreshListTime;
 
-    private boolean isPlay = false;
+    private boolean isPlay = true;
 
     private Handler mRefreshHandler = new Handler() {
 
@@ -158,31 +158,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_BAR, REFRESH_BAR_INTERVAL);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_BAR_INTERVAL);
 
-        EventBus.getDefault().register(this);
-
-        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
-            SingleFrequencyParam param = SingleFrequencyParam.loadFromCache();
-            if (param.frequecy == 0 || param.ifbw == 0 || param.span == 0) {
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-            } else {
-                isPlay = true;
-            }
-        }
         return view;
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPlayPauseEvent(PlayPauseEvent event) {
-        if (event.isPlay) {
-            SingleFrequencyParam param = SingleFrequencyParam.loadFromCache();
-            if (param.frequecy == 0 || param.ifbw == 0 || param.span == 0) {
-                PromptUtils.showToast("请先设置有效的单频测量参数再开始");
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-                return;
-            }
-        }
-        isPlay = event.isPlay;
     }
 
     @Override
@@ -195,12 +171,6 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
     public void onPause() {
         super.onPause();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
     }
 
     private void initMeasureTypes(View view) {
@@ -298,8 +268,8 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
         formatter.setTimeUnit(MAX_LINE_X_AXIS);
         xAxis.setValueFormatter(formatter);
         xAxis.enableGridDashedLine(1, 1, 0);
-        xAxis.setAxisMinimum(0);
-        xAxis.setAxisMaximum(60);
+        xAxis.setAxisMinimum(-20);
+        xAxis.setAxisMaximum(80);
 
         BarData barData = new BarData(generateMaxLevelBarData());
         barData.setBarWidth(BAR_WIDTH);

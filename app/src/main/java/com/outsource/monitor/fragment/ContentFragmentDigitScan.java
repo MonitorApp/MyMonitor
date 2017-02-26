@@ -71,7 +71,7 @@ public class ContentFragmentDigitScan extends Fragment {
                 } else {
                     if (mLevelTextureView.isPaused()) {
                         mLevelTextureView.resume();
-                        mFallsLevelView.resume();
+                        mFallsLevelView.start();
                     } else {
                         mLevelTextureView.start();
                         mFallsLevelView.start();

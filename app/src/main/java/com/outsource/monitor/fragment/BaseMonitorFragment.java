@@ -6,12 +6,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ViewDragHelper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.outsource.monitor.R;
 import com.outsource.monitor.base.Tab;
+import com.outsource.monitor.df.event.DfParamChangeEvent;
+import com.outsource.monitor.fscan.event.FscanParamsChangeEvent;
+import com.outsource.monitor.ifpan.event.IfpanParamsChangeEvent;
+import com.outsource.monitor.itu.event.ItuParamChangeEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Field;
 

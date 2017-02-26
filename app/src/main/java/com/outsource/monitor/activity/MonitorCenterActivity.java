@@ -3,6 +3,8 @@ package com.outsource.monitor.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.outsource.monitor.R;
@@ -34,19 +36,22 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     private BaseMonitorFragment mCurrentFragment;
     private Tab mCurrentTab = Tab.ITU;
     private MapFragment mMapFragment;
+    private TabMenuFragment mTabMenuFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         mCurrentTab = (Tab) getIntent().getSerializableExtra(TAB);
         if (mCurrentTab == null) mCurrentTab = Tab.ITU;
         // set the Behind View
         setBehindContentView(R.layout.left_menu_container);
         FragmentManager fragmentManager = getSupportFragmentManager();
         //left menu fragment
-        TabMenuFragment menuFragment = TabMenuFragment.newInstance(mCurrentTab);
-        fragmentManager.beginTransaction().add(R.id.left_menu_container, menuFragment).commitAllowingStateLoss();
-        menuFragment.setOnMapSwitchClickListener(new View.OnClickListener() {
+        mTabMenuFragment = TabMenuFragment.newInstance(mCurrentTab);
+        fragmentManager.beginTransaction().add(R.id.left_menu_container, mTabMenuFragment).commitAllowingStateLoss();
+        mTabMenuFragment.setOnMapSwitchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mMapFragment.isVisible()) {
@@ -135,11 +140,7 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     }
 
     public boolean isPlaying() {
-        FloatingBall floatingBall = (FloatingBall) FloatingManager.getInstance().getFloatingView();
-        if (floatingBall != null) {
-            return floatingBall.isPlaying();
-        }
-        return false;
+        return mTabMenuFragment.isPlaying();
     }
 
     public MapFragment getMapFragment() {

@@ -51,13 +51,17 @@ public class SocketThread extends Thread {
 
     public void addDataReceiver(DataReceiver receiver) {
         if (receiver != null) {
-            mDataReceivers.add(receiver);
+            if (mDataReceivers.contains(receiver)) {
+                mDataReceivers.add(receiver);
+            }
         }
     }
 
     public void addItuDataReceiver(ItuDataReceiver receiver) {
         if (receiver != null) {
-            mItuDataReceivers.add(receiver);
+            if (!mItuDataReceivers.contains(receiver)) {
+                mItuDataReceivers.add(receiver);
+            }
         }
     }
 
@@ -69,13 +73,17 @@ public class SocketThread extends Thread {
 
     public void addFscanDataReceiver(FscanDataReceiver receiver) {
         if (receiver != null) {
-            mFScanDataReceivers.add(receiver);
+            if (!mFScanDataReceivers.contains(receiver)) {
+                mFScanDataReceivers.add(receiver);
+            }
         }
     }
 
     public void addDfDataReceiver(DfDataReceiver receiver) {
         if (receiver != null) {
-            mDfDataReceivers.add(receiver);
+            if (!mDfDataReceivers.contains(receiver)) {
+                mDfDataReceivers.add(receiver);
+            }
         }
     }
 
@@ -120,7 +128,7 @@ public class SocketThread extends Thread {
             try {
                 mSocket.close();
                 mSocket = null;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -174,7 +182,7 @@ public class SocketThread extends Thread {
                 InputStream inputStream = null;
                 try {
                     //发送命令
-                    if (mSocket == null) return;
+                    if (!isConnected()) break;
                     outputStream = mSocket.getOutputStream();
                     bos.write(bytes);
                     outputStream.write(bos.toByteArray(), 0, bos.size());
@@ -187,12 +195,11 @@ public class SocketThread extends Thread {
                         e.printStackTrace();
                     }
                     //接受数据
-                    if (mSocket == null) return;
-                    inputStream = mSocket.getInputStream();
+                    if (!isConnected()) break;
                     byte[] buffer = new byte[4 * 1024];
                     int byteOffset = 0;
                     int readLen = 0;
-                    while ((readLen = inputStream.read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {
+                    while (isConnected() && (readLen = mSocket.getInputStream().read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {
                         byteOffset += readLen;
                         switch (command.type) {
                             case ITU:
@@ -238,7 +245,7 @@ public class SocketThread extends Thread {
                                 break;
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     if (outputStream != null) {
@@ -248,13 +255,13 @@ public class SocketThread extends Thread {
                             e.printStackTrace();
                         }
                     }
-                    if (inputStream != null) {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+//                    if (inputStream != null) {
+//                        try {
+//                            inputStream.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                 }
             }
             disconnect();

@@ -13,8 +13,12 @@ import android.widget.TextView;
 import com.outsource.monitor.R;
 import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.base.Tab;
+import com.outsource.monitor.event.PlayBallStateEvent;
+import com.outsource.monitor.event.PlayPauseEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by xionghao on 2016/12/13.
@@ -25,6 +29,7 @@ public class TabMenuFragment extends Fragment {
     private Tab mSelectedTab = Tab.ITU;
     private View.OnClickListener mMapSwitchClickListener;
     private View mMapSwitcher;
+    private TextView mTvPlayPause;
 
     public TabMenuFragment() {
 
@@ -48,6 +53,16 @@ public class TabMenuFragment extends Fragment {
         recyclerView.setAdapter(new TabAdapter());
         mMapSwitcher = view.findViewById(R.id.tv_map_switch);
         mMapSwitcher.setOnClickListener(mMapSwitchClickListener);
+        mTvPlayPause = (TextView) view.findViewById(R.id.tv_play_pause);
+        mTvPlayPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatePlayState(!v.isSelected());
+                EventBus.getDefault().post(new PlayPauseEvent(isPlaying()));
+            }
+        });
+
+        EventBus.getDefault().register(this);
         return view;
     }
 
@@ -87,5 +102,30 @@ public class TabMenuFragment extends Fragment {
         public int getItemCount() {
             return Tab.values().length;
         }
+    }
+
+    public boolean isPlaying() {
+        return mTvPlayPause != null && mTvPlayPause.isSelected();
+    }
+
+    private void updatePlayState(boolean isPlay) {
+        if (isPlay) {
+            mTvPlayPause.setText("暂停");
+            mTvPlayPause.setSelected(true);
+        } else {
+            mTvPlayPause.setText("开始");
+            mTvPlayPause.setSelected(false);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayStateEvent(PlayBallStateEvent event) {
+        updatePlayState(event.isPlay);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
 }

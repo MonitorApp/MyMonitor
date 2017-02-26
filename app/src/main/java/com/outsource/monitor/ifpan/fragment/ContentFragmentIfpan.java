@@ -69,7 +69,7 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
 
     private TextView mTvCurrentFrequencyLevel;
     private TextView mTvAnalyseInfo;
-    private boolean isPlay = false;
+    private boolean isPlay = true;
     private boolean showBarData = false;
 
     private Handler mRefreshHandler = new Handler() {
@@ -119,19 +119,6 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPlayPauseEvent(PlayPauseEvent event) {
-        if (event.isPlay) {
-            IfpanParam param = IfpanParam.loadFromCache();
-            if (param.frequency == 0 || param.band == 0 || param.span == 0) {
-                PromptUtils.showToast("请先设置有效的中频分析参数再开始");
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-                return;
-            }
-        }
-        isPlay = event.isPlay;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -155,26 +142,7 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
         initFallChart(view);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, 500);
 
-        EventBus.getDefault().register(this);
-
-        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
-            IfpanParam param = IfpanParam.loadFromCache();
-            if (param.frequency == 0 || param.band == 0 || param.span == 0) {
-                EventBus.getDefault().post(new PlayBallStateEvent(false));
-            } else {
-                isPlay = true;
-            }
-        }
-        if (!isPlay) {
-            mFallsLevelView.pause();
-        }
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
     }
 
     private void initCombineChart(View view) {
@@ -198,6 +166,8 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
         leftAxis.enableGridDashedLine(10, 10, 0);
         leftAxis.setAxisLineColor(Color.parseColor("#403f40"));
         leftAxis.setTextColor(Color.parseColor("#adadad"));
+        leftAxis.setAxisMinimum(-20);
+        leftAxis.setAxisMaximum(80);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setValueFormatter(mXValueFormatter);
