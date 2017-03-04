@@ -6,10 +6,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
+
+import com.outsource.monitor.utils.PromptUtils;
 
 
 /**
@@ -23,18 +31,14 @@ public abstract class BaseTextureView extends TextureView implements TextureView
     private static final int STATE_STOPPED = 0x00;
     private static final int STATE_DRAWING = 0x01;
     private static final int STATE_PAUSE = 0x02;
-    private static final int STATE_STOPPING = 0x03;
-    private static final int STATE_BACKGROUND_WHEN_DRAWING = 0x04;
-    private static final int STATE_BACKGROUND_WHEN_PAUSE = 0x05; //When app went background the canvas will clear, we need to redraw the last frame.
 
     private int mState = STATE_STOPPED;
-    private final DrawThread mDrawThread = new DrawThread();
+    private DrawThread mDrawThread;
     private long mLastDrawTime;
     private Paint mBgPaint;
 
     protected int mWidth;
     protected int mHeight;
-    boolean running = true;
 
     /**
      * @param context mContext
@@ -67,19 +71,7 @@ public abstract class BaseTextureView extends TextureView implements TextureView
      * 开始绘制
      */
     public void start() {
-        if (mState == STATE_PAUSE || mState == STATE_STOPPING || mState == STATE_DRAWING) {
-            return;
-        }
-        if (mDrawThread != null) {
-            mState = STATE_DRAWING;
-            if (!mDrawThread.isStart) {
-                mDrawThread.start();
-            } else {
-//                synchronized (mDrawThread) {
-//                    mDrawThread.notify();
-//                }
-            }
-        }
+        mState = STATE_DRAWING;
     }
 
     /**
@@ -99,9 +91,6 @@ public abstract class BaseTextureView extends TextureView implements TextureView
     public boolean resume() {
         if (mState == STATE_PAUSE) {
             mState = STATE_DRAWING;
-//            synchronized (mDrawThread) {
-//                mDrawThread.notify();
-//            }
             return true;
         }
         return false;
@@ -119,28 +108,21 @@ public abstract class BaseTextureView extends TextureView implements TextureView
      * 停止绘制
      */
     public void stop() {
-        if (mState == STATE_STOPPED) {
-            return;
-        }
-        int oldState = mState;
-        mState = STATE_STOPPING;
-        if (oldState == STATE_PAUSE) {
-//            synchronized (mDrawThread) {
-//                mDrawThread.notify();
-//            }
-        }
+        mState = STATE_STOPPED;
     }
 
     public void onDestroy() {
-        try {
-//            mDrawThread.interrupt();
-//            synchronized (mDrawThread) {
-//                mDrawThread.notify();
-//            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (mDrawThread != null) {
+            try {
+                synchronized (mDrawThread) {
+                    mDrawThread.interrupt();
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+                PromptUtils.showToast("onDestroy error!" + e.getMessage());
+            }
+            mDrawThread = null;
         }
-        running = true;
     }
 
 
@@ -153,17 +135,9 @@ public abstract class BaseTextureView extends TextureView implements TextureView
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        if (mState == STATE_BACKGROUND_WHEN_DRAWING) {
-            mState = STATE_DRAWING;
-//            synchronized (mDrawThread) {
-//                mDrawThread.notify();
-//            }
-        } else if (mState == STATE_PAUSE) {
-            mState = STATE_BACKGROUND_WHEN_PAUSE;
-//            synchronized (mDrawThread) {
-//                mDrawThread.notify();
-//            }
-        }
+        Log.e("BaseTexureView", "onSurfaceTextureAvailable");
+        mDrawThread = new DrawThread();
+        mDrawThread.start();
     }
 
     @Override
@@ -173,8 +147,17 @@ public abstract class BaseTextureView extends TextureView implements TextureView
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        if (mState == STATE_DRAWING) {
-            mState = STATE_BACKGROUND_WHEN_DRAWING;
+        Log.e("BaseTexureView", "onSurfaceTextureDestroyed");
+        if (mDrawThread != null) {
+            try {
+                synchronized (mDrawThread) {
+                    mDrawThread.interrupt();
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+                PromptUtils.showToast("onSurfaceTextureDestroyed error!" + e.getMessage());
+            }
+            mDrawThread = null;
         }
         return false;
     }
@@ -192,24 +175,19 @@ public abstract class BaseTextureView extends TextureView implements TextureView
         mBgPaint.setStyle(Paint.Style.FILL);
     }
 
+
     private class DrawThread extends Thread {
-        private boolean isStart;
 
         @Override
         public void run() {
-            isStart = true;
             try {
-                while (running) {
-                    draw();
+                while (!isInterrupted()) {
+                    if (mState == STATE_DRAWING) {
+                        synchronized (this) {
+                            draw();
+                        }
+                    }
                     Thread.sleep(FRAME_DURATION);
-//                    if (mState == STATE_DRAWING || mState == STATE_STOPPING || mState == STATE_BACKGROUND_WHEN_PAUSE) {
-//                        draw();
-//                        Thread.sleep(FRAME_DURATION);
-//                    } else {
-//                        synchronized (this) {
-//                            mDrawThread.wait();
-//                        }
-//                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -217,15 +195,10 @@ public abstract class BaseTextureView extends TextureView implements TextureView
         }
 
         private void draw() {
-            Canvas canvas = lockCanvas(null);
-            if (canvas != null) {
-                clearCanvas(canvas);
-                if (mState == STATE_STOPPING) {
-                    unlockCanvasAndPost(canvas);
-                    mState = STATE_STOPPED;
-                    return;
-                }
-//                synchronized (BaseTextureView.this) {
+            try {
+                Canvas canvas = lockCanvas(null);
+                if (canvas != null) {
+                    clearCanvas(canvas);
                     if ((System.currentTimeMillis() - mLastDrawTime) >= FRAME_DURATION) {
                         mLastDrawTime = System.currentTimeMillis();
                     } else {
@@ -235,12 +208,12 @@ public abstract class BaseTextureView extends TextureView implements TextureView
                             e.printStackTrace();
                         }
                     }
-//                }
-                drawCanvas(canvas);
-                unlockCanvasAndPost(canvas);
-                if (mState == STATE_BACKGROUND_WHEN_PAUSE) { //Redraw the last frame when draw thread on pause state and app resume from background
-                    mState = STATE_PAUSE;
+                    drawCanvas(canvas);
+                    unlockCanvasAndPost(canvas);
                 }
+            } catch (Throwable e) {
+                e.printStackTrace();
+                PromptUtils.showToast("drawCanvas error!" + e.getMessage());
             }
         }
     }

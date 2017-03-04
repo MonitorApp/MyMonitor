@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.baidu.mapapi.SDKInitializer;
 import com.outsource.monitor.R;
 import com.outsource.monitor.base.BaseActivity;
+import com.outsource.monitor.config.Config;
 import com.outsource.monitor.config.PreferenceKey;
 import com.outsource.monitor.service.ConnectCallback;
 import com.outsource.monitor.service.DataProviderService;
@@ -29,6 +30,10 @@ import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 import com.outsource.monitor.utils.Utils;
+import com.thoughtworks.xstream.XStream;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ConnectActivity extends BaseActivity {
 

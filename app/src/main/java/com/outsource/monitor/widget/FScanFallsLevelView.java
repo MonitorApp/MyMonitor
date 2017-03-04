@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Created by Administrator on 2016/10/6.
  */
-public class FScanFallsLevelView extends BaseSurfaceView implements FscanDataReceiver {
+public class FScanFallsLevelView extends BaseTextureView implements FscanDataReceiver {
 
     private static final int X_AXIS_HEIGHT = DisplayUtils.dp2px(15);//x轴刻度区域的高度
     private static final int Y_AXIS_WIDTH = DisplayUtils.dp2px(15);//y轴刻度区域的宽度

@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 设备参数框架 -->
+<config>
+    <device name="TCI735V">
+        <param>
+            <item name="antenna" title="天线" type="enum" default="641F" min="" max="" unit="">
+                <item title="641F" value="641F" />
+            </item>
+            <item name="antmode" title="工作模式" type="enum" default="垂直极化天线测向" min="" max="" unit="">
+                <item title="垂直极化天线测向" value="垂直极化天线测向" />
+            </item>
+            <item name="avemethod" title="平均方法" type="enum" default="平均值" min="" max="" unit="">
+                <item title="最大保持" value="最大保持" />
+                <item title="平均值" value="平均值" />
+                <item title="均方根" value="均方根" />
+            </item>
+            <item name="betapercent" title="β％带宽" type="double" default="99" min="80.0" max="99.9" unit="%" />
+            <item name="bfo" title="差拍频率振荡" type="double" default="0" min="-8000" max="8000" unit="" />
+            <item name="bwoutputtype" title="占用带宽测否" type="enum" default="测量" min="" max="" unit="">
+                <item title="测量" value="测量" />
+                <item title="不测量" value="不测量" />
+            </item>
+            <item name="confthreshold" title="可信度门限" type="int" default="10" min="-30" max="100" unit="" />
+            <item name="demodbw" title="解调带宽" type="enum" default="100kHz" min="" max="" unit="">
+                <item title="1kHz" value="1kHz" />
+                <item title="3kHz" value="3kHz" />
+                <item title="6kHz" value="6kHz" />
+                <item title="9kHz" value="9kHz" />
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="150kHz" value="150kHz" />
+                <item title="200kHz" value="200kHz" />
+            </item>
+            <item name="demodmode" title="解调模式" type="enum" default="FM" min="" max="" unit="">
+                <item title="FM" value="FM" />
+                <item title="AM" value="AM" />
+                <item title="CW" value="CW" />
+                <item title="USB" value="USB" />
+                <item title="LSB" value="LSB" />
+            </item>
+            <item name="detector" title="检波方式" type="enum" default="峰值" min="" max="" unit="">
+                <item title="线性" value="线性" />
+                <item title="对数" value="对数" />
+                <item title="均方根" value="均方根" />
+                <item title="峰值" value="峰值" />
+            </item>
+            <item name="dfantmode" title="测向模式" type="enum" default="垂直测向" min="" max="" unit="">
+                <item title="垂直测向" value="垂直测向" />
+            </item>
+            <item name="dfbw" title="测向带宽" type="enum" default="100kHz" min="" max="" unit="">
+                <item title="1kHz" value="1kHz" />
+                <item title="3kHz" value="3kHz" />
+                <item title="5kHz" value="5kHz" />
+                <item title="6kHz" value="6kHz" />
+                <item title="6.25kHz" value="6.25kHz" />
+                <item title="7.5kHz" value="7.5kHz" />
+                <item title="8.333kHz" value="8.333kHz" />
+                <item title="9kHz" value="9kHz" />
+                <item title="10kHz" value="10kHz" />
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="15kHz" value="15kHz" />
+                <item title="20kHz" value="20kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="200kHz" value="200kHz" />
+                <item title="300kHz" value="300kHz" />
+                <item title="400kHz" value="400kHz" />
+                <item title="600kHz" value="600kHz" />
+                <item title="1MHz" value="1MHz" />
+                <item title="2MHz" value="2MHz" />
+                <item title="3MHz" value="3MHz" />
+                <item title="4MHz" value="4MHz" />
+                <item title="5MHz" value="5MHz" />
+                <item title="6MHz" value="6MHz" />
+                <item title="7MHz" value="7MHz" />
+                <item title="8MHz" value="8MHz" />
+                <item title="9MHz" value="9MHz" />
+                <item title="10MHz" value="10MHz" />
+                <item title="20MHz" value="20MHz" />
+            </item>
+            <item name="dfoutputtype" title="是否进行测向" type="enum" default="不测量" min="" max="" unit="">
+                <item title="不测量" value="不测量" />
+                <item title="垂直天线" value="垂直天线" />
+            </item>
+            <item name="fieldmethod" title="场强测量方法" type="enum" default="峰值" min="" max="" unit="">
+                <item title="线性" value="线性" />
+                <item title="对数" value="对数" />
+                <item title="均方根" value="均方根" />
+                <item title="峰值" value="峰值" />
+            </item>
+            <item name="fieldoutputtype" title="信号场强测否" type="enum" default="测量" min="" max="" unit="">
+                <item title="测量" value="测量" />
+                <item title="不测量" value="不测量" />
+            </item>
+            <item name="freqmethod" title="频率测量方法" type="enum" default="FFT方式" min="" max="" unit="">
+                <item title="FFT方式" value="FFT方式" />
+                <item title="IFM方式" value="IFM方式" />
+            </item>
+            <item name="freqoutputtype" title="中心频率测否" type="enum" default="测量" min="" max="" unit="">
+                <item title="测量" value="测量" />
+                <item title="不测量" value="不测量" />
+            </item>
+            <item name="frequency" title="频率" type="double" default="97.1" min="0.009" max="3000.0" unit="MHz" />
+            <item name="gainctrl" title="增益控制" type="enum" default="快速" min="" max="" unit="">
+                <item title="快速" value="快速" />
+                <item title="中速" value="中速" />
+                <item title="慢速" value="慢速" />
+            </item>
+            <item name="holdtime" title="频谱间隔时间" type="double" default="0" min="0" max="10" unit="秒" />
+            <item name="ifbw" title="中频带宽" type="enum" default="100kHz" min="" max="" unit="">
+                <item title="1kHz" value="1kHz" />
+                <item title="3kHz" value="3kHz" />
+                <item title="6kHz" value="6kHz" />
+                <item title="9kHz" value="9kHz" />
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="150kHz" value="150kHz" />
+                <item title="200kHz" value="200kHz" />
+            </item>
+            <item name="mbw" title="测量带宽" type="enum" default="100kHz" min="" max="" unit="">            
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="15kHz" value="15kHz" />
+                <item title="20kHz" value="20kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="200kHz" value="200kHz" />
+                <item title="300kHz" value="300kHz" />
+                <item title="400kHz" value="400kHz" />
+                <item title="600kHz" value="600kHz" />
+                <item title="1MHz" value="1MHz" />
+                <item title="2MHz" value="2MHz" />
+                <item title="3MHz" value="3MHz" />
+                <item title="4MHz" value="4MHz" />
+                <item title="5MHz" value="5MHz" />
+                <item title="6MHz" value="6MHz" />
+                <item title="7MHz" value="7MHz" />
+                <item title="8MHz" value="8MHz" />
+                <item title="9MHz" value="9MHz" />
+                <item title="10MHz" value="10MHz" />
+                <item title="20MHz" value="20MHz" />
+            </item>
+            <item name="modeoutputtype" title="调制参数测否" type="enum" default="测量" min="" max="" unit="">
+                <item title="测量" value="测量" />
+                <item title="不测量" value="不测量" />
+            </item>
+            <item name="qualitythreshold" title="质量门限" type="int" default="30" min="0" max="100" unit="" />
+            <item name="rbw" title="分辨率带宽" type="enum" default="25kHz" min="" max="" unit="">
+                <item title="5kHz" value="5kHz" />
+                <item title="6.25kHz" value="6.25kHz" />
+                <item title="7.5kHz" value="7.5kHz" />
+                <item title="8.333kHz" value="8.333kHz" />
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="15kHz" value="15kHz" />
+                <item title="20kHz" value="20kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="200kHz" value="200kHz" />
+                <item title="300kHz" value="300kHz" />
+                <item title="400kHz" value="400kHz" />
+                <item title="600kHz" value="600kHz" />
+            </item>
+            <item name="recordthreshold" title="录音门限" type="int" default="关" min="-20" max="150" unit="dBμV" />
+            <item name="repeatcount" title="测量次数" type="int" default="1" min="1" max="10" unit="" />
+            <item name="signaltype" title="信号类型" type="enum" default="常规信号" min="" max="" unit="">
+                <item title="常规信号" value="常规信号" />
+                <item title="触发信号" value="触发信号" />
+            </item>
+            <item name="span" title="跨距" type="enum" default="20MHz" min="" max="" unit="">
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="15kHz" value="15kHz" />
+                <item title="20kHz" value="20kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="200kHz" value="200kHz" />
+                <item title="300kHz" value="300kHz" />
+                <item title="400kHz" value="400kHz" />
+                <item title="600kHz" value="600kHz" />
+                <item title="1MHz" value="1MHz" />
+                <item title="2MHz" value="2MHz" />
+                <item title="3MHz" value="3MHz" />
+                <item title="4MHz" value="4MHz" />
+                <item title="5MHz" value="5MHz" />
+                <item title="6MHz" value="6MHz" />
+                <item title="7MHz" value="7MHz" />
+                <item title="8MHz" value="8MHz" />
+                <item title="9MHz" value="9MHz" />
+                <item title="10MHz" value="10MHz" />
+                <item title="20MHz" value="20MHz" />
+            </item>
+            <item name="squelchthreshold" title="静噪门限" type="int" default="关" min="-30" max="110" unit="dBμV" />
+            <item name="startfreq" title="起始频率" type="double" default="137.0" min="0.009" max="3000.0" unit="MHz" />
+            <item name="step" title="扫描步长" type="enum" default="25kHz" min="" max="" unit="">
+                <item title="5kHz" value="5kHz" />
+                <item title="6.25kHz" value="6.25kHz" />
+                <item title="7.5kHz" value="7.5kHz" />
+                <item title="8.333kHz" value="8.333kHz" />
+                <item title="12.5kHz" value="12.5kHz" />
+                <item title="15kHz" value="15kHz" />
+                <item title="20kHz" value="20kHz" />
+                <item title="25kHz" value="25kHz" />
+                <item title="30kHz" value="30kHz" />
+                <item title="50kHz" value="50kHz" />
+                <item title="100kHz" value="100kHz" />
+                <item title="200kHz" value="200kHz" />
+		<item title="300kHz" value="300kHz" />
+                <item title="400kHz" value="400kHz" />
+                <item title="600kHz" value="600kHz" />
+            </item>
+            <item name="stopfreq" title="终止频率" type="double" default="173.0" min="0.009" max="3000.0" unit="MHz" />
+            <item name="tciantenna" title="天线" type="enum" default="监测天线" min="" max="" unit="">
+                <item title="监测天线" value="监测天线" />
+                <item title="外接天线1" value="外接天线1" />
+                <item title="外接天线2" value="外接天线2" />
+                <item title="测向天线垂直1" value="测向天线垂直1" />
+                <item title="测向天线垂直2" value="测向天线垂直2" />
+                <item title="测向天线垂直3" value="测向天线垂直3" />
+                <item title="测向天线垂直4" value="测向天线垂直4" />
+                <item title="测向天线垂直5" value="测向天线垂直5" />
+                <item title="测向天线垂直6" value="测向天线垂直6" />
+                <item title="测向天线垂直7" value="测向天线垂直7" />
+                <item title="测向天线垂直8" value="测向天线垂直8" />
+                <item title="测向天线垂直9" value="测向天线垂直9" />
+            </item>
+            <item name="workmode" title="工作方式" type="enum" default="宽带模式" min="" max="" unit="">
+                <item title="宽带模式" value="宽带模式" />
+                <item title="窄带模式" value="窄带模式" />
+            </item>
+            <item name="x1db" title="X1dB值" type="int" default="6" min="3" max="60" unit="dB" />
+            <item name="x2db" title="X2dB值" type="int" default="26" min="3" max="60" unit="dB" />
+        </param>
+
+        <!-- 单频测量功能 add by xionghao 17/3/5 -->
+        <func id="9" secs="1">
+            <items>
+                <item name="frequency" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="detector" living="true" />
+                <item name="gainctrl" living="true" />
+                <item name="span" living="true" />
+                <item name="recordthreshold" living="true" />
+            </items>
+        </func>
+        <func id="10" secs="1">
+            <items>
+                <item name="antenna" living="true" />
+                <item name="frequency" living="true" />
+                <item name="mbw" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="gainctrl" living="true" />
+                <item name="bfo" living="true" />
+            </items>
+        </func>
+        <func id="11" secs="1">
+            <items>
+                <item name="antenna" living="true" />
+                <item name="frequency" living="true" />
+                <item name="mbw" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="gainctrl" living="true" />
+                <item name="bfo" living="true" />
+            </items>
+        </func>
+        <func id="12" secs="1">
+            <items>
+                <item name="antenna" living="true" />
+                <item name="frequency" living="true" />
+                <item name="dfbw" living="true" />
+                <item name="dfantmode" living="true" />     
+				<item name="qualitythreshold" living="true" />
+                <item name="repeatcount" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="gainctrl" living="true" />
+                <item name="bfo" living="true" />
+            </items>
+        </func>
+        <func id="13" secs="1">
+            <items>
+                <item name="antenna" living="true" />
+                <item name="frequency" living="true" />
+                <item name="mbw" living="true" />
+                <item name="dfbw" living="true" />
+                <item name="dfantmode" living="true" />     
+		<item name="qualitythreshold" living="true" />
+                <item name="repeatcount" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="gainctrl" living="true" />
+                <item name="bfo" living="true" />
+            </items>
+        </func>
+        <func id="14" secs="1000">
+            <items>
+		<item name="antenna" living="false" />
+                <item name="frequency" living="false" />
+                <item name="ifbw" living="false" />
+            </items>
+        </func>
+        <func id="15" secs="5">
+            <items>
+                <item name="antenna" living="false" />
+                <item name="startfreq" living="false" />
+                <item name="stopfreq" living="false" />
+                <item name="step" living="false" />
+                <item name="workmode" living="false" />
+            </items>
+        </func>
+        <func id="22" secs="1000">
+            <items>
+                <item name="antenna" living="false" />
+                <item name="frequency" living="false" />
+                <item name="ifbw" living="false" />
+                <item name="demodmode" living="false" />
+                <item name="gainctrl" living="false" />
+                <item name="bfo" living="false" />
+                <item name="holdtime" living="false" />
+                <item name="squelchthreshold" living="false" />
+            </items>
+        </func>
+        <func id="25" secs="1">
+            <items>
+		<item name="antenna" living="false" />
+                <item name="startfreq" living="false" />
+                <item name="stopfreq" living="false" />
+                <item name="rbw" living="false" />
+                <item name="signaltype" living="false" />
+                <item name="workmode" living="false" />
+                <item name="antmode" living="false" />
+                <item name="confthreshold" living="false" />
+                <item name="qualitythreshold" living="false" />
+            </items>
+        </func>
+        <func id="24" secs="1">
+            <items>
+                <item name="antenna" living="true" />
+                <item name="frequency" living="true" />
+                <item name="mbw" living="true" />
+                <item name="dfbw" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="avemethod" living="true" />
+                <item name="repeatcount" living="true" />
+                <item name="freqoutputtype" living="true" />
+                <item name="freqmethod" living="true" />
+                <item name="modeoutputtype" living="true" />
+                <item name="fieldoutputtype" living="true" />
+                <item name="fieldmethod" living="true" />
+                <item name="bwoutputtype" living="true" />
+                <item name="betapercent" living="true" />
+                <item name="x1db" living="true" />
+                <item name="x2db" living="true" />
+                <item name="dfoutputtype" living="true" />
+                <item name="qualitythreshold" living="true" />
+            </items>
+            <constraint>
+                <item type="hide" master="freqoutputtype" mvalue="不测量" slave="freqmethod" svalue="FFT方式" />
+                <item type="hide" master="fieldoutputtype" mvalue="不测量" slave="fieldmethod" svalue="峰值" />
+                <item type="hide" master="bwoutputtype" mvalue="不测量" slave="betapercent" svalue="99" />
+                <item type="hide" master="bwoutputtype" mvalue="不测量" slave="x1db" svalue="6" />
+                <item type="hide" master="bwoutputtype" mvalue="不测量" slave="x2db" svalue="26" />
+                <items type="enable" master="mbw" slave="dfbw">
+                    <item masteritems="12.5kHz|" slaveitems="1kHz|3kHz|5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|" />
+                    <item masteritems="15kHz|" slaveitems="1kHz|3kHz|5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|15kHz|" />
+                    <item masteritems="20kHz|" slaveitems="1kHz|3kHz|5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|15kHz|20kHz|" />
+                    <item masteritems="25kHz|" slaveitems="1kHz|3kHz|5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|15kHz|20kHz|25kHz|" />
+                    <item masteritems="30kHz|" slaveitems="3kHz|5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|15kHz|20kHz|25kHz|30kHz|" />
+                    <item masteritems="50kHz|" slaveitems="3kHz|5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|15kHz|20kHz|25kHz|30kHz|50kHz|" />
+                    <item masteritems="100kHz|" slaveitems="5kHz|6kHz|6.25kHz|7.5kHz|8.333kHz|9kHz|10kHz|12.5kHz|15kHz|20kHz|25kHz|30kHz|50kHz|100kHz|" />
+                    <item masteritems="200kHz|" slaveitems="8.333kHz|9kHz|10kHz|12.5kHz|15kHz|20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|" />
+                    <item masteritems="300kHz|" slaveitems="15kHz|20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|" />
+                    <item masteritems="400kHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|" />
+                    <item masteritems="600kHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|" />
+                    <item masteritems="1MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|" />
+                    <item masteritems="2MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|" />
+                    <item masteritems="3MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|" />
+                    <item masteritems="4MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|" />
+                    <item masteritems="5MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|" />
+                    <item masteritems="6MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|6MHz|" />
+                    <item masteritems="7MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|6MHz|7MHz|" />
+                    <item masteritems="8MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|6MHz|7MHz|8MHz|" />
+                    <item masteritems="9MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|6MHz|7MHz|8MHz|9MHz|" />
+                    <item masteritems="10MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|6MHz|7MHz|8MHz|9MHz|10MHz|" />
+                    <item masteritems="20MHz|" slaveitems="20kHz|25kHz|30kHz|50kHz|100kHz|200kHz|300kHz|400kHz|600kHz|1MHz|2MHz|3MHz|4MHz|5MHz|6MHz|7MHz|8MHz|9MHz|10MHz|20MHz|" /> 
+		</items>
+            </constraint>
+        </func>
+    </device>
+</config>

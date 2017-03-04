@@ -1,43 +1,43 @@
 package com.outsource.monitor.itu.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.outsource.monitor.R;
-import com.outsource.monitor.parser.ItuParser48278;
-import com.outsource.monitor.itu.ItuDataReceiver;
+import com.outsource.monitor.config.ConfigManager;
+import com.outsource.monitor.config.Param;
+import com.outsource.monitor.config.UIParam;
 import com.outsource.monitor.itu.event.ItuParamChangeEvent;
 import com.outsource.monitor.itu.model.SingleFrequencyParam;
 import com.outsource.monitor.utils.PromptUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Administrator on 2016/10/2.
  */
-public class MenuFragmentItu extends Fragment implements View.OnClickListener, ItuDataReceiver {
+public class MenuFragmentItu extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "MenuFragmentSingleFrequency";
 
-    private EditText mEtFrequency;          //频率
-    private EditText mEtMdlFrequencyBand;  //中频带宽
-    private TextView mTvDemodulate;         //解调模式
-    private EditText mEtStep;               //跨距
-    private TextView mTvDetectionMode;    //检波方式
-    private TextView mTvBandScanMode;      //带宽测量模式
-    private TextView mTvIncreaseMode;      //增益模式
-    private TextView mTvRfAttenuation;      //射频衰减
-    private CheckBox mCbRecord;                //记录保存
+
+    private LinearLayout mLlLabel;
+    private LinearLayout mLlValue;
 
     public static Fragment newInstance() {
         return new MenuFragmentItu();
@@ -46,48 +46,110 @@ public class MenuFragmentItu extends Fragment implements View.OnClickListener, I
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.frag_menu_itu, container, false);
-        mEtFrequency = (EditText) view.findViewById(R.id.et_itu_frequence);
-
-        mEtMdlFrequencyBand = (EditText) view.findViewById(R.id.et_itu_mdl_band);
-        mTvDemodulate  = (TextView)view.findViewById(R.id.tv_demodulate);
-        mEtStep = (EditText) view.findViewById(R.id.et_itu_step);
-        mTvDetectionMode = (TextView) view.findViewById(R.id.tv_detection_mode);
-        mTvBandScanMode = (TextView) view.findViewById(R.id.tv_band_scan_mode);
-        mTvIncreaseMode = (TextView) view.findViewById(R.id.tv_increase_mode);
-        mTvRfAttenuation = (TextView) view.findViewById(R.id.tv_rf_attenuation);
-        mCbRecord = (CheckBox) view.findViewById(R.id.cb_record);
-        view.findViewById(R.id.btn_change_param).setOnClickListener(this);
-
-        SetParam2UI(SingleFrequencyParam.loadFromCache());
+        View view = inflater.inflate(R.layout.frag_menu_itu2, container, false);
+        mLlLabel = (LinearLayout) view.findViewById(R.id.ll_itu_param_label);
+        mLlValue = (LinearLayout) view.findViewById(R.id.ll_itu_param_value);
+        view.findViewById(R.id.btn_save_param).setOnClickListener(this);
+        loadParams();
         return view;
     }
 
-    public SingleFrequencyParam GetParamFromUI()
-    {
-        SingleFrequencyParam param = new SingleFrequencyParam();
-        param.frequecy = getInputFrequency();
-        param.ifbw = getInputBand();
-        param.demodmode = mTvDemodulate.getText().toString();
-        param.span = getInputStep();
-        return param;
+    private void loadParams() {
+        mLlLabel.removeAllViews();
+        mLlValue.removeAllViews();
+        SingleFrequencyParam param = SingleFrequencyParam.loadFromCache();
+        List<Param.Item> params = ConfigManager.getInstance().getFuncParams(0);
+        for (final Param.Item p : params) {
+            final String title = p.title + (TextUtils.isEmpty(p.unit) ? "" : "(单位：" + p.unit + ")");
+            TextView tv = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.item_param_label, mLlLabel, false);
+            tv.setText(title);
+            tv.setTag(p);
+            mLlLabel.addView(tv);
+
+            if (TextUtils.equals(p.type, "int") || TextUtils.equals(p.type, "double")) {
+                EditText et = (EditText) LayoutInflater.from(getActivity()).inflate(R.layout.item_param_value, mLlValue, false);
+                et.setInputType(TextUtils.equals(p.type, "int") ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                et.setHint("请输入" + p.title);
+                et.setText(p.defaultValue);
+                et.setTag(p.defaultValue);
+                mLlValue.addView(et);
+
+                for (UIParam uiParam : param.uiParams) {
+                    if (TextUtils.equals(uiParam.name, p.name)) {
+                        et.setText(uiParam.value);
+                    }
+                }
+            } else if (TextUtils.equals(p.type, "enum")) {
+                final TextView tvOptions = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.item_param_label, mLlLabel, false);
+                tvOptions.setText(p.defaultValue);
+                tvOptions.setTag(p.defaultValue);
+                tvOptions.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final List<Param.Item.Value> options = p.values;
+                        final ArrayList<CharSequence> titles = new ArrayList<>(options.size());
+                        final ArrayList<CharSequence> values = new ArrayList<>(options.size());
+                        for (Param.Item.Value option : options) {
+                            titles.add(option.title);
+                            values.add(option.value);
+                        }
+                        CharSequence[] ts = new CharSequence[options.size()];
+                        titles.toArray(ts);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("请选择" + p.title);
+                        builder.setItems(ts, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                tvOptions.setText(titles.get(which));
+                                tvOptions.setTag(values.get(which));
+                            }
+                        });
+                        builder.create().show();
+                    }
+                });
+
+                for (UIParam uiParam : param.uiParams) {
+                    if (TextUtils.equals(uiParam.name, p.name)) {
+                        tvOptions.setText(uiParam.value);
+                    }
+                }
+                mLlValue.addView(tvOptions);
+            }
+        }
     }
 
-    public void SetParam2UI(SingleFrequencyParam param)
+    public SingleFrequencyParam getParamFromUI()
     {
-        if (param.frequecy != 0) mEtFrequency.setText(String.format ("%.1f", param.frequecy));
-        if (param.ifbw != 0) mEtMdlFrequencyBand.setText(String.format("%.1f", param.ifbw));
-        if (param.demodmode != null) mTvDemodulate.setText(param.demodmode);
-        if (param.span != 0) mEtStep.setText(String.format("%d", param.span));
+        SingleFrequencyParam singleFrequencyParam = new SingleFrequencyParam();
+        List<UIParam> uiParams = new ArrayList<>();
+        int childCount = mLlValue.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            TextView tv = (TextView) mLlLabel.getChildAt(i);
+            TextView tvValue = (TextView) mLlValue.getChildAt(i);
+            Param.Item p = (Param.Item) tv.getTag();
+            UIParam uiParam = new UIParam();
+            uiParam.name = p.name;
+            uiParam.unit = p.unit;
+            if (TextUtils.equals(p.type, "enum")) {
+                uiParam.unit = "";
+                uiParam.value = tvValue.getTag().toString();
+            } else {
+                uiParam.value = tvValue.getText().toString();
+            }
+            uiParams.add(uiParam);
+        }
+        singleFrequencyParam.uiParams.clear();
+        singleFrequencyParam.uiParams.addAll(uiParams);
+        return singleFrequencyParam;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId())
         {
-            case R.id.btn_change_param:
+            case R.id.btn_save_param:
                 if (checkInput()) {
-                    SingleFrequencyParam param = GetParamFromUI();
+                    SingleFrequencyParam param = getParamFromUI();
                     param.save();
                     EventBus.getDefault().post(new ItuParamChangeEvent(param));
                 }
@@ -95,70 +157,14 @@ public class MenuFragmentItu extends Fragment implements View.OnClickListener, I
         }
     }
 
-    @Override
-    public void onReceiveItuData(List<Float> ituData) {
-    }
-
-    @Override
-    public void onReceiveItuHead(final ItuParser48278.DataHead ituHead) {
-        if (ituHead != null && mEtFrequency != null) {
-            mEtFrequency.post(new Runnable() {
-                @Override
-                public void run() {
-                    mEtFrequency.setText(String.format ("%.1f", ituHead.frequence / 1000000f));
-                }
-            });
-        }
-    }
-
     private boolean checkInput() {
-        return checkFrequency() && checkBand() && checkStep();
-    }
-
-    private float getInputFrequency() {
-        if (checkFrequency()) {
-            return Float.valueOf(mEtFrequency.getText().toString());
-        }
-        return 0;
-    }
-
-    private boolean checkFrequency() {
-        String frequency = mEtFrequency.getText().toString().trim();
-        if (TextUtils.isEmpty(frequency)) {
-            PromptUtils.showToast("请输入频率");
-            return false;
-        }
-        return true;
-    }
-
-    private float getInputBand() {
-        if (checkBand()) {
-            return Float.valueOf(mEtMdlFrequencyBand.getText().toString());
-        }
-        return 0;
-    }
-
-    private boolean checkBand() {
-        String band = mEtMdlFrequencyBand.getText().toString().trim();
-        if (TextUtils.isEmpty(band)) {
-            PromptUtils.showToast("请输入带宽");
-            return false;
-        }
-        return true;
-    }
-
-    private int getInputStep() {
-        if (checkStep()) {
-            return Integer.valueOf(mEtStep.getText().toString());
-        }
-        return 0;
-    }
-
-    private boolean checkStep() {
-        String span = mEtStep.getText().toString().trim();
-        if (TextUtils.isEmpty(span)) {
-            PromptUtils.showToast("请输入跨距");
-            return false;
+        int childCount = mLlValue.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            TextView tvValue = (TextView) mLlValue.getChildAt(i);
+            if (TextUtils.isEmpty(tvValue.getText().toString())) {
+                PromptUtils.showToast("请填写有效的参数");
+                return false;
+            }
         }
         return true;
     }

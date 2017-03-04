@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author xh2009cn
  * @version 1.0.0
  */
-public class LevelTextureView extends BaseSurfaceView implements DataReceiver, ScaleGestureDetector.OnScaleGestureListener {
+public class LevelTextureView extends BaseTextureView implements DataReceiver, ScaleGestureDetector.OnScaleGestureListener {
 
     private static final int DURATION_SPAN = 60 * 1000;//一屏显示的时长，单位毫秒
     private static final float LEVEL_SPAN = 100;//一屏显示的电平数

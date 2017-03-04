@@ -80,7 +80,6 @@ public class ItuFragment extends BaseMonitorFragment {
                     service.addItuDataReceiver(((MonitorCenterActivity) getActivity()).getMapFragment());
                 }
                 service.addItuDataReceiver((ItuDataReceiver) mContentFragment);
-                service.addItuDataReceiver((ItuDataReceiver) mMenuFragment);
                 String ip = PreferenceUtils.getString(PreferenceKey.DEVICE_IP);
                 int port = PreferenceUtils.getInt(PreferenceKey.DEVICE_PORT);
                 service.connect(ip, port, new ConnectCallback() {
@@ -112,7 +111,7 @@ public class ItuFragment extends BaseMonitorFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayPauseEvent(PlayPauseEvent playPauseEvent) {
         if (playPauseEvent.isPlay) {
-            if (mItuParam == null || mItuParam.frequecy == 0 || mItuParam.ifbw == 0 || mItuParam.span == 0) {
+            if (mItuParam == null) {
                 PromptUtils.showToast("请先设置有效的单频测量参数再开始");
                 EventBus.getDefault().post(new PlayBallStateEvent(false));
             } else {

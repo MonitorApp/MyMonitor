@@ -91,7 +91,7 @@
 
     </LinearLayout>
 
-    <com.outsource.monitor.mpchart.DefaultLineChart
+    <com.outsource.monitor.widget.mpchart.DefaultLineChart
         android:id="@+id/chart_single_frequency_line"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -105,7 +105,7 @@
         android:layout_marginTop="12dp"
         android:textColor="@color/text_color_999"/>
 
-    <com.outsource.monitor.mpchart.DefaultBarChart
+    <com.outsource.monitor.widget.mpchart.DefaultBarChart
         android:id="@+id/chart_single_frequency_time_percentage"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -119,7 +119,7 @@
         android:layout_marginTop="12dp"
         android:textColor="@color/text_color_999"/>
 
-    <com.outsource.monitor.mpchart.DefaultBarChart
+    <com.outsource.monitor.widget.mpchart.DefaultBarChart
         android:id="@+id/chart_single_frequency_max_level"
         android:layout_width="match_parent"
         android:layout_height="0dp"

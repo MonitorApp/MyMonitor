@@ -64,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:hint="请输入设备端口号"
+                    android:text="5050"
                     android:inputType="number" />
 
                 <Button
