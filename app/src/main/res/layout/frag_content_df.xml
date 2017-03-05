@@ -43,7 +43,7 @@
 
     </LinearLayout>
 
-    <com.outsource.monitor.df.widget.CompassView
+    <com.outsource.monitor.monitor.df.widget.CompassView
         android:id="@+id/df_compassView"
         android:layout_width="300dp"
         android:layout_height="300dp"

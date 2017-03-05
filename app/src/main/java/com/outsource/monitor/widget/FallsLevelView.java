@@ -6,10 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
-import com.outsource.monitor.event.PlayPauseEvent;
-import com.outsource.monitor.ifpan.model.FallRow;
-import com.outsource.monitor.parser.IfpanParser48278;
-import com.outsource.monitor.ifpan.IfpanDataReceiver;
+import com.outsource.monitor.monitor.base.event.PlayPauseEvent;
+import com.outsource.monitor.monitor.ifpan.model.FallRow;
+import com.outsource.monitor.monitor.base.parser.IfpanParser48278;
+import com.outsource.monitor.monitor.ifpan.IfpanDataReceiver;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;

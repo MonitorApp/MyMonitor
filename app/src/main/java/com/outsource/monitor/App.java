@@ -4,8 +4,7 @@ import android.app.Application;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.outsource.monitor.config.ConfigManager;
-import com.outsource.monitor.floating.FloatingActivityLifecycleCallback;
-import com.outsource.monitor.service.LocationService;
+import com.outsource.monitor.other.map.LocationService;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.EnvironmentUtils;
 import com.outsource.monitor.utils.PreferenceUtils;
@@ -26,10 +25,7 @@ public class App extends Application {
         PromptUtils.init(this);
         PreferenceUtils.init(this);
         SDKInitializer.initialize(this);
-//        FloatingManager.getInstance().setFloatingView(new FloatingBall(this));
-        registerActivityLifecycleCallbacks(new FloatingActivityLifecycleCallback());
         locationService = new LocationService(getApplicationContext());
-//        CrashHandler.getInstance().init(this);
         ConfigManager.getInstance().initFromXml(this);
     }
 }

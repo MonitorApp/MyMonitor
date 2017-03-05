@@ -171,7 +171,7 @@
                 <item title="400kHz" value="400kHz" />
                 <item title="600kHz" value="600kHz" />
             </item>
-            <item name="recordthreshold" title="录音门限" type="int" default="关" min="-20" max="150" unit="dBμV" />
+            <item name="recordthreshold" title="录音门限" type="int" default="40" min="-20" max="150" unit="dBμV" />
             <item name="repeatcount" title="测量次数" type="int" default="1" min="1" max="10" unit="" />
             <item name="signaltype" title="信号类型" type="enum" default="常规信号" min="" max="" unit="">
                 <item title="常规信号" value="常规信号" />
@@ -243,18 +243,69 @@
             <item name="x2db" title="X2dB值" type="int" default="26" min="3" max="60" unit="dB" />
         </param>
 
-        <!-- 单频测量功能 add by xionghao 17/3/5 -->
-        <func id="9" secs="1">
+        <!--  add by xionghao 17/3/5 -->
+        <!--  单频测量功能 -->
+        <func id="1" secs="1">
             <items>
                 <item name="frequency" living="true" />
                 <item name="ifbw" living="true" />
                 <item name="demodmode" living="true" />
-                <item name="detector" living="true" />
-                <item name="gainctrl" living="true" />
+                <item name="demodbw" living="true" />
                 <item name="span" living="true" />
-                <item name="recordthreshold" living="true" />
+                <item name="detector" living="true" />
             </items>
         </func>
+        <!--  中频分析 -->
+        <func id="2" secs="1">
+            <items>
+                <item name="frequency" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="demodbw" living="true" />
+                <item name="span" living="true" />
+                <item name="detector" living="true" />
+            </items>
+        </func>
+        <!--  频段扫描 -->
+        <func id="3" secs="1">
+            <items>
+                <item name="startfreq" living="true" />
+                <item name="stopfreq" living="true" />
+                <item name="step" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="detector" living="true" />
+            </items>
+        </func>
+        <!--  单频测向 -->
+        <func id="4" secs="1">
+            <items>
+                <item name="frequency" living="true" />
+                <item name="dfbw" living="true" />
+                <item name="span" living="true" />
+                <item name="demodmode" living="true" />
+                <item name="demodbw" living="true" />
+                <item name="detector" living="true" />
+            </items>
+        </func>
+        <!--  离散扫描 -->
+        <func id="5" secs="1">
+            <items>
+                <item name="frequency" living="true" />
+                <item name="ifbw" living="true" />
+                <item name="detector" living="true" />
+            </items>
+        </func>
+        <!--  数字扫描 -->
+        <func id="6" secs="1">
+            <items>
+                <item name="frequency" living="true" />
+                <item name="step" living="true" />
+                <item name="span" living="true" />
+                <item name="detector" living="true" />
+            </items>
+        </func>
+
+
         <func id="10" secs="1">
             <items>
                 <item name="antenna" living="true" />

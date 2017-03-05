@@ -20,6 +20,7 @@
         <TextView
             android:id="@+id/tv_play_pause"
             style="@style/TabLeftMenu"
+            android:background="@drawable/sel_pressed_bg_2"
             android:textSize="13sp"
             android:text="开始"/>
 

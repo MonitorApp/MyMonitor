@@ -6,11 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
-import com.outsource.monitor.event.PlayPauseEvent;
-import com.outsource.monitor.fscan.event.FscanChooseFrequency;
-import com.outsource.monitor.ifpan.model.FallRow;
-import com.outsource.monitor.parser.FscanParser48278;
-import com.outsource.monitor.fscan.FscanDataReceiver;
+import com.outsource.monitor.monitor.base.event.PlayPauseEvent;
+import com.outsource.monitor.monitor.ifpan.model.FallRow;
+import com.outsource.monitor.monitor.base.parser.FscanParser48278;
+import com.outsource.monitor.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
@@ -142,15 +141,6 @@ public class FScanFallsLevelView extends BaseTextureView implements FscanDataRec
             start();
         } else {
             pause();
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFrequencyChoose(FscanChooseFrequency fscanChooseFrequency) {
-        if (mHead.get() != null && fscanChooseFrequency.position < mHead.get().fscanParamList.size()) {
-            FscanParser48278.DataHead.FcanParam param = mHead.get().fscanParamList.get(fscanChooseFrequency.position);
-            startFreqency = DisplayUtils.toDisplayFrequency(param.startFreq);
-            endFrequency = DisplayUtils.toDisplayFrequency(param.endFreq);
         }
     }
 
