@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.outsource.monitor.R;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 import com.outsource.monitor.monitor.df.DfDataReceiver;
 import com.outsource.monitor.monitor.df.widget.CompassView;
 import com.outsource.monitor.monitor.base.parser.DFParser48278;
@@ -21,7 +22,7 @@ import com.outsource.monitor.utils.LogUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ContentFragmentDf extends Fragment implements DfDataReceiver {
+public class ContentFragmentDf extends BasePlayFragment implements DfDataReceiver {
 
     public static ContentFragmentDf newInstance() {
         return new ContentFragmentDf();
@@ -30,8 +31,6 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
     private AtomicReference<DFParser48278.DataValue> mCurrentData = new AtomicReference<>();
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final int MSG_ID_REFRESH_COMPASS = 1;
-
-    private boolean isPlay = true;
 
     private TextView mTvFrequency;
     private TextView mTvAngle;
@@ -42,7 +41,7 @@ public class ContentFragmentDf extends Fragment implements DfDataReceiver {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_ID_REFRESH_COMPASS) {
-                if (isPlay) {
+                if (isPlay()) {
                     if (mCurrentData.get() != null) {
                         float angle = mCurrentData.get().dir;
                         mCompassView.setBearing(angle);

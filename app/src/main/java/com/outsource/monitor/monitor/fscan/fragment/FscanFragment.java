@@ -1,9 +1,8 @@
 package com.outsource.monitor.monitor.fscan.fragment;
 
-import android.support.v4.app.Fragment;
-
 import com.outsource.monitor.config.Tab;
 import com.outsource.monitor.monitor.base.ui.BaseFuncFragment;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 
 /**
  * Created by xionghao on 2016/12/17.
@@ -21,7 +20,7 @@ public class FscanFragment extends BaseFuncFragment {
     }
 
     @Override
-    public Fragment createContentFragment() {
+    public BasePlayFragment createContentFragment() {
         return ContentFragmentFscan.newInstance();
     }
 }

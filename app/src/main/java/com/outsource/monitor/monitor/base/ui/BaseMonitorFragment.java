@@ -23,11 +23,11 @@ public abstract class BaseMonitorFragment extends Fragment {
 
     protected Tab mCurrentTab = Tab.ITU;
     protected DrawerLayout mDrawerLayout;
-    protected Fragment mContentFragment;
+    protected BasePlayFragment mContentFragment;
     protected Fragment mMenuFragment;
 
     public abstract Tab tab();
-    public abstract Fragment createContentFragment();
+    public abstract BasePlayFragment createContentFragment();
     public abstract Fragment createMenuFragment();
 
     public BaseMonitorFragment() {
@@ -89,5 +89,9 @@ public abstract class BaseMonitorFragment extends Fragment {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    protected BasePlayFragment getContentFragment() {
+        return mContentFragment;
     }
 }

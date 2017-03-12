@@ -28,6 +28,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.outsource.monitor.R;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 import com.outsource.monitor.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.monitor.fscan.adapter.FscanRangeAdapter;
 import com.outsource.monitor.monitor.fscan.chartformatter.FscanXAxisValueFormatter;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ContentFragmentFscan extends Fragment implements FscanDataReceiver {
+public class ContentFragmentFscan extends BasePlayFragment implements FscanDataReceiver {
 
     private FscanRangeAdapter mFScanRangeAdapter;
 
@@ -61,7 +62,6 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final int MSG_ID_REFRESH_CHART = 1;
 
-    private boolean isPlay = true;
     private boolean showLineChart = false;
 
     private int choosePosition;
@@ -73,7 +73,7 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_ID_REFRESH_CHART) {
-                if (isPlay) {
+                if (isPlay()) {
                     if (showLineChart) {
                         refreshLineChart();
                     }
@@ -110,9 +110,9 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
         initFallChart(view);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, 500);
 
-        if (!isPlay) {
-            mFallsLevelView.pause();
-        }
+//        if (!isPlay()) {
+//            mFallsLevelView.pause();
+//        }
         return view;
     }
 
@@ -272,7 +272,7 @@ public class ContentFragmentFscan extends Fragment implements FscanDataReceiver 
         BarDataSet set = new BarDataSet(entries, "DataSet 1");
         BarData barData = data.getBarData();
         barData.setValueTextSize(10f);
-        barData.setBarWidth(displaySpan / count / 6);
+        barData.setBarWidth(0.9f * displaySpan / count);
         barData.setOrientation(BarData.Orientation.VERTICAL);
         barData.removeDataSet(0);
         barData.addDataSet(set);

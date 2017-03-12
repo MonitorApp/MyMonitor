@@ -1,9 +1,8 @@
 package com.outsource.monitor.monitor.itu.fragment;
 
-import android.support.v4.app.Fragment;
-
 import com.outsource.monitor.config.Tab;
 import com.outsource.monitor.monitor.base.ui.BaseFuncFragment;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 
 /**
  * Created by xionghao on 2016/12/17.
@@ -21,8 +20,9 @@ public class ItuFragment extends BaseFuncFragment {
     }
 
     @Override
-    public Fragment createContentFragment() {
+    public BasePlayFragment createContentFragment() {
         return ContentFragmentItu.newInstance();
     }
+
 
 }

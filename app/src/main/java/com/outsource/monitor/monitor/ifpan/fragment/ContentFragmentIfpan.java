@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +26,12 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.outsource.monitor.R;
+import com.outsource.monitor.monitor.base.parser.IfpanParser48278;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 import com.outsource.monitor.monitor.ifpan.IfpanDataReceiver;
 import com.outsource.monitor.monitor.ifpan.chartformatter.IFPANXAxisValueFormatter;
 import com.outsource.monitor.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.monitor.itu.chartformatter.ITUYAxisValueFormatter;
-import com.outsource.monitor.monitor.base.parser.IfpanParser48278;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver {
+public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataReceiver {
 
     public static ContentFragmentIfpan newInstance() {
         return new ContentFragmentIfpan();
@@ -60,7 +60,6 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
 
     private TextView mTvCurrentFrequencyLevel;
     private TextView mTvAnalyseInfo;
-    private boolean isPlay = true;
     private boolean showBarData = false;
 
     private Handler mRefreshHandler = new Handler() {
@@ -68,7 +67,7 @@ public class ContentFragmentIfpan extends Fragment implements IfpanDataReceiver 
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_ID_REFRESH_CHART) {
-                if (isPlay) {
+                if (isPlay()) {
                     refreshTitle();
                     refreshLineChart();
                     if (showBarData) {

@@ -103,6 +103,9 @@ public class MonitorCenterActivity extends BaseSlidingMenuActivity {
     }
 
     private void switchTab(Tab tab) {
+        if (mMapFragment.isVisible()) {
+            hideMapFragment();
+        }
         FragmentManager fragmentManager = getSupportFragmentManager();
         BaseMonitorFragment contentFragment = createContentFragment(tab);
         fragmentManager.beginTransaction().replace(R.id.fl_monitor_container, contentFragment).commitAllowingStateLoss();

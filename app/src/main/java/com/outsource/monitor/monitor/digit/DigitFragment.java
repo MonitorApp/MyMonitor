@@ -1,9 +1,8 @@
 package com.outsource.monitor.monitor.digit;
 
-import android.support.v4.app.Fragment;
-
 import com.outsource.monitor.config.Tab;
 import com.outsource.monitor.monitor.base.ui.BaseFuncFragment;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 
 /**
  * Created by xionghao on 2017/3/5.
@@ -21,7 +20,7 @@ public class DigitFragment extends BaseFuncFragment {
     }
 
     @Override
-    public Fragment createContentFragment() {
+    public BasePlayFragment createContentFragment() {
         return ContentFragmentDigit.newInstance();
     }
 }

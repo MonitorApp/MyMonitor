@@ -26,7 +26,12 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.outsource.monitor.R;
+import com.outsource.monitor.config.ConfigManager;
 import com.outsource.monitor.config.Consts;
+import com.outsource.monitor.monitor.base.event.PlayPauseEvent;
+import com.outsource.monitor.monitor.base.event.UpdatePlayUIEvent;
+import com.outsource.monitor.monitor.base.parser.ItuParser48278;
+import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 import com.outsource.monitor.monitor.itu.ItuDataReceiver;
 import com.outsource.monitor.monitor.itu.adapter.MeasureItemAdapter;
 import com.outsource.monitor.monitor.itu.chartformatter.ITUXAxisTimeValueFormatter;
@@ -34,9 +39,13 @@ import com.outsource.monitor.monitor.itu.chartformatter.ITUXAxisValueFormatter;
 import com.outsource.monitor.monitor.itu.chartformatter.ITUYAxisValueFormatter;
 import com.outsource.monitor.monitor.itu.model.ItuItemData;
 import com.outsource.monitor.monitor.itu.model.ItuLevel;
-import com.outsource.monitor.monitor.base.parser.ItuParser48278;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.LogUtils;
+import com.outsource.monitor.utils.PromptUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +57,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * 每屏显示完了会统计一次数据，在下面两个柱状图里显示时间占用度（即电平区间命中率）和最大电平值
  * Created by xionghao on 2016/10/2.
  */
-public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
+public class ContentFragmentItu extends BasePlayFragment implements ItuDataReceiver {
 
-    public static Fragment newInstance() {
+    public static ContentFragmentItu newInstance() {
         return new ContentFragmentItu();
     }
 
@@ -91,8 +100,6 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
     private long lastRefreshBarTime;
     private long lastRefreshListTime;
 
-    private boolean isPlay = true;
-
     private Handler mRefreshHandler = new Handler() {
 
         @Override
@@ -105,7 +112,7 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
                     sendEmptyMessageDelayed(msg.what, REFRESH_LINE_INTERVAL - System.currentTimeMillis() + lastRefreshLineTime);
                     return;
                 }
-                if (isPlay) {
+                if (isPlay()) {
                     refreshLineChart();
                 }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_LINE, REFRESH_LINE_INTERVAL);
@@ -115,18 +122,18 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
                     sendEmptyMessageDelayed(msg.what, REFRESH_BAR_INTERVAL - System.currentTimeMillis() + lastRefreshBarTime);
                     return;
                 }
-                if (isPlay) {
+                if (isPlay()) {
                     refreshTimeBarChart();
                     refreshMaxLevelBarChart();
                 }
-                mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_LINE, REFRESH_BAR_INTERVAL);
+                mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_BAR, REFRESH_BAR_INTERVAL);
                 lastRefreshBarTime = System.currentTimeMillis();
             } else if (msg.what == MSG_ID_REFRESH_MEASURE_ITEM) {
                 if (System.currentTimeMillis() - lastRefreshListTime < REFRESH_MEASURE_ITEM_INTERVAL) {
                     sendEmptyMessageDelayed(msg.what, REFRESH_MEASURE_ITEM_INTERVAL - System.currentTimeMillis() + lastRefreshListTime);
                     return;
                 }
-                if (isPlay) {
+                if (isPlay()) {
                     refreshMeasureItemList();
                 }
                 mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_MEASURE_ITEM, REFRESH_MEASURE_ITEM_INTERVAL);
@@ -285,6 +292,12 @@ public class ContentFragmentItu extends Fragment implements ItuDataReceiver {
                 data.minValue = Math.min(realtimeValue, data.minValue);
             }
         }
+    }
+
+    @Override
+    protected void onPaused() {
+        super.onPaused();
+        mRealTimeLevels.clear();
     }
 
     @Override

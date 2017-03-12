@@ -22,6 +22,7 @@ import com.outsource.monitor.monitor.base.parser.Command;
 import com.outsource.monitor.monitor.base.service.ConnectCallback;
 import com.outsource.monitor.monitor.base.service.DataProviderService;
 import com.outsource.monitor.monitor.base.service.ServiceHelper;
+import com.outsource.monitor.monitor.itu.fragment.ContentFragmentItu;
 import com.outsource.monitor.utils.PreferenceUtils;
 import com.outsource.monitor.utils.PromptUtils;
 
@@ -154,10 +155,18 @@ public abstract class BaseFuncFragment extends BaseMonitorFragment {
                 PromptUtils.showToast("请先设置有效的参数再开始");
                 EventBus.getDefault().post(new UpdatePlayUIEvent(false));
             } else {
+                BasePlayFragment contentFragment = getContentFragment();
+                if (contentFragment != null) {
+                    contentFragment.play();
+                }
                 sendCommand();
             }
         } else {
             disconnect();
+            BasePlayFragment contentFragment = getContentFragment();
+            if (contentFragment != null) {
+                contentFragment.pause();
+            }
         }
     }
 
