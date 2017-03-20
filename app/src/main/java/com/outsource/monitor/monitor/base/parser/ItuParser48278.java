@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Created by wuly on 2016/11/26.
+ *  单频测量
+ */
+
 public class ItuParser48278 extends  ParserBase48278
 {
     public static class DataHead {

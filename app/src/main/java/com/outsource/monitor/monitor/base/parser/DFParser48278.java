@@ -2,6 +2,7 @@ package com.outsource.monitor.monitor.base.parser;
 
 /**
  * Created by wuly on 2016/11/26.
+ *  单频测向
  */
 public class DFParser48278 extends  ParserBase48278
 {
