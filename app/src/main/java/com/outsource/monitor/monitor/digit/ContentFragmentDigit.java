@@ -1,5 +1,6 @@
 package com.outsource.monitor.monitor.digit;
 
+import com.outsource.monitor.monitor.base.parser.DScanParser48278;
 import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 
 /**
@@ -12,12 +13,12 @@ public class ContentFragmentDigit extends BasePlayFragment implements DigitDataR
     }
 
     @Override
-    public void onReceiveDigitData() {
+    public void onReceiveDigitData(DScanParser48278.DataValue dsData) {
 
     }
 
     @Override
-    public void onReceiveDigitHead() {
+    public void onReceiveDigitHead(DScanParser48278.DataHead dsHead) {
 
     }
 }

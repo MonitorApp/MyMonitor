@@ -57,4 +57,18 @@ public class MScanParser48278 extends  ParserBase48278
             valueItem.freValue = byteArray.getShort();
         }
     }
+
+    public static MScanParser48278 TryParse(byte[] bytes, int pos) {
+
+        int dataLen = MScanParser48278.CheckBytes(bytes, pos);
+        if(dataLen == -1)
+        {
+            return  null;
+        }
+
+        MScanParser48278 mScanParser48278 = new MScanParser48278();
+        mScanParser48278.ParserData(ByteUtil.SubBytes(bytes, 0, dataLen + 8));
+        mScanParser48278.byteLen = dataLen + 8;
+        return mScanParser48278;
+    }
 }

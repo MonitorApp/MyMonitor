@@ -1,5 +1,6 @@
 package com.outsource.monitor.monitor.discrete;
 
+import com.outsource.monitor.monitor.base.parser.MScanParser48278;
 import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 
 /**
@@ -12,12 +13,12 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
     }
 
     @Override
-    public void onReceiveDiscreteData() {
+    public void onReceiveDiscreteData(MScanParser48278.DataValue msData) {
 
     }
 
     @Override
-    public void onReceiveDiscreteHead() {
+    public void onReceiveDiscreteHead(MScanParser48278.DataHead msHead) {
 
     }
 }

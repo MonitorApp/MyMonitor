@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.outsource.monitor.monitor.base.parser.DScanParser48278;
+import com.outsource.monitor.monitor.base.parser.MScanParser48278;
 import com.outsource.monitor.monitor.df.DfDataReceiver;
 import com.outsource.monitor.monitor.digit.DigitDataReceiver;
 import com.outsource.monitor.monitor.discrete.DiscreteDataReceiver;
@@ -253,11 +255,25 @@ public class SocketThread extends Thread {
                             case DISCRETE:
                             {
                                 //TODO parse data
+                                //离散扫描
+                                MScanParser48278 data = MScanParser48278.TryParse(buffer, byteOffset);
+                                if (data != null) {
+                                    System.arraycopy(buffer, data.byteLen, buffer, 0, buffer.length - data.byteLen);
+                                    byteOffset -= data.byteLen;
+                                    onDiscreteDataReceived(data);
+                                }
                             }
                             break;
                             case DIGIT:
                             {
                                 //TODO parse data
+                                //数字扫描
+                                DScanParser48278 data = DScanParser48278.TryParse(buffer, byteOffset);
+                                if (data != null) {
+                                    System.arraycopy(buffer, data.byteLen, buffer, 0, buffer.length - data.byteLen);
+                                    byteOffset -= data.byteLen;
+                                    onDigitDataReceived(data);
+                                }
                             }
                             break;
                             default:
@@ -371,6 +387,56 @@ public class SocketThread extends Thread {
                 if (data.m_dataValue != null) {
                     for (DfDataReceiver receiver : mDfDataReceivers) {
                         receiver.onReceiveDfData(data.m_dataValue);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    //数字扫描
+    private void onDigitDataReceived(DScanParser48278 data)
+    {
+        switch (data.m_frameType) {
+            case DScanParser48278.FRAME_TYPE_HEAD:
+                if (data.m_dataHead != null) {
+                    for (DigitDataReceiver receiver : mDigitDataReceivers) {
+                        receiver.onReceiveDigitHead(data.m_dataHead);
+                    }
+                }
+                break;
+            case DFParser48278.FRAME_TYPE_INFO:
+                break;
+            case DFParser48278.FRAME_TYPE_DATA:
+                if (data.m_dataValue != null) {
+                    for (DigitDataReceiver receiver : mDigitDataReceivers) {
+                        receiver.onReceiveDigitData(data.m_dataValue);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    //离散扫描
+    private void onDiscreteDataReceived(MScanParser48278 data)
+    {
+        switch (data.m_frameType) {
+            case DScanParser48278.FRAME_TYPE_HEAD:
+                if (data.m_dataHead != null) {
+                    for (DiscreteDataReceiver receiver : mDiscreteDataReceivers) {
+                        receiver.onReceiveDiscreteHead(data.m_dataHead);
+                    }
+                }
+                break;
+            case DFParser48278.FRAME_TYPE_INFO:
+                break;
+            case DFParser48278.FRAME_TYPE_DATA:
+                if (data.m_dataValue != null) {
+                    for (DiscreteDataReceiver receiver : mDiscreteDataReceivers) {
+                        receiver.onReceiveDiscreteData(data.m_dataValue);
                     }
                 }
                 break;

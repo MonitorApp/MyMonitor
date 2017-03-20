@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/3/20.
+ * 数字扫描
  */
-public class DScanParser extends  ParserBase48278
+public class DScanParser48278 extends  ParserBase48278
 {
     public static class DataHead
     {
@@ -48,5 +49,19 @@ public class DScanParser extends  ParserBase48278
         {
             m_dataValue.valueList.add(byteArray.getShort());
         }
+    }
+
+    public static DScanParser48278 TryParse(byte[] bytes, int pos) {
+
+        int dataLen = DScanParser48278.CheckBytes(bytes, pos);
+        if(dataLen == -1)
+        {
+            return  null;
+        }
+
+        DScanParser48278 dScanParser48278 = new DScanParser48278();
+        dScanParser48278.ParserData(ByteUtil.SubBytes(bytes, 0, dataLen + 8));
+        dScanParser48278.byteLen = dataLen + 8;
+        return dScanParser48278;
     }
 }

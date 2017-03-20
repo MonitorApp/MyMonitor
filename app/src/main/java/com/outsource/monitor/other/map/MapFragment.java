@@ -39,6 +39,8 @@ import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.outsource.monitor.R;
+import com.outsource.monitor.monitor.base.parser.DScanParser48278;
+import com.outsource.monitor.monitor.base.parser.MScanParser48278;
 import com.outsource.monitor.monitor.df.DfDataReceiver;
 import com.outsource.monitor.monitor.digit.DigitDataReceiver;
 import com.outsource.monitor.monitor.discrete.DiscreteDataReceiver;
@@ -422,22 +424,22 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
     }
 
     @Override
-    public void onReceiveDigitData() {
+    public void onReceiveDigitData(DScanParser48278.DataValue dsData) {
 
     }
 
     @Override
-    public void onReceiveDigitHead() {
+    public void onReceiveDigitHead(DScanParser48278.DataHead dsHead) {
 
     }
 
     @Override
-    public void onReceiveDiscreteData() {
+    public void onReceiveDiscreteData(MScanParser48278.DataValue msData) {
 
     }
 
     @Override
-    public void onReceiveDiscreteHead() {
+    public void onReceiveDiscreteHead(MScanParser48278.DataHead msHead) {
 
     }
 
