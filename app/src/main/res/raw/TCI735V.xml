@@ -292,7 +292,7 @@
             <items>
                 <item name="frequency" living="true" />
                 <item name="ifbw" living="true" />
-                <item name="detector" living="true" />
+                <item name="demodmode" living="true"/>
             </items>
         </func>
         <!--  数字扫描 -->

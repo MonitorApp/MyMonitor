@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="84dp"
+    android:layout_height="56dp">
+
+   <TextView
+       android:id="@+id/tv_mscan_param"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:textColor="@color/text_color_333"
+       android:layout_gravity="center"/>
+
+    <ImageView
+        android:id="@+id/iv_mscan_param_delete"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="right|top"
+        android:src="@android:drawable/ic_delete"/>
+
+</FrameLayout>

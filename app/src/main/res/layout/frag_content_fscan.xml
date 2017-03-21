@@ -77,7 +77,7 @@
                 android:layout_width="20dp"
                 android:layout_height="match_parent"/>
 
-            <com.outsource.monitor.widget.FScanFallsLevelView
+            <com.outsource.monitor.monitor.fscan.widget.FScanFallsLevelView
                 android:id="@+id/fall_fscan"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

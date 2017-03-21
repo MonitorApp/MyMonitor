@@ -1,4 +1,6 @@
-package com.outsource.monitor.monitor.discrete;
+package com.outsource.monitor.monitor.discrete.fragment;
+
+import android.support.v4.app.Fragment;
 
 import com.outsource.monitor.config.Tab;
 import com.outsource.monitor.monitor.base.ui.BaseFuncFragment;
@@ -22,5 +24,10 @@ public class DiscreteFragment extends BaseFuncFragment {
     @Override
     public BasePlayFragment createContentFragment() {
         return ContentFragmentDiscrete.newInstance();
+    }
+
+    @Override
+    public Fragment createMenuFragment() {
+        return MScanMenuFragment.newInstance();
     }
 }

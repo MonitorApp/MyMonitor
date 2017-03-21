@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="15sp"
+            android:textColor="@color/text_color_ccc"
+            android:text="离散扫描"/>
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/chart_mscan"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <com.outsource.monitor.widget.PaletteView
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"/>
+
+            <com.outsource.monitor.monitor.discrete.widget.MScanFallsLevelView
+                android:id="@+id/fall_mscan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+    </LinearLayout>

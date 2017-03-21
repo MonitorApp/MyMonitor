@@ -147,9 +147,11 @@ public class ConfigManager {
                     sb.append("RMTP:DF");
                     break;
                 case DISCRETE:
+                    command.type = Command.Type.DISCRETE;
                     sb.append("RMTP:MSCAN");
                     break;
                 case DIGIT:
+                    command.type = Command.Type.DIGIT;
                     sb.append("RMTP:DSCAN");
                     break;
                 default:
@@ -170,6 +172,7 @@ public class ConfigManager {
     public boolean isParamsValid(FuncType funcType) {
         List<UIParam> params = loadParams(funcType);
         if (CollectionUtils.isEmpty(params)) return false;
+        if (funcType == FuncType.DISCRETE) return true;
         for (UIParam param : params) {
             if (!param.isValueValid()) return false;
         }

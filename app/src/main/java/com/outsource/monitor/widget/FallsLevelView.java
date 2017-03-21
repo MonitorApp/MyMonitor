@@ -61,7 +61,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
     }
 
     @Override
-    void drawCanvas(Canvas canvas) {
+    protected void drawCanvas(Canvas canvas) {
         int rowCount = mFallRows.size();
         int index = 0;
         for (FallRow row : mFallRows) {

@@ -1,22 +1,17 @@
-
-package com.outsource.monitor.monitor.fscan.fragment;
+package com.outsource.monitor.monitor.discrete.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -27,43 +22,45 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.outsource.monitor.R;
+import com.outsource.monitor.monitor.base.parser.MScanParser48278;
 import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
-import com.outsource.monitor.monitor.fscan.FscanDataReceiver;
-import com.outsource.monitor.monitor.fscan.adapter.FscanRangeAdapter;
+import com.outsource.monitor.monitor.discrete.DiscreteDataReceiver;
+import com.outsource.monitor.monitor.discrete.widget.MScanFallsLevelView;
 import com.outsource.monitor.monitor.fscan.chartformatter.FscanXAxisValueFormatter;
 import com.outsource.monitor.monitor.fscan.chartformatter.FscanYAxisValueFormatter;
 import com.outsource.monitor.monitor.ifpan.model.FallRow;
-import com.outsource.monitor.monitor.base.parser.FscanParser48278;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
-import com.outsource.monitor.monitor.fscan.widget.FScanFallsLevelView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ContentFragmentFscan extends BasePlayFragment implements FscanDataReceiver {
+/**
+ * Created by xionghao on 2017/3/5.
+ */
 
-    private FscanRangeAdapter mFScanRangeAdapter;
+public class ContentFragmentDiscrete extends BasePlayFragment implements DiscreteDataReceiver {
 
-    public static ContentFragmentFscan newInstance() {
-        return new ContentFragmentFscan();
+    private float startFreqency;
+    private float endFrequency;
+
+    public static BasePlayFragment newInstance() {
+        return new ContentFragmentDiscrete();
     }
 
-    private AtomicReference<FscanParser48278.DataHead> mDataHead = new AtomicReference<>();
+    private AtomicReference<MScanParser48278.DataHead> mDataHead = new AtomicReference<>();
     private AtomicReference<List<Float>> mCurrentData = new AtomicReference<>();
     private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private CombinedChart mChart;
-    private FScanFallsLevelView mFallsLevelView;
+    private MScanFallsLevelView mFallsLevelView;
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final int MSG_ID_REFRESH_CHART = 1;
 
     private boolean showLineChart = false;
-
-    private int choosePosition;
 
     public static float DISPLAY_Y_DELTA = 46;//柱状图显示都是从0开始，底下的负数不会填充，所以将所有电平值都加50，保证大于0
 
@@ -103,8 +100,7 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.frag_content_fscan, null);
-        initFrequencyRangs(view);
+        View view = inflater.inflate(R.layout.frag_content_mscan, null);
         initCombineChart(view);
         initFallChart(view);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, 500);
@@ -115,32 +111,14 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
         return view;
     }
 
-    private void initFrequencyRangs(View view) {
-        RecyclerView rvFrequencyBands = (RecyclerView) view.findViewById(R.id.rv_fscan_items);
-        rvFrequencyBands.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rvFrequencyBands.setNestedScrollingEnabled(false);
-        mFScanRangeAdapter = new FscanRangeAdapter();
-        mFScanRangeAdapter.setOnItemClickListener(new FscanRangeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                if (choosePosition == position) return;
-                choosePosition = position;
-                if (mDataHead.get() != null && position < mDataHead.get().fscanParamList.size()) {
-                    onFrequencyBandSelected(mDataHead.get().fscanParamList.get(position));
-                }
-            }
-        });
-        rvFrequencyBands.setAdapter(mFScanRangeAdapter);
-    }
-
-    private void onFrequencyBandSelected(FscanParser48278.DataHead.FcanParam param) {
+    private void onFrequencyBandSelected(float startFreq, float endFreq) {
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setAxisMinimum(DisplayUtils.toDisplayFrequency(param.startFreq));
-        xAxis.setAxisMaximum(DisplayUtils.toDisplayFrequency(param.endFreq));
+        xAxis.setAxisMinimum(startFreq);
+        xAxis.setAxisMaximum(endFreq);
     }
 
     private void initCombineChart(View view) {
-        mChart = (CombinedChart) view.findViewById(R.id.chart_fscan);
+        mChart = (CombinedChart) view.findViewById(R.id.chart_mscan);
         mChart.getDescription().setEnabled(false);
         mChart.setBackgroundColor(Color.TRANSPARENT);
         mChart.setDrawGridBackground(false);
@@ -148,8 +126,8 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
         mChart.setHighlightFullBarEnabled(false);
 
         // 绘制层次，draw bars behind lines
-        mChart.setDrawOrder(new DrawOrder[]{
-                DrawOrder.BAR, DrawOrder.LINE
+        mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
+                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE
         });
 
         mChart.getAxisRight().setEnabled(false);
@@ -169,7 +147,7 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
         xAxis.enableGridDashedLine(10, 10, 0);
         xAxis.setAxisLineColor(Color.parseColor("#403f40"));
         xAxis.setTextColor(Color.parseColor("#adadad"));
-        xAxis.setPosition(XAxisPosition.BOTTOM);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 //        xAxis.setGranularity(0f);
 
         CombinedData data = new CombinedData();
@@ -184,7 +162,7 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
     }
 
     private void initFallChart(View view) {
-        mFallsLevelView = (FScanFallsLevelView) view.findViewById(R.id.fall_fscan);
+        mFallsLevelView = (MScanFallsLevelView) view.findViewById(R.id.fall_mscan);
         mFallsLevelView.start();
     }
 
@@ -222,19 +200,17 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
     }
 
     private void refreshLineChart() {
-        FscanParser48278.DataHead head = mDataHead.get();
+        MScanParser48278.DataHead head = mDataHead.get();
         List<Float> values = mCurrentData.get();
-        if (head == null || choosePosition >= mDataHead.get().fscanParamList.size() || CollectionUtils.isEmpty(values)) {
+        if (head == null || CollectionUtils.isEmpty(values)) {
             return;
         }
         ArrayList<Entry> entries = new ArrayList<Entry>();
-        FscanParser48278.DataHead.FcanParam param = head.fscanParamList.get(choosePosition);
-        float start = DisplayUtils.toDisplayFrequency(param.startFreq);
-        float displaySpan = DisplayUtils.toDisplayFrequency(param.endFreq - param.startFreq);
+        float displaySpan = endFrequency - startFreqency;
         int count = values.size();
         for (int i = 0; i < count; i++) {
             Float value = values.get(i);
-            entries.add(new Entry(start + i * displaySpan / count,  value + DISPLAY_Y_DELTA));
+            entries.add(new Entry(startFreqency + i * displaySpan / count,  value + DISPLAY_Y_DELTA));
         }
         LineDataSet set = new LineDataSet(entries, "Line DataSet");
         set.setColor(Color.rgb(240, 238, 70));
@@ -253,19 +229,17 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
     }
 
     private void refreshBarChart() {
-        FscanParser48278.DataHead head = mDataHead.get();
+        MScanParser48278.DataHead head = mDataHead.get();
         List<Float> values = mCurrentData.get();
-        if (head == null || choosePosition >= mDataHead.get().fscanParamList.size() || CollectionUtils.isEmpty(values)) {
+        if (head == null || CollectionUtils.isEmpty(values)) {
             return;
         }
         ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-        FscanParser48278.DataHead.FcanParam param = head.fscanParamList.get(choosePosition);
-        float start = DisplayUtils.toDisplayFrequency(param.startFreq);
-        float displaySpan = DisplayUtils.toDisplayFrequency(param.endFreq - param.startFreq);
+        float displaySpan = endFrequency - startFreqency;
         int count = values.size();
         for (int i = 0; i < count; i++) {
             Float value = values.get(i);
-            entries.add(new BarEntry(start + i * displaySpan / count, value + DISPLAY_Y_DELTA));
+            entries.add(new BarEntry(startFreqency + i * displaySpan / count, value + DISPLAY_Y_DELTA));
         }
         CombinedData data = mChart.getData();
         BarDataSet set = new BarDataSet(entries, "DataSet 1");
@@ -279,28 +253,36 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
     }
 
     @Override
-    public void onReceiveFScanData(FscanParser48278.DataValue fscanData) {
-        if (fscanData == null || CollectionUtils.isEmpty(fscanData.values)) {
-            LogUtils.d("频段扫描接受数据为空！");
-            return;
-        }
-        mFallsLevelView.onReceiveFScanData(fscanData);
-        mCurrentData.set(fscanData.values);
-    }
-
-    @Override
-    public void onReceiveFScanHead(final FscanParser48278.DataHead fscanHead) {
-        if (fscanHead == null || fscanHead.fscanParamList.size() == 0) {
+    public void onReceiveDiscreteData(MScanParser48278.DataValue msData) {
+        if (msData == null || msData.valueList.size() == 0) {
             LogUtils.d("频段扫描帧头为空！");
             return;
         }
-        mDataHead.set(fscanHead);
-        mFallsLevelView.onReceiveFScanHead(fscanHead);
+        ArrayList<MScanParser48278.DataValue.ValueItem> values = msData.valueList;
+        List<Float> levels = new ArrayList<>(values.size());
+        for (MScanParser48278.DataValue.ValueItem v : values) {
+            levels.add(v.freValue);
+        }
+        mCurrentData.set(levels);
+    }
+
+    @Override
+    public void onReceiveDiscreteHead(MScanParser48278.DataHead msHead) {
+        if (msHead == null || CollectionUtils.isEmpty(msHead.freqList)) {
+            LogUtils.d("离散扫描接受数据为空！");
+            return;
+        }
+        mFallsLevelView.onReceiveDiscreteHead(msHead);
+        List<Long> frequencyList = msHead.freqList;
+        for (Long freq : frequencyList) {
+            startFreqency = Math.min(startFreqency, DisplayUtils.toDisplayFrequency(freq));
+            endFrequency = Math.max(endFrequency, DisplayUtils.toDisplayFrequency(freq));
+        }
+        mDataHead.set(msHead);
         mRefreshHandler.post(new Runnable() {
             @Override
             public void run() {
-                mFScanRangeAdapter.update(fscanHead.fscanParamList);
-                onFrequencyBandSelected(fscanHead.fscanParamList.get(0));
+                onFrequencyBandSelected(startFreqency, endFrequency);
             }
         });
     }

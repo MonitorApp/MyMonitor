@@ -12,7 +12,7 @@ import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.config.Tab;
 import com.outsource.monitor.monitor.df.fragment.DfFragment;
 import com.outsource.monitor.monitor.digit.DigitFragment;
-import com.outsource.monitor.monitor.discrete.DiscreteFragment;
+import com.outsource.monitor.monitor.discrete.fragment.DiscreteFragment;
 import com.outsource.monitor.monitor.fscan.fragment.FscanFragment;
 import com.outsource.monitor.monitor.ifpan.fragment.IfpanFragment;
 import com.outsource.monitor.monitor.itu.fragment.ItuFragment;

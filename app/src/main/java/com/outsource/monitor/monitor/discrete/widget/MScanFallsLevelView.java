@@ -1,4 +1,4 @@
-package com.outsource.monitor.widget;
+package com.outsource.monitor.monitor.discrete.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,18 +7,22 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 
 import com.outsource.monitor.monitor.base.event.PlayPauseEvent;
-import com.outsource.monitor.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.monitor.base.parser.FscanParser48278;
+import com.outsource.monitor.monitor.base.parser.MScanParser48278;
+import com.outsource.monitor.monitor.discrete.DiscreteDataReceiver;
 import com.outsource.monitor.monitor.fscan.FscanDataReceiver;
+import com.outsource.monitor.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.Utils;
+import com.outsource.monitor.widget.BaseTextureView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,11 +30,11 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Created by Administrator on 2016/10/6.
  */
-public class FScanFallsLevelView extends BaseTextureView implements FscanDataReceiver {
+public class MScanFallsLevelView extends BaseTextureView implements DiscreteDataReceiver {
 
     private static final int X_AXIS_HEIGHT = DisplayUtils.dp2px(15);//x轴刻度区域的高度
     private static final int Y_AXIS_WIDTH = DisplayUtils.dp2px(15);//y轴刻度区域的宽度
-    private static final float X_CELL_COUNT = 10;//x轴有多少个网格
+    private static float X_CELL_COUNT = 10;//x轴有多少个网格
     private static final float Y_CELL_COUNT = 10;//y轴有多少个网格
     private static int LINE_HEIGHT = 1;
 
@@ -48,22 +52,23 @@ public class FScanFallsLevelView extends BaseTextureView implements FscanDataRec
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private FallRow mAverageFallRow;
     private int averageCount;//当前的平均值是由多少条数据算出来的
+    private List<Long> frequencyList = new ArrayList<>();
+    private AtomicReference<MScanParser48278.DataHead> mHead = new AtomicReference<>();
     private float startFreqency;
     private float endFrequency;
-    private AtomicReference<FscanParser48278.DataHead> mHead = new AtomicReference<>();
 
-    public FScanFallsLevelView(Context context) {
+    public MScanFallsLevelView(Context context) {
         super(context);
         init();
     }
 
-    public FScanFallsLevelView(Context context, AttributeSet attrs) {
+    public MScanFallsLevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     @Override
-    void drawCanvas(Canvas canvas) {
+    protected void drawCanvas(Canvas canvas) {
         int rowCount = mFallRows.size();
         int index = 0;
         for (FallRow row : mFallRows) {
@@ -200,23 +205,31 @@ public class FScanFallsLevelView extends BaseTextureView implements FscanDataRec
     }
 
     @Override
-    public void onReceiveFScanData(FscanParser48278.DataValue fscanData) {
-        if (fscanData == null || CollectionUtils.isEmpty(fscanData.values)) {
+    public void onReceiveDiscreteData(MScanParser48278.DataValue msData) {
+        if (msData == null || CollectionUtils.isEmpty(msData.valueList)) {
             LogUtils.d("中频分析接受数据为空！");
             return;
         }
-        updateFallLevels(new FallRow(System.currentTimeMillis(), fscanData.values));
+        ArrayList<MScanParser48278.DataValue.ValueItem> values = msData.valueList;
+        List<Float> levels = new ArrayList<>(values.size());
+        for (MScanParser48278.DataValue.ValueItem v : values) {
+            levels.add(v.freValue);
+        }
+        updateFallLevels(new FallRow(System.currentTimeMillis(), levels));
     }
 
     @Override
-    public void onReceiveFScanHead(FscanParser48278.DataHead fscanHead) {
-        if (fscanHead == null || fscanHead.fscanParamList.size() == 0) {
-            LogUtils.d("中频分析帧头为空！");
+    public void onReceiveDiscreteHead(MScanParser48278.DataHead msHead) {
+        if (msHead == null || msHead.freqList.size() == 0) {
+            LogUtils.d("离散扫描帧头为空！");
             return;
         }
-        mHead.set(fscanHead);
-        FscanParser48278.DataHead.FcanParam param = fscanHead.fscanParamList.get(0);
-        startFreqency = DisplayUtils.toDisplayFrequency(param.startFreq);
-        endFrequency = DisplayUtils.toDisplayFrequency(param.endFreq);
+        mHead.set(msHead);
+        frequencyList = msHead.freqList;
+        for (Long freq : frequencyList) {
+            startFreqency = Math.min(startFreqency, DisplayUtils.toDisplayFrequency(freq));
+            endFrequency = Math.max(endFrequency, DisplayUtils.toDisplayFrequency(freq));
+        }
+        X_CELL_COUNT = frequencyList.size();
     }
 }

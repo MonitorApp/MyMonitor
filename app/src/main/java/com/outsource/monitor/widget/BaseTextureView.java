@@ -26,7 +26,7 @@ import com.outsource.monitor.utils.PromptUtils;
  */
 public abstract class BaseTextureView extends TextureView implements TextureView.SurfaceTextureListener {
 
-    abstract void drawCanvas(Canvas canvas);
+    protected abstract void drawCanvas(Canvas canvas);
     protected int FRAME_DURATION = 50;//刷新频率
     private static final int STATE_STOPPED = 0x00;
     private static final int STATE_DRAWING = 0x01;
