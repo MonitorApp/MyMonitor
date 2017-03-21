@@ -146,6 +146,12 @@ public class ConfigManager {
                     command.type = Command.Type.DF;
                     sb.append("RMTP:DF");
                     break;
+                case DISCRETE:
+                    sb.append("RMTP:MSCAN");
+                    break;
+                case DIGIT:
+                    sb.append("RMTP:DSCAN");
+                    break;
                 default:
                     command.type = Command.Type.ITU;
                     sb.append("RMTP:SGLFREQ");
