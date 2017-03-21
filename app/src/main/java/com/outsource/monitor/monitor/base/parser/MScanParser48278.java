@@ -55,6 +55,7 @@ public class MScanParser48278 extends  ParserBase48278
             valueItem = new DataValue.ValueItem();
             valueItem.refFrequence = byteArray.getInt();
             valueItem.freValue = byteArray.getShort();
+            m_dataValue.valueList.add(valueItem);
         }
     }
 
