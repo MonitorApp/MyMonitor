@@ -21,7 +21,7 @@ public class DScanParser48278 extends  ParserBase48278
     {
         public int pointCount;  //数据个数
         public int freIndex;   //本包起始频率索引
-        public ArrayList<Short> valueList = new ArrayList<>();  //电平 (实际电频*100）)
+        public ArrayList<Float> valueList = new ArrayList<>();  //电平 (实际电频*100）)
     }
 
     public DataHead m_dataHead;
@@ -47,7 +47,7 @@ public class DScanParser48278 extends  ParserBase48278
         int i;
         for(i=0; i<m_dataValue.pointCount; ++i)
         {
-            m_dataValue.valueList.add(byteArray.getShort());
+            m_dataValue.valueList.add(byteArray.getShort() / 100f);
         }
     }
 

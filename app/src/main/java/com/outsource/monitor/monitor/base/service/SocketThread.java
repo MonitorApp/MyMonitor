@@ -254,7 +254,6 @@ public class SocketThread extends Thread {
                             }
                             case DISCRETE:
                             {
-                                //TODO parse data
                                 //离散扫描
                                 MScanParser48278 data = MScanParser48278.TryParse(buffer, byteOffset);
                                 if (data != null) {
@@ -266,7 +265,6 @@ public class SocketThread extends Thread {
                             break;
                             case DIGIT:
                             {
-                                //TODO parse data
                                 //数字扫描
                                 DScanParser48278 data = DScanParser48278.TryParse(buffer, byteOffset);
                                 if (data != null) {
