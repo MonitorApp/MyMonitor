@@ -252,7 +252,7 @@ public class ContentFragmentDigit extends BasePlayFragment implements DigitDataR
     @Override
     public void onReceiveDigitData(DScanParser48278.DataValue dsData) {
         if (dsData == null || CollectionUtils.isEmpty(dsData.valueList)) {
-            LogUtils.d("频段扫描接受数据为空！");
+            LogUtils.d("数字扫描接受数据为空！");
             return;
         }
         mFallsLevelView.onReceiveDigitData(dsData);
@@ -262,7 +262,7 @@ public class ContentFragmentDigit extends BasePlayFragment implements DigitDataR
     @Override
     public void onReceiveDigitHead(final DScanParser48278.DataHead dsHead) {
         if (dsHead == null) {
-            LogUtils.d("频段扫描帧头为空！");
+            LogUtils.d("数字扫描帧头为空！");
             return;
         }
         mDataHead.set(dsHead);

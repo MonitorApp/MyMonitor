@@ -71,7 +71,7 @@ public class FScanFallsLevelView extends BaseTextureView implements FscanDataRec
             float y = LINE_HEIGHT * (rowCount - index - 1);
             List<Float> levels = row.mValues;
             int size = levels.size();
-            int start = Y_AXIS_WIDTH;
+            float start = Y_AXIS_WIDTH;
             float distance = chartWidth / (float) size;
             for (Float level : levels) {
                 mLevelPaint.setColor(Utils.level2Color(level));

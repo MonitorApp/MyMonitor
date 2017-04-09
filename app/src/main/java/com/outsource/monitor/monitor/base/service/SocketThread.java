@@ -208,7 +208,7 @@ public class SocketThread extends Thread {
                         e.printStackTrace();
                     }
                     //接受数据
-                    byte[] buffer = new byte[4 * 1024];
+                    byte[] buffer = new byte[1024 * 1024];
                     int byteOffset = 0;
                     int readLen = 0;
                     while (isConnected() && (readLen = mSocket.getInputStream().read(buffer, byteOffset, buffer.length - byteOffset)) != 0) {

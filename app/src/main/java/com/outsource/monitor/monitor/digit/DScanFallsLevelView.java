@@ -70,7 +70,7 @@ public class DScanFallsLevelView extends BaseTextureView implements DigitDataRec
             float y = LINE_HEIGHT * (rowCount - index - 1);
             List<Float> levels = row.mValues;
             int size = levels.size();
-            int start = Y_AXIS_WIDTH;
+            float start = Y_AXIS_WIDTH;
             float distance = chartWidth / (float) size;
             for (Float level : levels) {
                 mLevelPaint.setColor(Utils.level2Color(level));
@@ -87,9 +87,9 @@ public class DScanFallsLevelView extends BaseTextureView implements DigitDataRec
         float span = endFrequency - startFreqency;
         //画x轴底部刻度值和垂直网格线
         for (int i = 0; i <= X_CELL_COUNT; i++) {
-            int xValue = (int) (startFreqency + i * (span / X_CELL_COUNT));
+            float xValue = (int) (startFreqency + i * (span / X_CELL_COUNT));
             int x = Y_AXIS_WIDTH + xUnitWidth * i;
-            String xMarkStr = String.format("%.1fkHz", xValue - span / 2);
+            String xMarkStr = String.format("%.1fMHz", xValue);
             float textWidth = mMarkTextPaint.measureText(xMarkStr);
             canvas.drawText(xMarkStr, 0, xMarkStr.length(), x - textWidth / 2 , mHeight - mMarkTextHeight, mMarkTextPaint);
             canvas.drawLine(x, mHeight - X_AXIS_HEIGHT, x, 0, mMarkPaint);

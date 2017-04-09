@@ -298,9 +298,9 @@
         <!--  数字扫描 -->
         <func id="6" secs="1">
             <items>
-                <item name="frequency" living="true" />
+                <item name="startfreq" living="true" />
+                <item name="stopfreq" living="true" />
                 <item name="step" living="true" />
-                <item name="span" living="true" />
                 <item name="detector" living="true" />
             </items>
         </func>
