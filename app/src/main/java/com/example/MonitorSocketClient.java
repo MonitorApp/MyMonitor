@@ -46,8 +46,8 @@ public class MonitorSocketClient {
             //String cmd = "RMTP:DF:4403000100113:frequency:98.1MHz\nifbw:30kHz\nspan:15kHz\nrecordthreshold:=40\ndemodmode:FM\n#";
 
             //数字扫描
-            String cmd = "RMTP:DSCAN:4403000100113:frequency:98.1MHz\nstep:50kHz\nspan:10MHz\n#";//”detector:=AVG\n#";
-
+            //String cmd = "RMTP:DSCAN:4403000100113:frequency:98.1MHz\nstep:50kHz\nspan:10MHz\n#";//”detector:=AVG\n#";
+            String cmd = "RMTP:DSCAN:4403000100113:antenna:\nstartfreq:137.0mhz\nstopfreq:173.0mhz\nstep:25khz\nworkmode:宽带模式\n#";
             //离散扫描
 //            String cmd = "RMTP:MSCAN:4403000100113:antenna:1 ,1 ,1 ,1 , 1\nfrequency:97.1mhz,98mhz,99mhz,100mhz,101mhz\n" +
 //                    "ifbw:100khz,100khz,100khz,100khz,100khz\n" +
@@ -149,7 +149,7 @@ public class MonitorSocketClient {
 
                         if(dsan.m_dataValue != null)
                         {
-                            System.out.println("Get Value data:" + dsan.m_dataValue.freIndex+" valuelen:" +dsan.m_dataValue.valueList.size());
+                            System.out.println("Get Value data:" + dsan.m_dataValue.freIndex+" valuelen:" +dsan.m_dataValue.valueList.size()+" points:"+dsan.m_dataValue.pointCount);
                         }
                     //数字扫描 end
 
