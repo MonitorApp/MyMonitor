@@ -36,4 +36,20 @@ public class UIParam {
         }
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UIParam uiParam = (UIParam) o;
+
+        return name != null ? name.equals(uiParam.name) : uiParam.name == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

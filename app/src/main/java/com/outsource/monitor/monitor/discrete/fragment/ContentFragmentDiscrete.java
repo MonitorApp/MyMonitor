@@ -34,7 +34,10 @@ import com.outsource.monitor.utils.DisplayUtils;
 import com.outsource.monitor.utils.LogUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ContentFragmentDiscrete extends BasePlayFragment implements DiscreteDataReceiver {
 
-    private float startFreqency;
+    private float startFreqency = Float.MAX_VALUE;
     private float endFrequency;
 
     public static BasePlayFragment newInstance() {
@@ -52,7 +55,8 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
     }
 
     private AtomicReference<MScanParser48278.DataHead> mDataHead = new AtomicReference<>();
-    private AtomicReference<List<Float>> mCurrentData = new AtomicReference<>();
+    private List<Float> mFrequencyList = new ArrayList<>();
+    private AtomicReference<Map<Float, Float>> mCurrentData = new AtomicReference<>();
     private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private CombinedChart mChart;
@@ -201,16 +205,15 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
 
     private void refreshLineChart() {
         MScanParser48278.DataHead head = mDataHead.get();
-        List<Float> values = mCurrentData.get();
-        if (head == null || CollectionUtils.isEmpty(values)) {
+        Map<Float, Float> levelMap = mCurrentData.get();
+        if (head == null || CollectionUtils.isEmpty(levelMap)) {
             return;
         }
-        ArrayList<Entry> entries = new ArrayList<Entry>();
-        float displaySpan = endFrequency - startFreqency;
-        int count = values.size();
-        for (int i = 0; i < count; i++) {
-            Float value = values.get(i);
-            entries.add(new Entry(startFreqency + i * displaySpan / count,  value + DISPLAY_Y_DELTA));
+        ArrayList<Entry> entries = new ArrayList<>();
+        Iterator<Map.Entry<Float, Float>> iterator = levelMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Float, Float> entry = iterator.next();
+            entries.add(new Entry(entry.getKey(),  entry.getValue() + DISPLAY_Y_DELTA));
         }
         LineDataSet set = new LineDataSet(entries, "Line DataSet");
         set.setColor(Color.rgb(240, 238, 70));
@@ -221,8 +224,8 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
 
-        CombinedData data = mChart.getData();
-        LineData lineData = data.getLineData();
+        CombinedData combinedData = mChart.getData();
+        LineData lineData = combinedData.getLineData();
         lineData.removeDataSet(0);
         lineData.addDataSet(set);
         lineData.notifyDataChanged();
@@ -230,22 +233,24 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
 
     private void refreshBarChart() {
         MScanParser48278.DataHead head = mDataHead.get();
-        List<Float> values = mCurrentData.get();
-        if (head == null || CollectionUtils.isEmpty(values)) {
+        Map<Float, Float> levelMap = mCurrentData.get();
+        if (head == null || CollectionUtils.isEmpty(levelMap)) {
             return;
         }
-        ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-        float displaySpan = endFrequency - startFreqency;
-        int count = values.size();
-        for (int i = 0; i < count; i++) {
-            Float value = values.get(i);
-            entries.add(new BarEntry(startFreqency + i * displaySpan / count, value + DISPLAY_Y_DELTA));
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        Iterator<Map.Entry<Float, Float>> iterator = levelMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Float, Float> entry = iterator.next();
+            entries.add(new BarEntry(entry.getKey(),  entry.getValue() + DISPLAY_Y_DELTA));
         }
+        float displaySpan = endFrequency - startFreqency;
         CombinedData data = mChart.getData();
         BarDataSet set = new BarDataSet(entries, "DataSet 1");
         BarData barData = data.getBarData();
         barData.setValueTextSize(10f);
-        barData.setBarWidth(0.9f * displaySpan / count);
+        int count = levelMap.size();
+        float barWidth = 0.9f * displaySpan / Math.max(count, 20);
+        barData.setBarWidth(barWidth);
         barData.setOrientation(BarData.Orientation.VERTICAL);
         barData.removeDataSet(0);
         barData.addDataSet(set);
@@ -261,9 +266,19 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
         ArrayList<MScanParser48278.DataValue.ValueItem> values = msData.valueList;
         List<Float> levels = new ArrayList<>(values.size());
         for (MScanParser48278.DataValue.ValueItem v : values) {
-            levels.add(v.freValue);
+            levels.add(v.level);
         }
-        mCurrentData.set(levels);
+        MScanParser48278.DataValue.ValueItem v = msData.valueList.get(0);
+        int index = v.freqIndex;
+        if (index >= 0 && index < mFrequencyList.size()) {
+            Map<Float, Float> data = mCurrentData.get();
+            if (data == null) {
+                data = new HashMap<>();
+            }
+            data.put(mFrequencyList.get(index), v.level);
+            mCurrentData.set(data);
+        }
+        mFallsLevelView.onReceiveDiscreteData(msData);
     }
 
     @Override
@@ -275,8 +290,10 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
         mFallsLevelView.onReceiveDiscreteHead(msHead);
         List<Long> frequencyList = msHead.freqList;
         for (Long freq : frequencyList) {
-            startFreqency = Math.min(startFreqency, DisplayUtils.toDisplayFrequency(freq));
-            endFrequency = Math.max(endFrequency, DisplayUtils.toDisplayFrequency(freq));
+            float frequency = DisplayUtils.toDisplayFrequency(freq);
+            startFreqency = Math.min(startFreqency, frequency);
+            endFrequency = Math.max(endFrequency, frequency);
+            mFrequencyList.add(frequency);
         }
         mDataHead.set(msHead);
         mRefreshHandler.post(new Runnable() {

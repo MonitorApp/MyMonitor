@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -27,7 +26,10 @@ import com.outsource.monitor.utils.PromptUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xionghao on 2017/3/5.
@@ -40,7 +42,7 @@ public class MScanMenuFragment extends Fragment {
     private LinearLayout mLlLabel;
     private LinearLayout mLlValue;
     private ConfigManager.FuncType mFuncType = ConfigManager.FuncType.DISCRETE;
-    private List<String> mFrequencyList = new ArrayList<>();
+    private List<List<UIParam>> mAddedParamList = new ArrayList<>();
 
     public static Fragment newInstance() {
         MScanMenuFragment fragment = new MScanMenuFragment();
@@ -58,15 +60,26 @@ public class MScanMenuFragment extends Fragment {
             public void onClick(View v) {
                 if (checkInput()) {
                     List<UIParam> params = getParamFromUI();
+                    String frequency = null;
                     for (UIParam p : params) {
                         if ("frequency".equals(p.name)) {
-                            if (mFrequencyList.contains(p.value + p.unit)) {
-                                PromptUtils.showToast("已经添加过该频率了");
-                                return;
-                            }
-                            mFrequencyList.add(p.value + p.unit);
+                            frequency = p.value;
+                            break;
                         }
                     }
+                    if (!TextUtils.isEmpty(frequency)) {
+                        for (List<UIParam> addParams : mAddedParamList) {
+                            for (UIParam p : addParams) {
+                                if ("frequency".equals(p.name)) {
+                                    if (frequency.equals(p.value)) {
+                                        PromptUtils.showToast("已经添加过该频率了");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    mAddedParamList.add(params);
                     mAdapter.notifyDataSetChanged();
                 }
             }
@@ -74,22 +87,11 @@ public class MScanMenuFragment extends Fragment {
         view.findViewById(R.id.btn_save_param).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFrequencyList.size() == 0) {
+                if (mAddedParamList.size() == 0) {
                     PromptUtils.showToast("请先添加要扫描的频率");
                     return;
                 }
-                List<UIParam> params = getParamFromUI();
-                StringBuilder sb = new StringBuilder();
-                for (String freq : mFrequencyList) {
-                    sb.append(freq).append(",");
-                }
-                sb.deleteCharAt(sb.length() - 1);
-                for (UIParam p : params) {
-                    if ("frequency".equals(p.name)) {
-                        p.value = sb.toString();
-                        p.unit = "";
-                    }
-                }
+                List<UIParam> params = combineAddedParams();
                 ConfigManager.getInstance().saveParams(mFuncType, params);
                 EventBus.getDefault().post(new ParamChangeEvent(mFuncType, params));
             }
@@ -102,6 +104,43 @@ public class MScanMenuFragment extends Fragment {
         return view;
     }
 
+    private List<UIParam> combineAddedParams() {
+        Map<String, List<UIParam>> map = new HashMap<>();
+        for (List<UIParam> params : mAddedParamList) {
+            for (UIParam p : params) {
+                List<UIParam> value = map.get(p.name);
+                if (value == null) {
+                    value = new ArrayList<>();
+                    value.add(p);
+                    map.put(p.name, value);
+                } else {
+                    value.add(p);
+                }
+            }
+        }
+        List<UIParam> combinedParams = new ArrayList<>();
+        Iterator<Map.Entry<String, List<UIParam>>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, List<UIParam>> entry = iterator.next();
+            UIParam param = new UIParam();
+            param.name = entry.getKey();
+            StringBuilder builder = new StringBuilder();
+            List<UIParam> list = entry.getValue();
+            for (UIParam p : list) {
+                builder.append(p.value).append(p.unit).append(",");
+                param.unit = "";
+                param.type = p.type;
+            }
+            if (builder.length() > 0) {
+                builder.deleteCharAt(builder.length() - 1);
+            }
+            param.value = builder.toString();
+            combinedParams.add(param);
+        }
+        return combinedParams;
+    }
+
+
     private RecyclerView.Adapter<MScanParamViewHolder> mAdapter = new RecyclerView.Adapter<MScanParamViewHolder>() {
 
         @Override
@@ -111,12 +150,16 @@ public class MScanMenuFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(MScanParamViewHolder holder, final int position) {
-            String frequency = mFrequencyList.get(position);
-            holder.tvFreq.setText(frequency);
+            List<UIParam> param = mAddedParamList.get(position);
+            for (UIParam p : param) {
+                if ("frequency".equals(p.name)) {
+                    holder.tvFreq.setText(p.value);
+                }
+            }
             holder.ivDel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mFrequencyList.remove(position);
+                    mAddedParamList.remove(position);
                     mAdapter.notifyDataSetChanged();
                 }
             });
@@ -124,7 +167,7 @@ public class MScanMenuFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mFrequencyList.size();
+            return mAddedParamList.size();
         }
     };
 

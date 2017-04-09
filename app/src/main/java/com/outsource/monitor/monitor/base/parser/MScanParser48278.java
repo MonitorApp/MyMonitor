@@ -19,8 +19,8 @@ public class MScanParser48278 extends  ParserBase48278
     {
         public static class ValueItem
         {
-            public int refFrequence;    //频率索引 long or int?
-            public float freValue;      //实际电频*100
+            public int freqIndex;    //频率索引 long or int?
+            public float level;      //实际电频*100
         }
 
         public int dataCount; //离散扫描数据个数
@@ -53,8 +53,8 @@ public class MScanParser48278 extends  ParserBase48278
         for(i=0; i<m_dataValue.dataCount; ++i)
         {
             valueItem = new DataValue.ValueItem();
-            valueItem.refFrequence = byteArray.getInt();
-            valueItem.freValue = byteArray.getShort() / 100f;
+            valueItem.freqIndex = byteArray.getInt();
+            valueItem.level = byteArray.getShort() / 100f;
             m_dataValue.valueList.add(valueItem);
         }
     }

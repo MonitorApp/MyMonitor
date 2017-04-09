@@ -4,13 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import com.outsource.monitor.monitor.base.event.PlayPauseEvent;
-import com.outsource.monitor.monitor.base.parser.FscanParser48278;
 import com.outsource.monitor.monitor.base.parser.MScanParser48278;
 import com.outsource.monitor.monitor.discrete.DiscreteDataReceiver;
-import com.outsource.monitor.monitor.fscan.FscanDataReceiver;
 import com.outsource.monitor.monitor.ifpan.model.FallRow;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.DisplayUtils;
@@ -52,10 +51,11 @@ public class MScanFallsLevelView extends BaseTextureView implements DiscreteData
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private FallRow mAverageFallRow;
     private int averageCount;//当前的平均值是由多少条数据算出来的
-    private List<Long> frequencyList = new ArrayList<>();
     private AtomicReference<MScanParser48278.DataHead> mHead = new AtomicReference<>();
-    private float startFreqency;
+    private float startFreqency = Float.MAX_VALUE;
     private float endFrequency;
+    private List<Float> mFrequencyList = new ArrayList<>();
+    private List<Float> mLevles = new ArrayList<>();
 
     public MScanFallsLevelView(Context context) {
         super(context);
@@ -92,15 +92,21 @@ public class MScanFallsLevelView extends BaseTextureView implements DiscreteData
         float span = endFrequency - startFreqency;
         //画x轴底部刻度值和垂直网格线
         for (int i = 0; i <= X_CELL_COUNT; i++) {
-            int xValue = (int) (startFreqency + i * (span / X_CELL_COUNT));
             int x = Y_AXIS_WIDTH + xUnitWidth * i;
-            String xMarkStr = String.format("%.1fkHz", xValue - span / 2);
-            float textWidth = mMarkTextPaint.measureText(xMarkStr);
-            canvas.drawText(xMarkStr, 0, xMarkStr.length(), x - textWidth / 2 , mHeight - mMarkTextHeight, mMarkTextPaint);
+
+            String xMarkStr = null;
+            if (i < mFrequencyList.size()) {
+                xMarkStr = String.format("%.1fMHz", mFrequencyList.get(i));
+            }
+            if (i < X_CELL_COUNT && !TextUtils.isEmpty(xMarkStr)) {
+                float textWidth = mMarkTextPaint.measureText(xMarkStr);
+                canvas.drawText(xMarkStr, 0, xMarkStr.length(), x + xUnitWidth / 2 - textWidth / 2 , mHeight - mMarkTextHeight, mMarkTextPaint);
+            }
+
             canvas.drawLine(x, mHeight - X_AXIS_HEIGHT, x, 0, mMarkPaint);
         }
 
-        //画x轴底部刻度值和水平网格线
+        //画y轴左侧刻度值和水平网格线
         int yUnitHeight = (int) ((mHeight - X_AXIS_HEIGHT) / Y_CELL_COUNT);
         for (int i = 0; i <= Y_CELL_COUNT; i++) {
             int y = mHeight - X_AXIS_HEIGHT - (i + 1) * yUnitHeight;
@@ -211,10 +217,13 @@ public class MScanFallsLevelView extends BaseTextureView implements DiscreteData
             return;
         }
         ArrayList<MScanParser48278.DataValue.ValueItem> values = msData.valueList;
-        List<Float> levels = new ArrayList<>(values.size());
-        for (MScanParser48278.DataValue.ValueItem v : values) {
-            levels.add(v.freValue);
+        MScanParser48278.DataValue.ValueItem v = values.get(0);
+        int freqIndex = v.freqIndex;
+        if (freqIndex >= 0 && freqIndex < mLevles.size()) {
+            mLevles.set(freqIndex, v.level);
         }
+        List<Float> levels = new ArrayList<>();
+        levels.addAll(mLevles);
         updateFallLevels(new FallRow(System.currentTimeMillis(), levels));
     }
 
@@ -225,11 +234,13 @@ public class MScanFallsLevelView extends BaseTextureView implements DiscreteData
             return;
         }
         mHead.set(msHead);
-        frequencyList = msHead.freqList;
-        for (Long freq : frequencyList) {
-            startFreqency = Math.min(startFreqency, DisplayUtils.toDisplayFrequency(freq));
-            endFrequency = Math.max(endFrequency, DisplayUtils.toDisplayFrequency(freq));
+        for (Long freq : msHead.freqList) {
+            float frequency = DisplayUtils.toDisplayFrequency(freq);
+            startFreqency = Math.min(startFreqency, frequency);
+            endFrequency = Math.max(endFrequency, frequency);
+            mFrequencyList.add(frequency);
+            mLevles.add(0f);
         }
-        X_CELL_COUNT = frequencyList.size();
+        X_CELL_COUNT = msHead.freqList.size();
     }
 }

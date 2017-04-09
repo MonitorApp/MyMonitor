@@ -96,7 +96,7 @@ public class FScanFallsLevelView extends BaseTextureView implements FscanDataRec
             canvas.drawLine(x, mHeight - X_AXIS_HEIGHT, x, 0, mMarkPaint);
         }
 
-        //画x轴底部刻度值和水平网格线
+        //画y轴左侧刻度值和水平网格线
         int yUnitHeight = (int) ((mHeight - X_AXIS_HEIGHT) / Y_CELL_COUNT);
         for (int i = 0; i <= Y_CELL_COUNT; i++) {
             int y = mHeight - X_AXIS_HEIGHT - (i + 1) * yUnitHeight;
