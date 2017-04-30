@@ -1,11 +1,20 @@
 package com.outsource.monitor.other.map;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,10 +69,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.RuntimePermissions;
+
 /**
  * Created by xionghao on 2017/1/14.
  */
-
+@RuntimePermissions
 public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataReceiver, FscanDataReceiver, DfDataReceiver, DiscreteDataReceiver, DigitDataReceiver {
 
     private static final int MIN_DISTANCE = 50;
@@ -77,16 +91,12 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_map, container, false);
-        startLocation();
-
         mMapView = (MapView) view.findViewById(R.id.map_view);
-
-//        mLocationMockHandler.sendEmptyMessage(1);
-
         mBasePoi = new MyPoi();
         mBasePoi.longitude = 120.19;
         mBasePoi.latitude = 30.26;
         mBasePoi.level = 100;
+        MapFragmentPermissionsDispatcher.requestLocationWithCheck(this);
         return view;
     }
 
@@ -468,5 +478,43 @@ public class MapFragment extends Fragment implements ItuDataReceiver, IfpanDataR
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         view.setDrawingCacheEnabled(true);
         return view.getDrawingCache(true);
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION})
+    public void requestLocation() {
+        startLocation();
+    }
+
+    @OnNeverAskAgain(Manifest.permission.ACCESS_FINE_LOCATION)
+    void onLocationNeverAskAgain() {
+        showSettingPermissionsDialog(getActivity(), R.string.string_permission_location);
+    }
+
+    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
+    void onLocationDenied() {
+        showSettingPermissionsDialog(getActivity(), R.string.string_permission_location);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        MapFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    public static void showSettingPermissionsDialog(final Activity context, @StringRes int messageResId) {
+        if (context == null || context.isFinishing()) {
+            return;
+        }
+
+        new AlertDialog.Builder(context).setTitle("权限申请").setMessage(messageResId).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                context.startActivity(new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
+            }
+        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).show();
     }
 }

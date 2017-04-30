@@ -14,4 +14,6 @@
 
     <string name="startlocation">开始定位</string>
     <string name="stoplocation">停止定位</string>
+
+    <string name="string_permission_location">在设置-应用-手监-权限中开启位置信息权限,以正常使用手监功能.</string>
 </resources>
