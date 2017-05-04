@@ -1,7 +1,9 @@
 package com.outsource.monitor.utils;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -9,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -282,12 +285,18 @@ public class EnvironmentUtils {
          */
         public static void init(final Context context) {
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            mIMEI = telephonyManager.getDeviceId();
+            int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE);
+            if(permissionCheck == PackageManager.PERMISSION_GRANTED)
+            {
+                mIMEI = telephonyManager.getDeviceId();
+            }
             if (mIMEI == null) {
                 mIMEI = "";
             }
 
-            mIMSI = telephonyManager.getSubscriberId();
+            if(permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                mIMSI = telephonyManager.getSubscriberId();
+            }
             if (mIMSI == null) {
                 mIMSI = "";
             }
