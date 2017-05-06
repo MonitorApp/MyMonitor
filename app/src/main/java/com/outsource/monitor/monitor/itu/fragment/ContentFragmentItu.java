@@ -258,16 +258,16 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         mMaxLevelBarChart = (BarChart) view.findViewById(R.id.chart_single_frequency_max_level);
         YAxis leftAxis = mMaxLevelBarChart.getAxisLeft();
         leftAxis.enableGridDashedLine(10, 10, 0);
-//        leftAxis.setAxisMinimum(0);
-//        leftAxis.setAxisMaximum(DeviceConfig.MAX_LEVEL);
+        leftAxis.setAxisMinimum(0);
+        leftAxis.setAxisMaximum(100);
 
         XAxis xAxis = mMaxLevelBarChart.getXAxis();
         ITUXAxisTimeValueFormatter formatter = new ITUXAxisTimeValueFormatter();
         formatter.setTimeUnit(MAX_LINE_X_AXIS);
         xAxis.setValueFormatter(formatter);
         xAxis.enableGridDashedLine(1, 1, 0);
-        xAxis.setAxisMinimum(-20);
-        xAxis.setAxisMaximum(80);
+        xAxis.setAxisMinimum(0);
+        xAxis.setAxisMaximum(60);
 
         BarData barData = new BarData(generateMaxLevelBarData());
         barData.setBarWidth(BAR_WIDTH);
@@ -386,7 +386,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         set.setDrawCircleHole(false);
         set.setDrawValues(false);
         set.setDrawCircles(false);
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         return set;
     }
@@ -394,6 +394,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
     private void refreshMeasureItemList() {
         mMeasureItemAdapter.update(mCurrentItemsData);
     }
+
     private void refreshLineChart() {
         LineData lineData = mLineChart.getData();
         lineData.removeDataSet(0);
