@@ -189,7 +189,7 @@ public class SocketThread extends Thread {
             }
             Command command = mCommand.get();
             if (!TextUtils.isEmpty(command.command)) {
-                byte[] bytes = command.command.getBytes(Charset.forName("UTF-8"));
+                byte[] bytes = command.command.getBytes(Charset.forName("GBK"));
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(bytes.length);
                 OutputStream outputStream = null;
                 InputStream inputStream = null;
