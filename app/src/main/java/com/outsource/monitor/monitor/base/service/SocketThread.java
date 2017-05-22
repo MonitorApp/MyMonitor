@@ -243,6 +243,7 @@ public class SocketThread extends Thread {
                                     onFScanDataReceived(data);
                                 }
                             }
+                            break;
                             case DF:
                             {
                                 DFParser48278 data = DFParser48278.TryParse(buffer, byteOffset);
@@ -252,6 +253,7 @@ public class SocketThread extends Thread {
                                     onDfDataReceived(data);
                                 }
                             }
+                            break;
                             case DISCRETE:
                             {
                                 //离散扫描
