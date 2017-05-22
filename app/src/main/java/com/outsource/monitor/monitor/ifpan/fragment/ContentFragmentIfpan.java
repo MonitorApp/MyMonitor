@@ -294,6 +294,7 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
         mDataHead.set(ifpanHeads);
         XAxis xAxis = mChart.getXAxis();
         float axisSpan = DisplayUtils.toDisplaySpan(ifpanHeads.span);
+        mXValueFormatter.setFrequency(DisplayUtils.toDisplayFrequency(ifpanHeads.frequence));
         mXValueFormatter.setSpan(axisSpan);
         xAxis.setAxisMinimum(-axisSpan / 2);
         xAxis.setAxisMaximum(axisSpan / 2);

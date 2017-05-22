@@ -120,6 +120,9 @@ public class DisplayUtils {
         return  realSpan / 1000f;
     }
 
+    /**
+     * 转成97.1MHz
+     */
     public static float toDisplayFrequency(long realFrequency) {
         return  realFrequency / 1000000f;
     }

@@ -86,7 +86,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
         for (int i = 0; i <= X_CELL_COUNT; i++) {
             int xValue = (int) (frequency + i * (span / X_CELL_COUNT));
             int x = Y_AXIS_WIDTH + xUnitWidth * i;
-            String xMarkStr = String.format("%.1fkHz", xValue - span / 2);
+            String xMarkStr = String.format("%.1fMHz", xValue - span / 2);
             float textWidth = mMarkTextPaint.measureText(xMarkStr);
             canvas.drawText(xMarkStr, 0, xMarkStr.length(), x - textWidth / 2 , mHeight - mMarkTextHeight, mMarkTextPaint);
             canvas.drawLine(x, mHeight - X_AXIS_HEIGHT, x, 0, mMarkPaint);
@@ -168,6 +168,7 @@ public class FallsLevelView extends BaseTextureView implements IfpanDataReceiver
             LogUtils.d("中频分析帧头为空！");
             return;
         }
+        frequency = DisplayUtils.toDisplayFrequency(ifpanHeads.frequence);
         span = getDisplaySpan(ifpanHeads.span);
 //        frequency = ifpanHeads.frequence;
     }

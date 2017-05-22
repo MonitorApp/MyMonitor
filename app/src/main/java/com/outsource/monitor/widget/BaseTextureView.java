@@ -213,7 +213,7 @@ public abstract class BaseTextureView extends TextureView implements TextureView
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
-                PromptUtils.showToast("drawCanvas error!" + e.getMessage());
+//                PromptUtils.showToast("drawCanvas error!" + e.getMessage());
             }
         }
     }

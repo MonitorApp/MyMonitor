@@ -23,7 +23,8 @@ public class IFPANXAxisValueFormatter implements IAxisValueFormatter
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
 //        value -= max / 2;
-        return String.format("%.1fkHz", value);
+        value += frequency;
+        return String.format("%.1fMHz", value);
     }
 
     @Override
