@@ -1,5 +1,6 @@
 package com.outsource.monitor.monitor.base.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import com.outsource.monitor.base.OnTabChangeEvent;
 import com.outsource.monitor.config.Tab;
 import com.outsource.monitor.monitor.base.event.UpdatePlayUIEvent;
 import com.outsource.monitor.monitor.base.event.PlayPauseEvent;
+import com.outsource.monitor.other.map.OfflineMapActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,6 +61,12 @@ public class TabMenuFragment extends Fragment {
             public void onClick(View v) {
                 updatePlayState(!v.isSelected());
                 EventBus.getDefault().post(new PlayPauseEvent(isPlaying()));
+            }
+        });
+        view.findViewById(R.id.tv_map_offline).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), OfflineMapActivity.class));
             }
         });
 

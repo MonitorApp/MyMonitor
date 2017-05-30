@@ -30,5 +30,11 @@
             android:textSize="13sp"
             android:text="打开/关闭地图"/>
 
+        <TextView
+            android:id="@+id/tv_map_offline"
+            style="@style/TabLeftMenu"
+            android:textSize="13sp"
+            android:text="离线地图"/>
+
     </LinearLayout>
 </LinearLayout>
