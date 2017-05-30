@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +34,14 @@ import com.outsource.monitor.monitor.base.event.UpdatePlayUIEvent;
 import com.outsource.monitor.monitor.base.parser.ItuParser48278;
 import com.outsource.monitor.monitor.base.ui.BasePlayFragment;
 import com.outsource.monitor.monitor.itu.ItuDataReceiver;
+import com.outsource.monitor.monitor.itu.ItuTimePercentageThresholdDialog;
 import com.outsource.monitor.monitor.itu.adapter.MeasureItemAdapter;
 import com.outsource.monitor.monitor.itu.chartformatter.ITUXAxisTimeValueFormatter;
 import com.outsource.monitor.monitor.itu.chartformatter.ITUXAxisValueFormatter;
 import com.outsource.monitor.monitor.itu.chartformatter.ITUYAxisValueFormatter;
 import com.outsource.monitor.monitor.itu.model.ItuItemData;
 import com.outsource.monitor.monitor.itu.model.ItuLevel;
+import com.outsource.monitor.monitor.itu.model.ItuTimePercentageThreshold;
 import com.outsource.monitor.utils.CollectionUtils;
 import com.outsource.monitor.utils.LogUtils;
 import com.outsource.monitor.utils.PromptUtils;
@@ -63,7 +66,9 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         return new ContentFragmentItu();
     }
 
-    private static final int MAX_LINE_X_AXIS = Consts.SECONDS * 2;//最多显示2秒前的数据，单位为ms
+    private static final int MAX_LINE_X_AXIS = Consts.SECONDS * 10;//最多显示2秒前的数据，单位为ms
+    private long mRealTimeStamp = 0; // 当前数据的时间，不是真实时间
+    private static final long DATA_INTERVAL = 30; // 两条数据的时间间隔固定为70ms
     private static final int MIN_MEASURE_LEVEL = 0;
     private static final int MAX_MEASURE_LEVEL = 100;
     private static final int MAX_BAR_X_AXIS = 60;
@@ -74,6 +79,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
     private TextView mTvMeasureItemName;
     private TextView mTvRealTimeLevel;
     private TextView mTvTimePercentageTitle;
+    private TextView mTvTimePercentageThreshold;
     private TextView mTvMaxValueTitle;
     private AtomicReference<List<ItuParser48278.DataHead.HeadItem>> mItuHead = new AtomicReference<>();
     private List<ConcurrentLinkedQueue<ItuLevel>> mRealTimeLevels = new ArrayList<>();
@@ -82,6 +88,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
     private List<Integer> hitCountPerScreen = new ArrayList<>();//一屏内命中次数
     private List<Integer> totalCountPerScreen = new ArrayList<>();//一屏内扫描的电平次数
     private List<Float> maxLevelPerScreen = new ArrayList<>();
+    private List<ItuTimePercentageThreshold> mItuTimePercentageThresholds = new ArrayList<>();
     private MeasureItemAdapter mMeasureItemAdapter;
     private long frame;//当前接收到第几帧，用于计算平均值，长时间运行会导致溢出
     private List<ItuItemData> mCurrentItemsData = new ArrayList<>(0);
@@ -187,12 +194,13 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
     }
 
     private void onMeasureItemChanged() {
-        List<ItuParser48278.DataHead.HeadItem> ituHeads = mItuHead.get();
-        if (ituHeads != null && choosePosition < ituHeads.size()) {
-            ItuParser48278.DataHead.HeadItem head = ituHeads.get(choosePosition);
+        int size = mItuTimePercentageThresholds.size();
+        if (choosePosition < size) {
+            ItuTimePercentageThreshold head = mItuTimePercentageThresholds.get(choosePosition);
             mTvMeasureItemName.setText(head.name + "[" + head.unit + "]");
-            mTvTimePercentageTitle.setText(head.name + "时间占用度");
+            mTvTimePercentageTitle.setText(head.name + "时间占用度，门限值：");
             mTvMaxValueTitle.setText(head.name + "最大值");
+            mTvTimePercentageThreshold.setText(head.threshold + head.unit);
         }
         if (choosePosition < mCurrentItemsData.size()) {
             mTvRealTimeLevel.setText(Float.toString(mCurrentItemsData.get(choosePosition).realtimeValue));
@@ -210,6 +218,25 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         mTvMeasureItemName = (TextView) view.findViewById(R.id.tv_sgl_selected_measure_item_name);
         mTvRealTimeLevel = (TextView) view.findViewById(R.id.tv_sgl_selected_measure_item_realtime_value);
         mTvTimePercentageTitle = (TextView) view.findViewById(R.id.tv_sgl_selected_measure_item_time_percentage);
+        mTvTimePercentageThreshold = (TextView) view.findViewById(R.id.tv_itu_time_percentage_threshold);
+        mTvTimePercentageThreshold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (choosePosition < mItuTimePercentageThresholds.size()) {
+                    ItuTimePercentageThresholdDialog dialog = new ItuTimePercentageThresholdDialog(getActivity(), mItuTimePercentageThresholds.get(choosePosition));
+                    dialog.setOnTimePercentageThresholdChangeListener(new ItuTimePercentageThresholdDialog.OnTimePercentageThresholdChangeListener() {
+                        @Override
+                        public void onTimePercentageThresholdChanged(int threshold) {
+                            if (choosePosition < mItuTimePercentageThresholds.size()) {
+                                mItuTimePercentageThresholds.get(choosePosition).threshold = threshold;
+                                onMeasureItemChanged();
+                            }
+                        }
+                    });
+                    dialog.show();
+                }
+            }
+        });
         mTvMaxValueTitle = (TextView) view.findViewById(R.id.tv_sgl_selected_measure_item_max_value);
         mLineChart = (LineChart) view.findViewById(R.id.chart_single_frequency_line);
         IAxisValueFormatter yValueFormatter = new ITUYAxisValueFormatter();
@@ -222,6 +249,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         IAxisValueFormatter xValueFormatter = new ITUXAxisValueFormatter();
         XAxis xAxis = mLineChart.getXAxis();
         xAxis.setValueFormatter(xValueFormatter);
+        xAxis.setDrawLabels(false);
         xAxis.enableGridDashedLine(10, 10, 0);
         xAxis.setAxisMinimum(0);
         xAxis.setAxisMaximum(MAX_LINE_X_AXIS);
@@ -259,7 +287,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         YAxis leftAxis = mMaxLevelBarChart.getAxisLeft();
         leftAxis.enableGridDashedLine(10, 10, 0);
         leftAxis.setAxisMinimum(0);
-        leftAxis.setAxisMaximum(100);
+//        leftAxis.setAxisMaximum(100);
 
         XAxis xAxis = mMaxLevelBarChart.getXAxis();
         ITUXAxisTimeValueFormatter formatter = new ITUXAxisTimeValueFormatter();
@@ -277,7 +305,10 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
     }
 
     private boolean isHit(float level) {
-        return level >= MIN_MEASURE_LEVEL && level <= MAX_MEASURE_LEVEL;
+        if (choosePosition < mItuTimePercentageThresholds.size()) {
+            return level >= mItuTimePercentageThresholds.get(choosePosition).threshold;
+        }
+        return false;
     }
 
     private void refreshMeasureItemData(List<Float> ituData) {
@@ -311,11 +342,18 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         if (choosePosition >= ituData.size()) return;
 
         int len = ituData.size();
+        if (len > 0) {
+            if (mRealTimeStamp == 0) {
+                mRealTimeStamp = System.currentTimeMillis();
+            } else {
+                mRealTimeStamp += DATA_INTERVAL;
+            }
+        }
         for (int i = 0; i < len; i++) {
             float level = ituData.get(i);
-            mRealTimeLevels.get(i).add(new ItuLevel(System.currentTimeMillis(), level));
-            ItuLevel head = mRealTimeLevels.get(i).peek();
-            if (head != null && (System.currentTimeMillis() - head.timestamp) > MAX_LINE_X_AXIS) {
+            mRealTimeLevels.get(i).add(new ItuLevel(mRealTimeStamp, level));
+            ItuLevel head = null;
+            while ((head = mRealTimeLevels.get(i).peek()) != null && (System.currentTimeMillis() - head.timestamp) > MAX_LINE_X_AXIS) {
                 mRealTimeLevels.get(i).poll();
             }
             maxLevelPerScreen.set(i, Math.max(level, maxLevelPerScreen.get(i)));
@@ -366,7 +404,10 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
                 totalCountPerScreen.add(0);
                 maxLevelPerScreen.add(ituHead.dataHead.get(i).minVal);
                 mCurrentItemsData.add(new ItuItemData());
-            }
+
+                ItuParser48278.DataHead.HeadItem item = ituHead.dataHead.get(i);
+                mItuTimePercentageThresholds.add(new ItuTimePercentageThreshold(item.name, item.unit, i == 0 ? 40 : 122));
+        }
             mRefreshHandler.sendEmptyMessage(MSG_ID_INIT_MEASURE_ITEM);
         }
         measureItemCount = ituHead.dataHead != null ? ituHead.dataHead.size() : 0;
@@ -386,7 +427,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         set.setDrawCircleHole(false);
         set.setDrawValues(false);
         set.setDrawCircles(false);
-        set.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+        set.setMode(LineDataSet.Mode.LINEAR);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         return set;
     }

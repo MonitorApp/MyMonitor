@@ -65,11 +65,10 @@
         <service android:name=".monitor.base.service.DataProviderService" android:exported="false"/>
 
         <activity android:name=".other.activity.MainActivity" android:screenOrientation="landscape"/>
-        <activity android:name=".other.activity.DiscreteScanActivity" android:screenOrientation="landscape"/>
         <activity android:name=".other.activity.RecordActivity" android:screenOrientation="landscape"/>
         <activity android:name=".other.activity.AboutActivity" android:screenOrientation="landscape"/>
         <activity android:name=".other.activity.OptionActivity" android:screenOrientation="landscape" android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity android:name=".monitor.base.ui.MonitorCenterActivity" android:screenOrientation="landscape" android:theme="@style/AppTheme.FullScreen"/>
+        <activity android:name=".monitor.base.ui.MonitorCenterActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.FullScreen"/>
         <activity android:name=".other.activity.MapActivity" android:screenOrientation="landscape"/>
         <activity android:name=".other.activity.LocationActivity" android:screenOrientation="landscape"/>
 

@@ -20,8 +20,9 @@ public class ITUXAxisTimeValueFormatter implements IAxisValueFormatter
 
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
-        mDate.setTime(System.currentTimeMillis() - (mTimeUnit * (int) value));
-        return mFormat.format(mDate);
+//        mDate.setTime(System.currentTimeMillis() - (mTimeUnit * (int) value));
+//        return mFormat.format(mDate);
+        return String.valueOf((int) value);
     }
 
     @Override
