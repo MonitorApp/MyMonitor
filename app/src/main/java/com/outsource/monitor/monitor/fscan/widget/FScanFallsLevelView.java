@@ -44,7 +44,7 @@ public class FScanFallsLevelView extends BaseTextureView implements FscanDataRec
     private int mMarkTextHeight;
 
     public static final int FALL_COUNT = 50;//最大显示的横线数量
-    private static final long FALL_YAXIS_UNIT = 50;//瀑布图两行之间的最小时间间隔
+    private static final long FALL_YAXIS_UNIT = 10 * 1000;//瀑布图两行之间的最小时间间隔
     private ConcurrentLinkedQueue<FallRow> mFallRows = new ConcurrentLinkedQueue<>();
     //瀑布图要显示100秒的数据，如果每条数据都显示的话数据量太大，所以每次把1秒内的数据取平均值合并成一条
     private FallRow mAverageFallRow;

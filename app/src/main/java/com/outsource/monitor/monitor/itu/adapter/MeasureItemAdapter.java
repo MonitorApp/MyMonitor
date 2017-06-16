@@ -50,10 +50,10 @@ public class MeasureItemAdapter extends RecyclerView.Adapter {
         viewHolder.tvTitle.setText(head.name + "[" + head.unit + "]");
         if (position >= mData.size()) return;
         final ItuItemData data = mData.get(position);
-        viewHolder.tvRealTimeValue.setText(Float.toString(data.realtimeValue));
-        viewHolder.tvAverageValue.setText(Float.toString(data.averageValue));
-        viewHolder.tvMaxValue.setText(Float.toString(data.maxValue));
-        viewHolder.tvMinValue.setText(Float.toString(data.minValue));
+        viewHolder.tvRealTimeValue.setText(String.format("%.1f", data.realtimeValue));
+        viewHolder.tvAverageValue.setText(String.format("%.1f", data.averageValue));
+        viewHolder.tvMaxValue.setText(String.format("%.1f", data.maxValue));
+        viewHolder.tvMinValue.setText(String.format("%.1f", data.minValue));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

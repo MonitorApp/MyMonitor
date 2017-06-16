@@ -444,7 +444,7 @@ public class ContentFragmentItu extends BasePlayFragment implements ItuDataRecei
         mLineChart.notifyDataSetChanged();
         mLineChart.invalidate();
         if (choosePosition < mCurrentItemsData.size()) {
-            mTvRealTimeLevel.setText(Float.toString(mCurrentItemsData.get(choosePosition).realtimeValue));
+            mTvRealTimeLevel.setText(String.format("%.1f", mCurrentItemsData.get(choosePosition).realtimeValue));
         }
     }
 
