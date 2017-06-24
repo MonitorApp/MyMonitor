@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,9 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
 
     private TextView mTvCurrentFrequencyLevel;
     private TextView mTvAnalyseInfo;
+
+    private TextView mTvLeftSpan;
+    private TextView mTvRightSpan;
     private boolean showBarData = false;
 
     private Handler mRefreshHandler = new Handler() {
@@ -101,7 +105,7 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
                     maxLevelIndex = i;
                 }
             }
-            long deltaSpan = maxLevelIndex * head.span / size - head.span / 2;
+            long deltaSpan = maxLevelIndex * head.ifbw / size - head.ifbw / 2;
             float displayDelta = DisplayUtils.toDisplaySpan(deltaSpan);
             long maxLevelFrequency = frequency + deltaSpan;
             float displayMaxLevelFrequency = DisplayUtils.toDisplayFrequency(maxLevelFrequency);
@@ -128,6 +132,8 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
         mXValueFormatter = new IFPANXAxisValueFormatter();
         mTvCurrentFrequencyLevel = (TextView) view.findViewById(R.id.tv_ifpan_current_frequency_level);
         mTvAnalyseInfo = (TextView) view.findViewById(R.id.tv_ifpan_analyse_info);
+        mTvLeftSpan = (TextView) view.findViewById(R.id.tv_ifpan_span_left);
+        mTvRightSpan = (TextView) view.findViewById(R.id.tv_ifpan_span_right);
         initCombineChart(view);
         initFallChart(view);
         mRefreshHandler.sendEmptyMessageDelayed(MSG_ID_REFRESH_CHART, 500);
@@ -160,6 +166,8 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
         leftAxis.setAxisMaximum(80);
 
         XAxis xAxis = mChart.getXAxis();
+        xAxis.setAvoidFirstLastClipping(true);
+        xAxis.setSpaceMin(0);
         xAxis.setValueFormatter(mXValueFormatter);
         xAxis.enableGridDashedLine(10, 10, 0);
         xAxis.setAxisLineColor(Color.parseColor("#403f40"));
@@ -223,7 +231,7 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
             return;
         }
         ArrayList<Entry> entries = new ArrayList<Entry>();
-        float displaySpan = DisplayUtils.toDisplaySpan(head.span);
+        float displaySpan = DisplayUtils.toDisplaySpan(head.ifbw);
         float start = -displaySpan / 2;
         int count = values.size();
         for (int i = 0; i < count; i++) {
@@ -253,7 +261,7 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
             return;
         }
         ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-        float displaySpan = DisplayUtils.toDisplaySpan(head.span);
+        float displaySpan = DisplayUtils.toDisplaySpan(head.ifbw);
         float start = -displaySpan / 2;
         int count = values.size();
         for (int i = 0; i < count; i++) {
@@ -285,18 +293,30 @@ public class ContentFragmentIfpan extends BasePlayFragment implements IfpanDataR
     }
 
     @Override
-    public void onReceiveIfpanHead(IfpanParser48278.DataHead ifpanHeads) {
+    public void onReceiveIfpanHead(final IfpanParser48278.DataHead ifpanHeads) {
         if (ifpanHeads == null) {
             LogUtils.d("中频分析帧头为空！");
             return;
         }
+        if (isFinishing()) return;
         mFallsLevelView.onReceiveIfpanHead(ifpanHeads);
         mDataHead.set(ifpanHeads);
         XAxis xAxis = mChart.getXAxis();
-        float axisSpan = DisplayUtils.toDisplaySpan(ifpanHeads.span);
+        final float axisSpan = DisplayUtils.toDisplaySpan(ifpanHeads.ifbw);
+        Log.d("xh", "span " + ifpanHeads.ifbw);
         mXValueFormatter.setFrequency(DisplayUtils.toDisplayFrequency(ifpanHeads.frequence));
         mXValueFormatter.setSpan(axisSpan);
         xAxis.setAxisMinimum(-axisSpan / 2);
         xAxis.setAxisMaximum(axisSpan / 2);
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isFinishing()) return;
+                float half = axisSpan / 2f;
+                mTvLeftSpan.setText(String.format("%.1fkHz", -half));
+                mTvRightSpan.setText(String.format("%.1fkHz", half));
+            }
+        });
     }
 }

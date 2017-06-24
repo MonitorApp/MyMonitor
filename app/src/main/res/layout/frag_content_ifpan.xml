@@ -34,13 +34,34 @@
         android:textColor="@color/text_color_999"
         android:textSize="13sp"/>
 
-
-    <com.github.mikephil.charting.charts.CombinedChart
-        android:id="@+id/chart_middle_frequency_analyse"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp">
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/chart_middle_frequency_analyse"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/tv_ifpan_span_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|bottom"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/text_color_999"
+            android:textSize="11sp"/>
+
+        <TextView
+            android:id="@+id/tv_ifpan_span_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:textColor="@color/text_color_999"
+            android:textSize="11sp"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -7,13 +7,13 @@ public class IFPANXAxisValueFormatter implements IAxisValueFormatter
 {
 
     private float frequency;
-    private float max;
+    private float span;
 
     public IFPANXAxisValueFormatter() {
     }
 
     public void setSpan(float span) {
-        max = span;
+        this.span = span;
     }
 
     public void setFrequency(float frequency) {
@@ -22,9 +22,12 @@ public class IFPANXAxisValueFormatter implements IAxisValueFormatter
 
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
-//        value -= max / 2;
         value += frequency;
-        return String.format("%.1fMHz", value);
+        String xFormat = String.format("%.1fMHz", value);
+        if (value == frequency) {
+            return xFormat;
+        }
+        return "";
     }
 
     @Override

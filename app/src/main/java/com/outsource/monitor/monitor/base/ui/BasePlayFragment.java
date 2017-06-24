@@ -1,12 +1,12 @@
 package com.outsource.monitor.monitor.base.ui;
 
-import android.support.v4.app.Fragment;
+import com.outsource.monitor.base.BaseFragment;
 
 /**
  * Created by xionghao on 2017/3/12.
  */
 
-public class BasePlayFragment extends Fragment {
+public class BasePlayFragment extends BaseFragment {
 
     private boolean isPlay;
 
