@@ -101,6 +101,7 @@ public class TabMenuFragment extends Fragment {
                         mSelectedTab = tab;
                         notifyDataSetChanged();
                         EventBus.getDefault().post(new OnTabChangeEvent(tab));
+                        updatePlayState(false);
                     }
                 }
             });

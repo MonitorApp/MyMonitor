@@ -67,13 +67,13 @@ public abstract class BaseFuncFragment extends BaseMonitorFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mServiceHelper = new ServiceHelper(getActivity());
-        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
-            if (!ConfigManager.getInstance().isParamsValid(getFuncType())) {
-                EventBus.getDefault().post(new UpdatePlayUIEvent(false));
-            } else {
-                sendCommand();
-            }
-        }
+//        if (((MonitorCenterActivity) getActivity()).isPlaying()) {
+//            if (!ConfigManager.getInstance().isParamsValid(getFuncType())) {
+//                EventBus.getDefault().post(new UpdatePlayUIEvent(false));
+//            } else {
+//                sendCommand();
+//            }
+//        }
         EventBus.getDefault().register(this);
     }
 
