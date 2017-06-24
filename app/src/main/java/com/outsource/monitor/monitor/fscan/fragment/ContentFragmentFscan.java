@@ -61,7 +61,7 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
     private static final long REFRESH_CHART_INTERVAL = 100;
     private static final int MSG_ID_REFRESH_CHART = 1;
 
-    private boolean showLineChart = false;
+    private boolean showLineChart = true;
 
     private int choosePosition;
 
@@ -271,7 +271,7 @@ public class ContentFragmentFscan extends BasePlayFragment implements FscanDataR
         BarDataSet set = new BarDataSet(entries, "DataSet 1");
         BarData barData = data.getBarData();
         barData.setValueTextSize(10f);
-        barData.setBarWidth(0.9f * displaySpan / count);
+        barData.setBarWidth(0.02f * displaySpan / count);
         barData.setOrientation(BarData.Orientation.VERTICAL);
         barData.removeDataSet(0);
         barData.addDataSet(set);

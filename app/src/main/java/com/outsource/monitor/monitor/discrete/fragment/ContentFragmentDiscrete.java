@@ -249,7 +249,7 @@ public class ContentFragmentDiscrete extends BasePlayFragment implements Discret
         BarData barData = data.getBarData();
         barData.setValueTextSize(10f);
         int count = levelMap.size();
-        float barWidth = 0.9f * displaySpan / Math.max(count, 20);
+        float barWidth = 0.02f * displaySpan / Math.max(count, 20);
         barData.setBarWidth(barWidth);
         barData.setOrientation(BarData.Orientation.VERTICAL);
         barData.removeDataSet(0);
